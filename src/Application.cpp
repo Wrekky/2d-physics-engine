@@ -9,7 +9,7 @@ bool Application::IsRunning() {
 ///////////////////////////////////////////////////////////////////////////////
 void Application::Setup() {
     running = Graphics::OpenWindow();
-
+    particle = new Particle(500, 100, 50);
     // TODO: setup objects in the scene
 }
 
@@ -43,7 +43,7 @@ void Application::Update() {
 ///////////////////////////////////////////////////////////////////////////////
 void Application::Render() {
     Graphics::ClearScreen(0xFF056263);
-    Graphics::DrawFillCircle(200, 200, 40, 0xFFFFFFFF);
+    Graphics::DrawFillCircle(particle->position.x, particle->position.y, 10, 0xFFFFFFFF);
     Graphics::RenderFrame();
 }
 
@@ -52,6 +52,6 @@ void Application::Render() {
 ///////////////////////////////////////////////////////////////////////////////
 void Application::Destroy() {
     // TODO: destroy all objects in the scene
-
+    delete particle;
     Graphics::CloseWindow();
 }
