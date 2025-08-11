@@ -1,4 +1,7 @@
 #include "Application.h"
+#include "./Physics/Constants.h"
+
+#include <iostream>
 
 bool Application::IsRunning() {
     return running;
@@ -36,6 +39,25 @@ void Application::Input() {
 ///////////////////////////////////////////////////////////////////////////////
 void Application::Update() {
     // TODO: update all objects in the scene
+    //Check fps
+    static int timePreviousFrame;
+
+    int physicsTime = MILLISECS_PER_FRAME - (SDL_GetTicks() - timePreviousFrame);
+    //All physics code, TODO: split into a seperate function/class
+    particle->velocity = Vec2(2.0,2.0);
+    particle->position += (particle->velocity);
+    /////////////////////////////////////////////
+    int timeToWait = MILLISECS_PER_FRAME - (SDL_GetTicks() - timePreviousFrame);;
+    timePreviousFrame = SDL_GetTicks();
+    physicsTime = (physicsTime - timeToWait);
+    
+    if (physicsTime > MILLISECS_PER_FRAME) {
+        std::cout << "Took: " << physicsTime << " miliseconds to calculate physics" << std::endl;
+    }
+    
+    if(timeToWait > 0) {
+        SDL_Delay(timeToWait);
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
