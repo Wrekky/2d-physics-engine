@@ -42,6 +42,10 @@ void Application::Update() {
     //Check fps
     static int timePreviousFrame;
     float deltaTime = (SDL_GetTicks() - timePreviousFrame) / 1000.0f;
+    if (deltaTime > 0.016) {
+        //If it pauses for whatever reason and deltaTime has a large gap for whatever reason
+        deltaTime = 0.016;
+    }
     int physicsTime = MILLISECS_PER_FRAME - (SDL_GetTicks() - timePreviousFrame);
     //All physics code, TODO: split into a seperate function/class
     particle->velocity = Vec2(50.0 * deltaTime, 50.0  * deltaTime);
@@ -55,7 +59,7 @@ void Application::Update() {
         std::cout << "Took: " << physicsTime << " miliseconds to calculate physics" << std::endl;
     }
     
-    if(timeToWait > 0) {
+    if (timeToWait > 0) {
         SDL_Delay(timeToWait);
     }
 }
