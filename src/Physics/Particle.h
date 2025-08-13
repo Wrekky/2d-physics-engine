@@ -11,6 +11,7 @@ struct Particle
 
     float mass;
 
+    void Integrate(float dt);
     Particle(float x, float y, float mass);
     ~Particle();
 };

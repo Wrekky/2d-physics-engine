@@ -13,6 +13,7 @@ bool Application::IsRunning() {
 void Application::Setup() {
     running = Graphics::OpenWindow();
     particle = new Particle(500, 100, 50);
+    particle->radius = 4;
     // TODO: setup objects in the scene
 }
 
@@ -47,9 +48,9 @@ void Application::Update() {
         deltaTime = 0.016;
     }
     int physicsTime = MILLISECS_PER_FRAME - (SDL_GetTicks() - timePreviousFrame);
-    //All physics code, TODO: split into a seperate function/class
-    particle->velocity = Vec2(50.0 * deltaTime, 50.0  * deltaTime);
-    particle->position += (particle->velocity);
+
+    particle->acceleration = Vec2(20, 20);
+    particle->Integrate(deltaTime);
     /////////////////////////////////////////////
     int timeToWait = MILLISECS_PER_FRAME - (SDL_GetTicks() - timePreviousFrame);;
     timePreviousFrame = SDL_GetTicks();

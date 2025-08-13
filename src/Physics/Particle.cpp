@@ -5,6 +5,12 @@ Particle::Particle(float x, float y, float mass) {
     this->position = Vec2(x, y);
     this->mass = mass;
 }
+
 Particle::~Particle() {
 
+}
+
+void Particle::Integrate(float dt) {
+    velocity += acceleration * dt;
+    position += velocity * dt;
 }
