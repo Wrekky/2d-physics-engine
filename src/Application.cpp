@@ -51,6 +51,24 @@ void Application::Update() {
 
     particle->acceleration = Vec2(20, 20);
     particle->Integrate(deltaTime);
+
+    if (particle->position.x >= Graphics::Width() - particle->radius) {
+        particle->position.x = Graphics::Width() - particle->radius;
+        particle->velocity.x *= -1;
+    }
+    else if (particle->position.x <= 0 + particle->radius) {
+        particle->position.x = 0.0 + particle->radius;
+        particle->velocity.x *= -1;
+    }
+
+    if (particle->position.y >= Graphics::Height() - particle->radius) {
+        particle->position.y = Graphics::Height() - particle->radius;
+        particle->velocity.y *= -1;
+    }
+    else if (particle->position.y <= 0 + particle->radius) {
+        particle->position.y = 0.0 + particle->radius;
+        particle->velocity.y *= -1;
+    }
     /////////////////////////////////////////////
     int timeToWait = MILLISECS_PER_FRAME - (SDL_GetTicks() - timePreviousFrame);;
     timePreviousFrame = SDL_GetTicks();
