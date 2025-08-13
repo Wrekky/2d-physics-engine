@@ -37,7 +37,24 @@ void Application::Input() {
             case SDL_KEYDOWN:
                 if (event.key.keysym.sym == SDLK_ESCAPE)
                     running = false;
+                if (event.key.keysym.sym == SDLK_UP)
+                    pushForce.y = -500;
+                if (event.key.keysym.sym == SDLK_LEFT)
+                    pushForce.x = -500;
+                if (event.key.keysym.sym == SDLK_RIGHT)
+                    pushForce.x = 500;
+                if (event.key.keysym.sym == SDLK_DOWN)
+                    pushForce.y = 500;
                 break;
+            case SDL_KEYUP:
+                if (event.key.keysym.sym == SDLK_UP)
+                    pushForce.y = 0;
+                if (event.key.keysym.sym == SDLK_LEFT)
+                    pushForce.x = 0;
+                if (event.key.keysym.sym == SDLK_RIGHT)
+                    pushForce.x = 0;
+                if (event.key.keysym.sym == SDLK_DOWN)
+                    pushForce.y = 0;
         }
     }
 }
@@ -65,6 +82,7 @@ void Application::Update() {
         particle->AddForce(wind);
         weight = Vec2(0.0, particle->mass * gravity);
         particle->AddForce(weight);
+        particle->AddForce(pushForce);
     }
 
     for (auto particle : particles)
