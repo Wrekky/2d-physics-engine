@@ -14,6 +14,7 @@ void Application::Setup() {
     running = Graphics::OpenWindow();
     particle = new Particle(500, 100, 50);
     particle->radius = 4;
+    particle->mass = 1;
     // TODO: setup objects in the scene
 }
 
@@ -48,8 +49,10 @@ void Application::Update() {
         deltaTime = 0.016;
     }
     int physicsTime = MILLISECS_PER_FRAME - (SDL_GetTicks() - timePreviousFrame);
-
-    particle->acceleration = Vec2(20, 20);
+    Vec2 wind(50.0,0.0);
+    Vec2 gravity(0.0, 50);
+    particle->AddForce(wind);
+    particle->AddForce(gravity);
     particle->Integrate(deltaTime);
 
     if (particle->position.x >= Graphics::Width() - particle->radius) {

@@ -11,6 +11,16 @@ Particle::~Particle() {
 }
 
 void Particle::Integrate(float dt) {
+    acceleration = sumForces / mass;
     velocity += acceleration * dt;
     position += velocity * dt;
+    ClearForces();
+}
+
+void Particle::AddForce(const Vec2& force) {
+    sumForces += force;
+}
+
+void Particle::ClearForces() {
+    sumForces = Vec2(0.0, 0.0);
 }
