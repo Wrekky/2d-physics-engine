@@ -58,11 +58,13 @@ void Application::Update() {
 
     //apply physics
     Vec2 wind(50.0, 0.0);//adding forces
-    Vec2 gravity(0.0, 50);
+    float gravity = 50;
+    Vec2 weight(0.0, 0.0);
     for (auto particle : particles)
     {
         particle->AddForce(wind);
-        particle->AddForce(gravity);
+        weight = Vec2(0.0, particle->mass * gravity);
+        particle->AddForce(weight);
     }
 
     for (auto particle : particles)
