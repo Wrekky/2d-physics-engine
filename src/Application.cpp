@@ -12,9 +12,15 @@ bool Application::IsRunning() {
 ///////////////////////////////////////////////////////////////////////////////
 void Application::Setup() {
     running = Graphics::OpenWindow();
-    particle = new Particle(500, 100, 50);
-    particle->radius = 4;
-    particle->mass = 1;
+
+    Particle* smallBall = new Particle(100,50,1.0);
+    smallBall->radius = 4;
+
+    Particle* bigBall = new Particle(50,100,3.0);
+    bigBall->radius = 8;
+
+    particles.push_back(smallBall);
+    particles.push_back(bigBall);
     // TODO: setup objects in the scene
 }
 
@@ -49,29 +55,47 @@ void Application::Update() {
         deltaTime = 0.016;
     }
     int physicsTime = MILLISECS_PER_FRAME - (SDL_GetTicks() - timePreviousFrame);
-    Vec2 wind(50.0,0.0);
+
+    //apply physics
+    Vec2 wind(50.0, 0.0);//adding forces
     Vec2 gravity(0.0, 50);
-    particle->AddForce(wind);
-    particle->AddForce(gravity);
-    particle->Integrate(deltaTime);
-
-    if (particle->position.x >= Graphics::Width() - particle->radius) {
-        particle->position.x = Graphics::Width() - particle->radius;
-        particle->velocity.x *= -1;
-    }
-    else if (particle->position.x <= 0 + particle->radius) {
-        particle->position.x = 0.0 + particle->radius;
-        particle->velocity.x *= -1;
+    for (auto particle : particles)
+    {
+        particle->AddForce(wind);
+        particle->AddForce(gravity);
     }
 
-    if (particle->position.y >= Graphics::Height() - particle->radius) {
-        particle->position.y = Graphics::Height() - particle->radius;
-        particle->velocity.y *= -1;
+    for (auto particle : particles)
+    {
+        particle->Integrate(deltaTime);
     }
-    else if (particle->position.y <= 0 + particle->radius) {
-        particle->position.y = 0.0 + particle->radius;
-        particle->velocity.y *= -1;
+
+    //game logic
+    for (auto particle : particles)
+    {
+        if (particle->position.x >= Graphics::Width() - particle->radius)
+        {
+            particle->position.x = Graphics::Width() - particle->radius;
+            particle->velocity.x *= -1;
+        }
+        else if (particle->position.x <= 0 + particle->radius)
+        {
+            particle->position.x = 0.0 + particle->radius;
+            particle->velocity.x *= -1;
+        }
+
+        if (particle->position.y >= Graphics::Height() - particle->radius)
+        {
+            particle->position.y = Graphics::Height() - particle->radius;
+            particle->velocity.y *= -1;
+        }
+        else if (particle->position.y <= 0 + particle->radius)
+        {
+            particle->position.y = 0.0 + particle->radius;
+            particle->velocity.y *= -1;
+        }
     }
+
     /////////////////////////////////////////////
     int timeToWait = MILLISECS_PER_FRAME - (SDL_GetTicks() - timePreviousFrame);;
     timePreviousFrame = SDL_GetTicks();
@@ -91,7 +115,10 @@ void Application::Update() {
 ///////////////////////////////////////////////////////////////////////////////
 void Application::Render() {
     Graphics::ClearScreen(0xFF056263);
-    Graphics::DrawFillCircle(particle->position.x, particle->position.y, particle->radius, 0xFFFFFFFF);
+    for (auto particle : particles)
+    {
+        Graphics::DrawFillCircle(particle->position.x, particle->position.y, particle->radius, 0xFFFFFFFF);
+    }
     Graphics::RenderFrame();
 }
 
@@ -99,7 +126,8 @@ void Application::Render() {
 // Destroy function to delete objects and close the window
 ///////////////////////////////////////////////////////////////////////////////
 void Application::Destroy() {
-    // TODO: destroy all objects in the scene
-    delete particle;
+    for (auto particle: particles) {
+        delete particle;
+    }
     Graphics::CloseWindow();
 }
