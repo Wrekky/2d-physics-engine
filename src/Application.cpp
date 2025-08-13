@@ -38,13 +38,13 @@ void Application::Input() {
                 if (event.key.keysym.sym == SDLK_ESCAPE)
                     running = false;
                 if (event.key.keysym.sym == SDLK_UP)
-                    pushForce.y = -500;
+                    pushForce.y = -50 * PIXELS_PER_METER;
                 if (event.key.keysym.sym == SDLK_LEFT)
-                    pushForce.x = -500;
+                    pushForce.x = -50 * PIXELS_PER_METER;
                 if (event.key.keysym.sym == SDLK_RIGHT)
-                    pushForce.x = 500;
+                    pushForce.x = 50 * PIXELS_PER_METER;
                 if (event.key.keysym.sym == SDLK_DOWN)
-                    pushForce.y = 500;
+                    pushForce.y = 50 * PIXELS_PER_METER;
                 break;
             case SDL_KEYUP:
                 if (event.key.keysym.sym == SDLK_UP)
@@ -74,8 +74,8 @@ void Application::Update() {
     int physicsTime = MILLISECS_PER_FRAME - (SDL_GetTicks() - timePreviousFrame);
 
     //apply physics
-    Vec2 wind(50.0, 0.0);//adding forces
-    float gravity = 50;
+    Vec2 wind(10.0 * PIXELS_PER_METER, 0.0);//adding forces
+    float gravity = 9.8 * PIXELS_PER_METER;
     Vec2 weight(0.0, 0.0);
     for (auto particle : particles)
     {
