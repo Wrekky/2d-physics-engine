@@ -22,6 +22,10 @@ void Application::Setup() {
     particles.push_back(smallBall);
     particles.push_back(bigBall);
     // TODO: setup objects in the scene
+    water.x = 0;
+    water.y = Graphics::Height() / 2;
+    water.w = Graphics::Width();
+    water.h = Graphics::Height() / 2;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -83,6 +87,11 @@ void Application::Update() {
         weight = Vec2(0.0, particle->mass * gravity);
         particle->AddForce(weight);
         particle->AddForce(pushForce);
+        if(particle->position.y > water.y) {
+            Vec2 drag = Force::GenerateDragForce(*particle, 0.01);
+            particle->AddForce(drag);
+        }
+
     }
 
     for (auto particle : particles)
@@ -135,6 +144,7 @@ void Application::Update() {
 ///////////////////////////////////////////////////////////////////////////////
 void Application::Render() {
     Graphics::ClearScreen(0xFF056263);
+    Graphics::DrawFillRect(water.x + water.w / 2, water.y + water.h / 2, water.w, water.h, 0xFFEB6134);
     for (auto particle : particles)
     {
         Graphics::DrawFillCircle(particle->position.x, particle->position.y, particle->radius, 0xFFFFFFFF);

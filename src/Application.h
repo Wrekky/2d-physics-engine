@@ -3,7 +3,7 @@
 
 #include "./Graphics.h"
 #include "./Physics/Particle.h"
-
+#include "./Physics/Force.h"
 #include <vector>
 
 class Application {
@@ -11,6 +11,8 @@ class Application {
         bool running = false;
         std::vector<Particle*> particles;
         Vec2 pushForce = Vec2(0, 0);
+        
+        SDL_Rect water;
 
     public:
         Application() = default;
