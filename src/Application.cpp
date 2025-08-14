@@ -59,6 +59,16 @@ void Application::Input() {
                     pushForce.x = 0;
                 if (event.key.keysym.sym == SDLK_DOWN)
                     pushForce.y = 0;
+                break;
+            case SDL_MOUSEBUTTONDOWN:
+                if (event.button.button == SDL_BUTTON_LEFT) {
+                    int x, y;
+                    SDL_GetMouseState(&x, &y);
+                    Particle* particle = new Particle(x, y, 1.0);
+                    particle->radius = 5;
+                    particles.push_back(particle);
+                }
+                break;
         }
     }
 }
