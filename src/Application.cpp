@@ -83,15 +83,16 @@ void Application::Update() {
     Vec2 weight(0.0, 0.0);
     for (auto particle : particles)
     {
-        particle->AddForce(wind);
         weight = Vec2(0.0, particle->mass * gravity);
         particle->AddForce(weight);
         particle->AddForce(pushForce);
-        if(particle->position.y > water.y) {
+        if (particle->position.y > water.y) {
             Vec2 drag = Force::GenerateDragForce(*particle, 0.01);
             particle->AddForce(drag);
         }
-
+        else { // only  apply wind when above water
+            particle->AddForce(wind);
+        }
     }
 
     for (auto particle : particles)
