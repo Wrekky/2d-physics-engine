@@ -95,6 +95,8 @@ void Application::Update() {
     {
         weight = Vec2(0.0, particle->mass * gravity);
         particle->AddForce(weight);
+        Vec2 friction = Force::GenerateFrictionForce(*particle, 10 * PIXELS_PER_METER);
+        particle->AddForce(friction);
         particle->AddForce(pushForce);
         if (particle->position.y > water.y) {
             Vec2 drag = Force::GenerateDragForce(*particle, 0.01);

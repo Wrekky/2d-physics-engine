@@ -11,3 +11,9 @@ Vec2 Force::GenerateDragForce(const Particle& particle, float k) {
     }
     return dragForce;
 }
+
+Vec2 Force::GenerateFrictionForce(const Particle& particle, float k) {
+    Vec2 frictionForce = particle.velocity.UnitVector() * -1.0;
+    frictionForce *= k;
+    return frictionForce;
+} 
