@@ -26,6 +26,7 @@ void Application::Setup() {
     water.y = Graphics::Height() / 2;
     water.w = Graphics::Width();
     water.h = Graphics::Height() / 2;
+    anchor = Vec2(Graphics::Width()/2, 30);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -91,6 +92,11 @@ void Application::Update() {
     Vec2 wind(10.0 * PIXELS_PER_METER, 0.0);//adding forces
     float gravity = 9.8 * PIXELS_PER_METER;
     Vec2 weight(0.0, 0.0);
+
+
+    //adding a spring to the top of the screen to the smaller ball
+    Vec2 springForce = Force::GenerateSpringForce(*particles[0], anchor, 200, 40);
+    particles[0]->AddForce(springForce);
     for (auto particle : particles)
     {
         weight = Vec2(0.0, particle->mass * gravity);
@@ -162,6 +168,8 @@ void Application::Render() {
     {
         Graphics::DrawFillCircle(particle->position.x, particle->position.y, particle->radius, 0xFFFFFFFF);
     }
+    Graphics::DrawFillCircle(anchor.x, anchor.y, 4, 0xFFFFFFFF);
+    Graphics::DrawLine(anchor.x, anchor.y, particles[0]->position.x, particles[0]->position.y, 0xFFFFFFFF);
     Graphics::RenderFrame();
 }
 

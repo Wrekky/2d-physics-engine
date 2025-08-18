@@ -13,6 +13,7 @@ class Application {
         Vec2 pushForce = Vec2(0, 0);
         
         SDL_Rect water;
+        Vec2 anchor;
 
     public:
         Application() = default;
