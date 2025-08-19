@@ -12,5 +12,6 @@ struct Force {
     static Vec2 GenerateSpringForce(const Particle& particle, const Particle& b, float restLength, float k);
     
     static void GenerateChainForces(Vec2 anchor, float restLength, float springStrength, std::vector<Particle*> chainParticles);
+    static void GenerateChainBoxForces(float restLength, float springStrength, std::vector<Particle*> boxParticles);
 };
 #endif

@@ -70,3 +70,15 @@ void Force::GenerateChainForces(Vec2 anchor, float restLength, float springStren
         chainParticles[i-1]->AddForce(springForce);
     }
 }
+
+//make sure boxParticles is 4 particles.
+void Force::GenerateChainBoxForces(float restLength, float springStrength, std::vector<Particle*> boxParticles) {
+    for (int x = 0; x < 4; x++) {
+        for (int y = 0; y < 4; y++) {
+            if (x != y) {
+                Vec2 springForce = GenerateSpringForce(*boxParticles[x], *boxParticles[y], restLength, springStrength);
+                boxParticles[x]->AddForce(springForce);
+            }
+        }
+    }
+}
