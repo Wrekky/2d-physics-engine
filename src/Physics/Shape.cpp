@@ -11,6 +11,10 @@ ShapeType CircleShape::GetType() const {
     return CIRCLE;
 };
 
+float CircleShape::GetMomentOfInertia() const {
+    return (1/2) * (radius * radius);
+}
+
 PolygonShape::PolygonShape(const std::vector<Vec2> vertices) {
     // TODO: ...
 };
@@ -21,6 +25,11 @@ Shape* PolygonShape::Clone() const {
 ShapeType PolygonShape::GetType() const {
     return POLYGON;
 };
+
+float PolygonShape::GetMomentOfInertia() const {
+    //TODO: ...
+    return 0;
+}
 
 BoxShape::BoxShape(float width, float height) {
     // TODO: ...
@@ -33,4 +42,7 @@ ShapeType BoxShape::GetType() const {
     return BOX;
 };
 
-
+float BoxShape::GetMomentOfInertia() const {
+    //TODO: ...
+    return 0;
+}

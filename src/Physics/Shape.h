@@ -14,6 +14,7 @@ struct Shape
     virtual ~Shape () = default;
     virtual ShapeType GetType() const = 0;
     virtual Shape* Clone() const = 0;
+    virtual float GetMomentOfInertia() const = 0;
 };
 
 struct CircleShape: public Shape {
@@ -24,6 +25,8 @@ struct CircleShape: public Shape {
     virtual ~CircleShape();
     ShapeType GetType() const override;
     Shape* Clone() const override;
+
+    float GetMomentOfInertia() const override;
 };
 
 struct PolygonShape: public Shape {
@@ -34,6 +37,8 @@ struct PolygonShape: public Shape {
     virtual ~PolygonShape();
     ShapeType GetType() const override;
     Shape* Clone() const override;
+
+    float GetMomentOfInertia() const override;
 };
 
 struct BoxShape: public PolygonShape {
@@ -44,5 +49,7 @@ struct BoxShape: public PolygonShape {
     virtual ~BoxShape();
     ShapeType GetType() const override;
     Shape* Clone() const override;
+
+    float GetMomentOfInertia() const override;
 };
 #endif
