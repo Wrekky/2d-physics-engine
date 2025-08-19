@@ -105,11 +105,11 @@ void Application::Update() {
         particle->AddForce(friction);
         particle->AddForce(pushForce);
         if (particle->position.y > water.y) {
-            Vec2 drag = Force::GenerateDragForce(*particle, 0.01);
-            particle->AddForce(drag);
+            //Vec2 drag = Force::GenerateDragForce(*particle, 0.01);
+            //particle->AddForce(drag);
         }
         else { // only  apply wind when above water
-            particle->AddForce(wind);
+            //particle->AddForce(wind);
         }
     }
 
@@ -163,7 +163,7 @@ void Application::Update() {
 ///////////////////////////////////////////////////////////////////////////////
 void Application::Render() {
     Graphics::ClearScreen(0xFF056263);
-    Graphics::DrawFillRect(water.x + water.w / 2, water.y + water.h / 2, water.w, water.h, 0xFFEB6134);
+    //Graphics::DrawFillRect(water.x + water.w / 2, water.y + water.h / 2, water.w, water.h, 0xFFEB6134);
     for (auto particle : particles)
     {
         Graphics::DrawFillCircle(particle->position.x, particle->position.y, particle->radius, 0xFFFFFFFF);
