@@ -133,26 +133,30 @@ void Application::Update() {
     //game logic
     for (auto body : bodies)
     {
-        if (body->position.x >= Graphics::Width())
+        if (body->shape->GetType() == CIRCLE)
         {
-            body->position.x = Graphics::Width();
-            body->velocity.x *= -1;
-        }
-        else if (body->position.x <= 0)
-        {
-            body->position.x = 0.0;
-            body->velocity.x *= -1;
-        }
+            CircleShape *circleShape = (CircleShape *)body->shape;
+            if (body->position.x >= Graphics::Width() - circleShape->radius)
+            {
+                body->position.x = Graphics::Width() - circleShape->radius;
+                body->velocity.x *= -1;
+            }
+            else if (body->position.x <= 0 + circleShape->radius)
+            {
+                body->position.x = 0.0 + circleShape->radius;
+                body->velocity.x *= -1;
+            }
 
-        if (body->position.y >= Graphics::Height())
-        {
-            body->position.y = Graphics::Height();
-            body->velocity.y *= -1;
-        }
-        else if (body->position.y <= 0)
-        {
-            body->position.y = 0.0;
-            body->velocity.y *= -1;
+            if (body->position.y >= Graphics::Height() - circleShape->radius)
+            {
+                body->position.y = Graphics::Height() - circleShape->radius;
+                body->velocity.y *= -1;
+            }
+            else if (body->position.y <= 0 + circleShape->radius)
+            {
+                body->position.y = 0.0 + circleShape->radius;
+                body->velocity.y *= -1;
+            }
         }
     }
 
@@ -178,7 +182,11 @@ void Application::Render() {
     //Graphics::DrawFillRect(water.x + water.w / 2, water.y + water.h / 2, water.w, water.h, 0xFFEB6134);
     for (auto body : bodies)
     {
-        Graphics::DrawFillCircle(body->position.x, body->position.y, 10, 0xFFFFFFFF);
+        if (body->shape->GetType() == CIRCLE)
+        {
+            CircleShape *circleShape = (CircleShape *)body->shape;
+            Graphics::DrawFillCircle(body->position.x, body->position.y, circleShape->radius, 0xFFFFFFFF);
+        }
     }
     //drawing chain
     Graphics::DrawFillCircle(500, 500, 6, 0xFFFFFFFF);
