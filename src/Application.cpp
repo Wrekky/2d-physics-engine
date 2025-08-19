@@ -22,6 +22,15 @@ void Application::Setup() {
     particles.push_back(smallBall);
     particles.push_back(bigBall);
     // TODO: setup objects in the scene
+
+    //chain particle setup
+    for(int i = 0; i < 10; i++) {
+        Particle* chain = new Particle(500,500,3.0);
+        chain->radius = 8;
+        particles.push_back(chain);
+        chainParticles.push_back(chain);
+    }
+
     water.x = 0;
     water.y = Graphics::Height() / 2;
     water.w = Graphics::Width();
@@ -99,6 +108,7 @@ void Application::Update() {
     particles[0]->AddForce(springForce);
     for (auto particle : particles)
     {
+        Force::GenerateChainForces(Vec2(500,500), 20, 20, chainParticles);
         weight = Vec2(0.0, particle->mass * gravity);
         particle->AddForce(weight);
         Vec2 friction = Force::GenerateFrictionForce(*particle, 10 * PIXELS_PER_METER);
