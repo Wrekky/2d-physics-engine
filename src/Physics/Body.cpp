@@ -1,20 +1,20 @@
 #include "Body.h"
 
 // TODO:
-Body::Body(float x, float y, float mass) {
+Body::Body(const Shape& shape, float x, float y, float mass) {
     this->position = Vec2(x, y);
     this->mass = mass;
+    this->shape = shape.Clone();
     if (mass != 0.0) {
         this->invMass = 1.0 / mass;
     }
     else {
         this-> invMass = 0.0;
     }
-    
 }
 
 Body::~Body() {
-
+    delete shape;
 }
 
 void Body::Integrate(float dt) {

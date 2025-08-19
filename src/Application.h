@@ -13,7 +13,6 @@ class Application {
         std::vector<Body*> chainBodies;
         std::vector<Body*> boxBodies;
         Vec2 pushForce = Vec2(0, 0);
-        
         SDL_Rect water;
         Vec2 anchor;
 

@@ -12,12 +12,9 @@ bool Application::IsRunning() {
 ///////////////////////////////////////////////////////////////////////////////
 void Application::Setup() {
     running = Graphics::OpenWindow();
+    Body* smallBall = new Body(CircleShape(50), 100, 50, 1.0);
 
-    Body* smallBall = new Body(100,50,1.0);
-    smallBall->radius = 4;
-
-    Body* bigBall = new Body(50,100,3.0);
-    bigBall->radius = 8;
+    Body* bigBall = new Body(CircleShape(50), 50, 100, 3.0);
 
     bodies.push_back(smallBall);
     bodies.push_back(bigBall);
@@ -25,15 +22,13 @@ void Application::Setup() {
 
     //chain body setup
     for(int i = 0; i < 10; i++) {
-        Body* chain = new Body(500,500,3.0);
-        chain->radius = 8;
+        Body* chain = new Body(CircleShape(50), 500, 500, 3.0);
         bodies.push_back(chain);
         chainBodies.push_back(chain);
     }
     //box body setup
     for(int i = 0; i < 4; i++) {
-        Body* body = new Body(500 + (i * 10),500,3.0);
-        body->radius = 8;
+        Body* body = new Body(CircleShape(50), 500 + (i * 10), 500, 3.0);
         bodies.push_back(body);
         boxBodies.push_back(body);
     }
@@ -81,8 +76,7 @@ void Application::Input() {
                 if (event.button.button == SDL_BUTTON_LEFT) {
                     int x, y;
                     SDL_GetMouseState(&x, &y);
-                    Body* body = new Body(x, y, 1.0);
-                    body->radius = 5;
+                    Body* body = new Body(CircleShape(50), x, y, 1.0);
                     bodies.push_back(body);
                 }
                 break;
@@ -139,25 +133,25 @@ void Application::Update() {
     //game logic
     for (auto body : bodies)
     {
-        if (body->position.x >= Graphics::Width() - body->radius)
+        if (body->position.x >= Graphics::Width())
         {
-            body->position.x = Graphics::Width() - body->radius;
+            body->position.x = Graphics::Width();
             body->velocity.x *= -1;
         }
-        else if (body->position.x <= 0 + body->radius)
+        else if (body->position.x <= 0)
         {
-            body->position.x = 0.0 + body->radius;
+            body->position.x = 0.0;
             body->velocity.x *= -1;
         }
 
-        if (body->position.y >= Graphics::Height() - body->radius)
+        if (body->position.y >= Graphics::Height())
         {
-            body->position.y = Graphics::Height() - body->radius;
+            body->position.y = Graphics::Height();
             body->velocity.y *= -1;
         }
-        else if (body->position.y <= 0 + body->radius)
+        else if (body->position.y <= 0)
         {
-            body->position.y = 0.0 + body->radius;
+            body->position.y = 0.0;
             body->velocity.y *= -1;
         }
     }
@@ -184,7 +178,7 @@ void Application::Render() {
     //Graphics::DrawFillRect(water.x + water.w / 2, water.y + water.h / 2, water.w, water.h, 0xFFEB6134);
     for (auto body : bodies)
     {
-        Graphics::DrawFillCircle(body->position.x, body->position.y, body->radius, 0xFFFFFFFF);
+        Graphics::DrawFillCircle(body->position.x, body->position.y, 10, 0xFFFFFFFF);
     }
     //drawing chain
     Graphics::DrawFillCircle(500, 500, 6, 0xFFFFFFFF);
