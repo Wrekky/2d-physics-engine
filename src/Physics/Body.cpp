@@ -1,10 +1,18 @@
 #include "Body.h"
 
 Body::Body(const Shape& shape, float x, float y, float mass) {
+    this->shape = shape.Clone();
     this->position = Vec2(x, y);
     this->mass = mass;
-    this->shape = shape.Clone();
     this->I = shape.GetMomentOfInertia() * mass;
+
+    this->velocity = Vec2(0, 0);
+    this->acceleration = Vec2(0, 0);
+    this->rotation = 0.0;
+    this->angularVelocity = 0.0;
+    this->angularAcceleration = 0.0;
+    this->sumForces = 0.0;
+    this->sumTorque = 0.0;
 
     if (I != 0.0) {
         this->invI = 1.0 / I;
