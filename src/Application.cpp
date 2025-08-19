@@ -13,29 +13,29 @@ bool Application::IsRunning() {
 void Application::Setup() {
     running = Graphics::OpenWindow();
 
-    Particle* smallBall = new Particle(100,50,1.0);
+    Body* smallBall = new Body(100,50,1.0);
     smallBall->radius = 4;
 
-    Particle* bigBall = new Particle(50,100,3.0);
+    Body* bigBall = new Body(50,100,3.0);
     bigBall->radius = 8;
 
-    particles.push_back(smallBall);
-    particles.push_back(bigBall);
+    bodys.push_back(smallBall);
+    bodys.push_back(bigBall);
     // TODO: setup objects in the scene
 
-    //chain particle setup
+    //chain body setup
     for(int i = 0; i < 10; i++) {
-        Particle* chain = new Particle(500,500,3.0);
+        Body* chain = new Body(500,500,3.0);
         chain->radius = 8;
-        particles.push_back(chain);
-        chainParticles.push_back(chain);
+        bodys.push_back(chain);
+        chainBodys.push_back(chain);
     }
-    //box particle setup
+    //box body setup
     for(int i = 0; i < 4; i++) {
-        Particle* particle = new Particle(500 + (i * 10),500,3.0);
-        particle->radius = 8;
-        particles.push_back(particle);
-        boxParticles.push_back(particle);
+        Body* body = new Body(500 + (i * 10),500,3.0);
+        body->radius = 8;
+        bodys.push_back(body);
+        boxBodys.push_back(body);
     }
 
     water.x = 0;
@@ -81,9 +81,9 @@ void Application::Input() {
                 if (event.button.button == SDL_BUTTON_LEFT) {
                     int x, y;
                     SDL_GetMouseState(&x, &y);
-                    Particle* particle = new Particle(x, y, 1.0);
-                    particle->radius = 5;
-                    particles.push_back(particle);
+                    Body* body = new Body(x, y, 1.0);
+                    body->radius = 5;
+                    bodys.push_back(body);
                 }
                 break;
         }
@@ -111,54 +111,54 @@ void Application::Update() {
 
 
     //adding a spring to the top of the screen to the smaller ball
-    Vec2 springForce = Force::GenerateSpringForce(*particles[0], anchor, 200, 40);
-    particles[0]->AddForce(springForce);
-    for (auto particle : particles)
+    Vec2 springForce = Force::GenerateSpringForce(*bodys[0], anchor, 200, 40);
+    bodys[0]->AddForce(springForce);
+    for (auto body : bodys)
     {
-        Force::GenerateChainBoxForces(100, 50, boxParticles);
-        Force::GenerateChainForces(Vec2(500,500), 20, 20, chainParticles);
-        weight = Vec2(0.0, particle->mass * gravity);
-        particle->AddForce(weight);
-        Vec2 friction = Force::GenerateFrictionForce(*particle, 10 * PIXELS_PER_METER);
-        particle->AddForce(friction);
-        particle->AddForce(pushForce);
-        if (particle->position.y > water.y) {
-            //Vec2 drag = Force::GenerateDragForce(*particle, 0.01);
-            //particle->AddForce(drag);
+        Force::GenerateChainBoxForces(100, 50, boxBodys);
+        Force::GenerateChainForces(Vec2(500,500), 20, 20, chainBodys);
+        weight = Vec2(0.0, body->mass * gravity);
+        body->AddForce(weight);
+        Vec2 friction = Force::GenerateFrictionForce(*body, 10 * PIXELS_PER_METER);
+        body->AddForce(friction);
+        body->AddForce(pushForce);
+        if (body->position.y > water.y) {
+            //Vec2 drag = Force::GenerateDragForce(*body, 0.01);
+            //body->AddForce(drag);
         }
         else { // only  apply wind when above water
-            //particle->AddForce(wind);
+            //body->AddForce(wind);
         }
     }
 
-    for (auto particle : particles)
+    for (auto body : bodys)
     {
-        particle->Integrate(deltaTime);
+        body->Integrate(deltaTime);
     }
 
     //game logic
-    for (auto particle : particles)
+    for (auto body : bodys)
     {
-        if (particle->position.x >= Graphics::Width() - particle->radius)
+        if (body->position.x >= Graphics::Width() - body->radius)
         {
-            particle->position.x = Graphics::Width() - particle->radius;
-            particle->velocity.x *= -1;
+            body->position.x = Graphics::Width() - body->radius;
+            body->velocity.x *= -1;
         }
-        else if (particle->position.x <= 0 + particle->radius)
+        else if (body->position.x <= 0 + body->radius)
         {
-            particle->position.x = 0.0 + particle->radius;
-            particle->velocity.x *= -1;
+            body->position.x = 0.0 + body->radius;
+            body->velocity.x *= -1;
         }
 
-        if (particle->position.y >= Graphics::Height() - particle->radius)
+        if (body->position.y >= Graphics::Height() - body->radius)
         {
-            particle->position.y = Graphics::Height() - particle->radius;
-            particle->velocity.y *= -1;
+            body->position.y = Graphics::Height() - body->radius;
+            body->velocity.y *= -1;
         }
-        else if (particle->position.y <= 0 + particle->radius)
+        else if (body->position.y <= 0 + body->radius)
         {
-            particle->position.y = 0.0 + particle->radius;
-            particle->velocity.y *= -1;
+            body->position.y = 0.0 + body->radius;
+            body->velocity.y *= -1;
         }
     }
 
@@ -182,30 +182,30 @@ void Application::Update() {
 void Application::Render() {
     Graphics::ClearScreen(0xFF056263);
     //Graphics::DrawFillRect(water.x + water.w / 2, water.y + water.h / 2, water.w, water.h, 0xFFEB6134);
-    for (auto particle : particles)
+    for (auto body : bodys)
     {
-        Graphics::DrawFillCircle(particle->position.x, particle->position.y, particle->radius, 0xFFFFFFFF);
+        Graphics::DrawFillCircle(body->position.x, body->position.y, body->radius, 0xFFFFFFFF);
     }
     //drawing chain
     Graphics::DrawFillCircle(500, 500, 6, 0xFFFFFFFF);
-    Graphics::DrawLine(500, 500, chainParticles[0]->position.x, chainParticles[0]->position.y, 0xFFFFFFFF);
-    for (int i = 1; i < chainParticles.size(); i++) {
-        Graphics::DrawLine(chainParticles[i]->position.x, chainParticles[i]->position.y, 
-            chainParticles[i - 1]->position.x, chainParticles[i - 1]->position.y, 
+    Graphics::DrawLine(500, 500, chainBodys[0]->position.x, chainBodys[0]->position.y, 0xFFFFFFFF);
+    for (int i = 1; i < chainBodys.size(); i++) {
+        Graphics::DrawLine(chainBodys[i]->position.x, chainBodys[i]->position.y, 
+            chainBodys[i - 1]->position.x, chainBodys[i - 1]->position.y, 
             0xFFFFFFFF);
     }
     //drawing chain box
-    for (int x = 0; x < boxParticles.size(); x++) {
-        for (int y = 0; y < boxParticles.size(); y++) {
+    for (int x = 0; x < boxBodys.size(); x++) {
+        for (int y = 0; y < boxBodys.size(); y++) {
             if (x != y) {
-                Graphics::DrawLine(boxParticles[x]->position.x, boxParticles[x]->position.y, 
-                    boxParticles[y]->position.x, boxParticles[y]->position.y,
+                Graphics::DrawLine(boxBodys[x]->position.x, boxBodys[x]->position.y, 
+                    boxBodys[y]->position.x, boxBodys[y]->position.y,
                 0xFFFFFFFF);
             }
         }
     }
     Graphics::DrawFillCircle(anchor.x, anchor.y, 4, 0xFFFFFFFF);
-    Graphics::DrawLine(anchor.x, anchor.y, particles[0]->position.x, particles[0]->position.y, 0xFFFFFFFF);
+    Graphics::DrawLine(anchor.x, anchor.y, bodys[0]->position.x, bodys[0]->position.y, 0xFFFFFFFF);
     Graphics::RenderFrame();
 }
 
@@ -213,8 +213,8 @@ void Application::Render() {
 // Destroy function to delete objects and close the window
 ///////////////////////////////////////////////////////////////////////////////
 void Application::Destroy() {
-    for (auto particle: particles) {
-        delete particle;
+    for (auto body: bodys) {
+        delete body;
     }
     Graphics::CloseWindow();
 }

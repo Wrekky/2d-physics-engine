@@ -2,16 +2,16 @@
 #define APPLICATION_H
 
 #include "./Graphics.h"
-#include "./Physics/Particle.h"
+#include "./Physics/Body.h"
 #include "./Physics/Force.h"
 #include <vector>
 
 class Application {
     private:
         bool running = false;
-        std::vector<Particle*> particles;
-        std::vector<Particle*> chainParticles;
-        std::vector<Particle*> boxParticles;
+        std::vector<Body*> bodys;
+        std::vector<Body*> chainBodys;
+        std::vector<Body*> boxBodys;
         Vec2 pushForce = Vec2(0, 0);
         
         SDL_Rect water;
