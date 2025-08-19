@@ -30,6 +30,13 @@ void Application::Setup() {
         particles.push_back(chain);
         chainParticles.push_back(chain);
     }
+    //box particle setup
+    for(int i = 0; i < 4; i++) {
+        Particle* particle = new Particle(500 + (i * 10),500,3.0);
+        particle->radius = 8;
+        particles.push_back(particle);
+        boxParticles.push_back(particle);
+    }
 
     water.x = 0;
     water.y = Graphics::Height() / 2;
@@ -108,6 +115,7 @@ void Application::Update() {
     particles[0]->AddForce(springForce);
     for (auto particle : particles)
     {
+        Force::GenerateChainBoxForces(100, 50, boxParticles);
         Force::GenerateChainForces(Vec2(500,500), 20, 20, chainParticles);
         weight = Vec2(0.0, particle->mass * gravity);
         particle->AddForce(weight);
@@ -191,4 +199,8 @@ void Application::Destroy() {
         delete particle;
     }
     Graphics::CloseWindow();
+}
+
+void CreateBox() {
+
 }

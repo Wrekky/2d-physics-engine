@@ -11,6 +11,7 @@ class Application {
         bool running = false;
         std::vector<Particle*> particles;
         std::vector<Particle*> chainParticles;
+        std::vector<Particle*> boxParticles;
         Vec2 pushForce = Vec2(0, 0);
         
         SDL_Rect water;
