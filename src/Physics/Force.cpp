@@ -42,3 +42,31 @@ Vec2 Force::GenerateSpringForce(const Particle& particle, Vec2 anchor, float res
 
     return springForce;
 }
+
+Vec2 Force::GenerateSpringForce(const Particle& particle, const Particle& b, float restLength, float k) {
+    Vec2 d = particle.position - b.position;
+
+    float displacement = d.Magnitude() - restLength;
+
+    Vec2 springDirection = d.UnitVector();
+    float springMagnitude = -k * displacement;
+
+    Vec2 springForce = springDirection * springMagnitude;
+
+    return springForce;
+}
+
+//Creates a chain of particles. Adds the required force for every particle.
+void Force::GenerateChainForces(Vec2 anchor, float restLength, float springStrength, std::vector<Particle*> chainParticles) {
+    //apply spring force on every particle. order? each particle needs to understand which particle its attached to.
+    //spring force will be applied in the order of the array.
+    Vec2 springForce = GenerateSpringForce(*chainParticles[0], anchor, restLength, springStrength);
+    chainParticles[0]->AddForce(springForce);
+    for (int i = 1; i < chainParticles.size(); i++) {
+        springForce = GenerateSpringForce(*chainParticles[i], *chainParticles[i-1], restLength, springStrength);
+        chainParticles[i]->AddForce(springForce);
+        //Force needs to be applied both ways.
+        springForce = GenerateSpringForce(*chainParticles[i-1], *chainParticles[i], restLength, springStrength);
+        chainParticles[i-1]->AddForce(springForce);
+    }
+}
