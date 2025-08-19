@@ -186,6 +186,24 @@ void Application::Render() {
     {
         Graphics::DrawFillCircle(particle->position.x, particle->position.y, particle->radius, 0xFFFFFFFF);
     }
+    //drawing chain
+    Graphics::DrawFillCircle(500, 500, 6, 0xFFFFFFFF);
+    Graphics::DrawLine(500, 500, chainParticles[0]->position.x, chainParticles[0]->position.y, 0xFFFFFFFF);
+    for (int i = 1; i < chainParticles.size(); i++) {
+        Graphics::DrawLine(chainParticles[i]->position.x, chainParticles[i]->position.y, 
+            chainParticles[i - 1]->position.x, chainParticles[i - 1]->position.y, 
+            0xFFFFFFFF);
+    }
+    //drawing chain box
+    for (int x = 0; x < boxParticles.size(); x++) {
+        for (int y = 0; y < boxParticles.size(); y++) {
+            if (x != y) {
+                Graphics::DrawLine(boxParticles[x]->position.x, boxParticles[x]->position.y, 
+                    boxParticles[y]->position.x, boxParticles[y]->position.y,
+                0xFFFFFFFF);
+            }
+        }
+    }
     Graphics::DrawFillCircle(anchor.x, anchor.y, 4, 0xFFFFFFFF);
     Graphics::DrawLine(anchor.x, anchor.y, particles[0]->position.x, particles[0]->position.y, 0xFFFFFFFF);
     Graphics::RenderFrame();
