@@ -56,26 +56,26 @@ Vec2 Force::GenerateSpringForce(const Body& body, const Body& b, float restLengt
     return springForce;
 }
 
-//Creates a chain of bodys. Adds the required force for every body.
-void Force::GenerateChainForces(Vec2 anchor, float restLength, float springStrength, std::vector<Body*> chainBodys) {
+//Creates a chain of bodies. Adds the required force for every body.
+void Force::GenerateChainForces(Vec2 anchor, float restLength, float springStrength, std::vector<Body*> chainBodies) {
     //apply spring force on every body. order? each body needs to understand which body its attached to.
     //spring force will be applied in the order of the array.
-    Vec2 springForce = GenerateSpringForce(*chainBodys[0], anchor, restLength, springStrength);
-    chainBodys[0]->AddForce(springForce);
-    for (int i = 1; i < chainBodys.size(); i++) {
-        springForce = GenerateSpringForce(*chainBodys[i], *chainBodys[i-1], restLength, springStrength);
-        chainBodys[i]->AddForce(springForce);
-        chainBodys[i-1]->AddForce(-springForce);
+    Vec2 springForce = GenerateSpringForce(*chainBodies[0], anchor, restLength, springStrength);
+    chainBodies[0]->AddForce(springForce);
+    for (int i = 1; i < chainBodies.size(); i++) {
+        springForce = GenerateSpringForce(*chainBodies[i], *chainBodies[i-1], restLength, springStrength);
+        chainBodies[i]->AddForce(springForce);
+        chainBodies[i-1]->AddForce(-springForce);
     }
 }
 
-//make sure boxBodys is 4 bodys.
-void Force::GenerateChainBoxForces(float restLength, float springStrength, std::vector<Body*> boxBodys) {
+//make sure boxBodies is 4 bodies.
+void Force::GenerateChainBoxForces(float restLength, float springStrength, std::vector<Body*> boxBodies) {
     for (int x = 0; x < 4; x++) {
         for (int y = 0; y < 4; y++) {
             if (x != y) {
-                Vec2 springForce = GenerateSpringForce(*boxBodys[x], *boxBodys[y], restLength, springStrength);
-                boxBodys[x]->AddForce(springForce);
+                Vec2 springForce = GenerateSpringForce(*boxBodies[x], *boxBodies[y], restLength, springStrength);
+                boxBodies[x]->AddForce(springForce);
             }
         }
     }

@@ -11,7 +11,7 @@ struct Force {
     static Vec2 GenerateSpringForce(const Body& body, Vec2 anchor, float restLength, float k);
     static Vec2 GenerateSpringForce(const Body& body, const Body& b, float restLength, float k);
     
-    static void GenerateChainForces(Vec2 anchor, float restLength, float springStrength, std::vector<Body*> chainBodys);
-    static void GenerateChainBoxForces(float restLength, float springStrength, std::vector<Body*> boxBodys);
+    static void GenerateChainForces(Vec2 anchor, float restLength, float springStrength, std::vector<Body*> chainBodies);
+    static void GenerateChainBoxForces(float restLength, float springStrength, std::vector<Body*> boxBodies);
 };
 #endif
