@@ -65,9 +65,7 @@ void Force::GenerateChainForces(Vec2 anchor, float restLength, float springStren
     for (int i = 1; i < chainParticles.size(); i++) {
         springForce = GenerateSpringForce(*chainParticles[i], *chainParticles[i-1], restLength, springStrength);
         chainParticles[i]->AddForce(springForce);
-        //Force needs to be applied both ways.
-        springForce = GenerateSpringForce(*chainParticles[i-1], *chainParticles[i], restLength, springStrength);
-        chainParticles[i-1]->AddForce(springForce);
+        chainParticles[i-1]->AddForce(-springForce);
     }
 }
 
