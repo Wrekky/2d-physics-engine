@@ -43,6 +43,5 @@ ShapeType BoxShape::GetType() const {
 };
 
 float BoxShape::GetMomentOfInertia() const {
-    //TODO: ...
-    return 0;
+    return (0.083333) * (width * width + height * height);
 }
