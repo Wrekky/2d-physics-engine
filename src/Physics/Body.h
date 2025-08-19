@@ -11,13 +11,13 @@ struct Body
     Vec2 velocity;
     Vec2 acceleration;
 
+    float sumTorque;
     float angularAcceleration;
     float angularVelocity;
     float rotation;
 
     float mass;
     float invMass;
-    float sumTorque;
     float I;
     float invI;
 

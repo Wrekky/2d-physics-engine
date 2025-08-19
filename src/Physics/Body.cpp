@@ -1,17 +1,18 @@
 #include "Body.h"
 
-// TODO:
 Body::Body(const Shape& shape, float x, float y, float mass) {
     this->position = Vec2(x, y);
     this->mass = mass;
     this->shape = shape.Clone();
     this->I = shape.GetMomentOfInertia() * mass;
+
     if (I != 0.0) {
         this->invI = 1.0 / I;
     }
     else {
         this->invI = 0.0;
     }
+
     if (mass != 0.0) {
         this->invMass = 1.0 / mass;
     }
@@ -37,6 +38,7 @@ void Body::IntegrateAngular(float dt) {
     rotation += angularVelocity * dt;
     ClearTorque();
 }
+
 void Body::AddForce(const Vec2& force) {
     sumForces += force;
 }
