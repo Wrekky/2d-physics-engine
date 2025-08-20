@@ -20,7 +20,7 @@ PolygonShape::PolygonShape(const std::vector<Vec2> vertices) {
 };
 PolygonShape::~PolygonShape() {};
 Shape* PolygonShape::Clone() const {
-    return new PolygonShape(vertices);
+    return new PolygonShape(localVertices);
 };
 ShapeType PolygonShape::GetType() const {
     return POLYGON;
@@ -31,8 +31,26 @@ float PolygonShape::GetMomentOfInertia() const {
     return 0;
 }
 
+void PolygonShape::UpdateVertices(float rotation, const Vec2& position) {
+    for(int i = 0; i < localVertices.size(); i++) {
+        worldVertices[i] = localVertices[i].Rotate(rotation);
+        worldVertices[i] += position;
+    }
+}
+
 BoxShape::BoxShape(float width, float height) {
-    // TODO: ...
+    this->width = width;
+    this->height = height;
+    //loading vertices based on local origin.
+    localVertices.push_back(Vec2(-width / 2.0, -height / 2.0));
+    localVertices.push_back(Vec2(width / 2.0, -height / 2.0));
+    localVertices.push_back(Vec2(width / 2.0, height / 2.0));
+    localVertices.push_back(Vec2(-width / 2.0, height / 2.0));
+
+    worldVertices.push_back(Vec2(-width / 2.0, -height / 2.0));
+    worldVertices.push_back(Vec2(width / 2.0, -height / 2.0));
+    worldVertices.push_back(Vec2(width / 2.0, height / 2.0));
+    worldVertices.push_back(Vec2(-width / 2.0, height / 2.0));
 };
 BoxShape::~BoxShape() {};
 Shape* BoxShape::Clone() const {

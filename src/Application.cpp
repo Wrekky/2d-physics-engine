@@ -12,6 +12,8 @@ bool Application::IsRunning() {
 ///////////////////////////////////////////////////////////////////////////////
 void Application::Setup() {
     running = Graphics::OpenWindow();
+    Body* box = new Body(BoxShape(200, 150), 200, 200, 1.0);
+    bodies.push_back(box);
     Body* smallBall = new Body(CircleShape(50), 100, 50, 1.0);
 
     Body* bigBall = new Body(CircleShape(50), 50, 100, 3.0);
@@ -103,31 +105,41 @@ void Application::Update() {
     float gravity = 9.8 * PIXELS_PER_METER;
     Vec2 weight(0.0, 0.0);
 
-
-    //adding a spring to the top of the screen to the smaller ball
-    Vec2 springForce = Force::GenerateSpringForce(*bodies[0], anchor, 200, 40);
-    bodies[0]->AddForce(springForce);
     for (auto body : bodies)
     {
-        Force::GenerateChainBoxForces(100, 50, boxBodies);
-        Force::GenerateChainForces(Vec2(500,500), 20, 20, chainBodies);
-        weight = Vec2(0.0, body->mass * gravity);
-        body->AddForce(weight);
-        Vec2 friction = Force::GenerateFrictionForce(*body, 10 * PIXELS_PER_METER);
-        body->AddForce(friction);
-        body->AddForce(pushForce);
-        if (body->position.y > water.y) {
-            //Vec2 drag = Force::GenerateDragForce(*body, 0.01);
-            //body->AddForce(drag);
-        }
-        else { // only  apply wind when above water
-            //body->AddForce(wind);
+        float torque = 20;
+        body->AddTorque(torque);
+        if (body->shape->GetType() == CIRCLE)
+        {
+            Force::GenerateChainBoxForces(100, 50, boxBodies);
+            Force::GenerateChainForces(Vec2(500, 500), 20, 20, chainBodies);
+            weight = Vec2(0.0, body->mass * gravity);
+            body->AddForce(weight);
+            Vec2 friction = Force::GenerateFrictionForce(*body, 10 * PIXELS_PER_METER);
+            body->AddForce(friction);
+            body->AddForce(pushForce);
+            if (body->position.y > water.y)
+            {
+                // Vec2 drag = Force::GenerateDragForce(*body, 0.01);
+                // body->AddForce(drag);
+            }
+            else
+            { // only  apply wind when above water
+                // body->AddForce(wind);
+            }
         }
     }
 
     for (auto body : bodies)
     {
         body->IntegrateLinear(deltaTime);
+        body->IntegrateAngular(deltaTime);
+        bool isPolygon = body->shape->GetType() == POLYGON || body->shape->GetType() == BOX;
+
+        if(isPolygon) {
+            PolygonShape* polygonShape = (PolygonShape*)body->shape;
+            polygonShape->UpdateVertices(body->rotation, body->position);
+        }
     }
 
     //game logic
@@ -184,8 +196,12 @@ void Application::Render() {
     {
         if (body->shape->GetType() == CIRCLE)
         {
-            CircleShape *circleShape = (CircleShape *)body->shape;
-            Graphics::DrawCircle(body->position.x, body->position.y, circleShape->radius, 0.0, 0xFFFFFFFF);
+            CircleShape *circleShape = (CircleShape*)body->shape;
+            Graphics::DrawCircle(body->position.x, body->position.y, circleShape->radius, body->rotation, 0xFFFFFFFF);
+        }
+        else if(body->shape->GetType() == BOX) {
+            BoxShape *boxShape = (BoxShape*)body->shape;
+            Graphics::DrawPolygon(body->position.x, body->position.y, boxShape->worldVertices, 0xFFFFFFFF);
         }
     }
     //drawing chain
