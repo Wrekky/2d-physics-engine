@@ -62,3 +62,15 @@ void Body::AddTorque(float torque) {
 void Body::ClearTorque() {
     sumTorque = 0;
 }
+
+void Body::Update(float deltaTime)
+{
+    IntegrateLinear(deltaTime);
+    IntegrateAngular(deltaTime);
+    bool isPolygon = shape->GetType() == POLYGON || shape->GetType() == BOX;
+    if (isPolygon)
+    {
+        PolygonShape* polygonShape = (PolygonShape*)shape;
+        polygonShape->UpdateVertices(rotation, position);
+    }
+}

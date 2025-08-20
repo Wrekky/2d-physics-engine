@@ -23,6 +23,8 @@ struct Body
 
     Shape* shape = NULL;
 
+    void Update(float deltaTime);
+
     void AddForce(const Vec2& force);
     void ClearForces();
     void AddTorque(float torque);
