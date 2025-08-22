@@ -10,11 +10,7 @@ class Application {
     private:
         bool running = false;
         std::vector<Body*> bodies;
-        std::vector<Body*> chainBodies;
-        std::vector<Body*> boxBodies;
         Vec2 pushForce = Vec2(0, 0);
-        SDL_Rect water;
-        Vec2 anchor;
 
     public:
         Application() = default;

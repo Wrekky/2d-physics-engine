@@ -1,6 +1,6 @@
 #include "Application.h"
 #include "./Physics/Constants.h"
-
+#include "./Physics/CollisionDetection.h"
 #include <iostream>
 
 bool Application::IsRunning() {
@@ -12,34 +12,6 @@ bool Application::IsRunning() {
 ///////////////////////////////////////////////////////////////////////////////
 void Application::Setup() {
     running = Graphics::OpenWindow();
-    Body* box = new Body(BoxShape(200, 150), 200, 200, 1.0);
-    bodies.push_back(box);
-    Body* smallBall = new Body(CircleShape(50), 100, 50, 1.0);
-
-    Body* bigBall = new Body(CircleShape(50), 50, 100, 3.0);
-
-    bodies.push_back(smallBall);
-    bodies.push_back(bigBall);
-    // TODO: setup objects in the scene
-
-    //chain body setup
-    for(int i = 0; i < 10; i++) {
-        Body* chain = new Body(CircleShape(50), 500, 500, 3.0);
-        bodies.push_back(chain);
-        chainBodies.push_back(chain);
-    }
-    //box body setup
-    for(int i = 0; i < 4; i++) {
-        Body* body = new Body(CircleShape(50), 500 + (i * 10), 500, 3.0);
-        bodies.push_back(body);
-        boxBodies.push_back(body);
-    }
-
-    water.x = 0;
-    water.y = Graphics::Height() / 2;
-    water.w = Graphics::Width();
-    water.h = Graphics::Height() / 2;
-    anchor = Vec2(Graphics::Width()/2, 30);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -107,35 +79,42 @@ void Application::Update() {
 
     for (auto body : bodies)
     {
-        float torque = 20;
-        body->AddTorque(torque);
         if (body->shape->GetType() == CIRCLE)
         {
-            Force::GenerateChainBoxForces(100, 50, boxBodies);
-            Force::GenerateChainForces(Vec2(500, 500), 20, 20, chainBodies);
             weight = Vec2(0.0, body->mass * gravity);
             body->AddForce(weight);
-            Vec2 friction = Force::GenerateFrictionForce(*body, 10 * PIXELS_PER_METER);
-            body->AddForce(friction);
             body->AddForce(pushForce);
-            if (body->position.y > water.y)
-            {
-                // Vec2 drag = Force::GenerateDragForce(*body, 0.01);
-                // body->AddForce(drag);
-            }
-            else
-            { // only  apply wind when above water
-                // body->AddForce(wind);
-            }
         }
     }
 
+    //apply forces
     for (auto body : bodies)
     {
         body->Update(deltaTime);
     }
 
-    //game logic
+    //check for a collision
+    if(bodies.size() > 1) {
+        for (int i = 0; i <= bodies.size() - 1; i++)
+        {
+            for (int j = i + 1; j < bodies.size(); j++)
+            {
+                Body *a = bodies[i];
+                Body *b = bodies[j];
+
+                a->isColliding = false;
+                b->isColliding = false;
+                if (CollisionDetection::IsColliding(a, b))
+                {
+                    a->isColliding = true;
+                    b->isColliding = true;
+                }
+            }
+        }
+    }
+
+
+    //game logic (move above checking collision potentially)
     for (auto body : bodies)
     {
         if (body->shape->GetType() == CIRCLE)
@@ -184,39 +163,20 @@ void Application::Update() {
 ///////////////////////////////////////////////////////////////////////////////
 void Application::Render() {
     Graphics::ClearScreen(0xFF056263);
-    //Graphics::DrawFillRect(water.x + water.w / 2, water.y + water.h / 2, water.w, water.h, 0xFFEB6134);
     for (auto body : bodies)
     {
+        Uint32 color = body->isColliding ? 0xFF0000FF : 0xFFFFFFFF;
         if (body->shape->GetType() == CIRCLE)
         {
             CircleShape *circleShape = (CircleShape*)body->shape;
-            Graphics::DrawCircle(body->position.x, body->position.y, circleShape->radius, body->rotation, 0xFFFFFFFF);
+            Graphics::DrawCircle(body->position.x, body->position.y, circleShape->radius, body->rotation, color);
         }
-        else if(body->shape->GetType() == BOX) {
+        else if(body->shape->GetType() == BOX) 
+        {
             BoxShape *boxShape = (BoxShape*)body->shape;
-            Graphics::DrawPolygon(body->position.x, body->position.y, boxShape->worldVertices, 0xFFFFFFFF);
+            Graphics::DrawPolygon(body->position.x, body->position.y, boxShape->worldVertices, color);
         }
     }
-    //drawing chain
-    Graphics::DrawFillCircle(500, 500, 6, 0xFFFFFFFF);
-    Graphics::DrawLine(500, 500, chainBodies[0]->position.x, chainBodies[0]->position.y, 0xFFFFFFFF);
-    for (int i = 1; i < chainBodies.size(); i++) {
-        Graphics::DrawLine(chainBodies[i]->position.x, chainBodies[i]->position.y, 
-            chainBodies[i - 1]->position.x, chainBodies[i - 1]->position.y, 
-            0xFFFFFFFF);
-    }
-    //drawing chain box
-    for (int x = 0; x < boxBodies.size(); x++) {
-        for (int y = 0; y < boxBodies.size(); y++) {
-            if (x != y) {
-                Graphics::DrawLine(boxBodies[x]->position.x, boxBodies[x]->position.y, 
-                    boxBodies[y]->position.x, boxBodies[y]->position.y,
-                0xFFFFFFFF);
-            }
-        }
-    }
-    Graphics::DrawFillCircle(anchor.x, anchor.y, 4, 0xFFFFFFFF);
-    Graphics::DrawLine(anchor.x, anchor.y, bodies[0]->position.x, bodies[0]->position.y, 0xFFFFFFFF);
     Graphics::RenderFrame();
 }
 
