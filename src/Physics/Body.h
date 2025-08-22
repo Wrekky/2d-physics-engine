@@ -6,6 +6,8 @@
 // TODO:
 struct Body
 {
+    bool isColliding = false;
+    
     Vec2 sumForces;
     Vec2 position;
     Vec2 velocity;
