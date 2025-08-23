@@ -1,6 +1,7 @@
 #include "Application.h"
 #include "./Physics/Constants.h"
 #include "./Physics/CollisionDetection.h"
+#include "./Physics/Contact.h"
 #include <iostream>
 
 bool Application::IsRunning() {
@@ -62,6 +63,7 @@ void Application::Input() {
 // Update function (called several times per second to update objects)
 ///////////////////////////////////////////////////////////////////////////////
 void Application::Update() {
+    Graphics::ClearScreen(0xFF056263);
     // TODO: update all objects in the scene
     //Check fps
     static int timePreviousFrame;
@@ -94,18 +96,24 @@ void Application::Update() {
     }
 
     //check for a collision
+
+
     if(bodies.size() > 1) {
+        for(int i = 0; i < bodies.size(); i++) {
+            bodies[i]->isColliding = false;
+        }
         for (int i = 0; i <= bodies.size() - 1; i++)
         {
             for (int j = i + 1; j < bodies.size(); j++)
             {
                 Body *a = bodies[i];
                 Body *b = bodies[j];
-
-                a->isColliding = false;
-                b->isColliding = false;
-                if (CollisionDetection::IsColliding(a, b))
+                Contact contact;
+                if (CollisionDetection::IsColliding(a, b, contact))
                 {
+                    Graphics::DrawFillCircle(contact.start.x, contact.start.y, 3, 0xFFFFFFFF);
+                    Graphics::DrawFillCircle(contact.end.x, contact.end.y, 3, 0xFFFFFFFF);
+                    Graphics::DrawLine(contact.start.x, contact.start.y, contact.start.x + contact.normal.x * 15, contact.start.y + contact.normal.y * 15, 0xFFFFFFFF);
                     a->isColliding = true;
                     b->isColliding = true;
                 }
@@ -162,7 +170,6 @@ void Application::Update() {
 // Render function (called several times per second to draw objects)
 ///////////////////////////////////////////////////////////////////////////////
 void Application::Render() {
-    Graphics::ClearScreen(0xFF056263);
     for (auto body : bodies)
     {
         Uint32 color = body->isColliding ? 0xFF0000FF : 0xFFFFFFFF;
