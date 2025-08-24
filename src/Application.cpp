@@ -2,7 +2,6 @@
 #include "./Physics/Constants.h"
 #include "./Physics/CollisionDetection.h"
 #include "./Physics/Contact.h"
-#include "./Physics/Collision.h"
 #include <iostream>
 
 bool Application::IsRunning() {
@@ -117,8 +116,7 @@ void Application::Update() {
                     Graphics::DrawLine(contact.start.x, contact.start.y, contact.start.x + contact.normal.x * 15, contact.start.y + contact.normal.y * 15, 0xFFFFFFFF);
                     a->isColliding = true;
                     b->isColliding = true;
-                    contact.ResolvePenetration();
-                    Collision::ResolveCollision(contact);
+                    contact.ResolveCollision();
                 }
             }
         }

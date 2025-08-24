@@ -11,3 +11,18 @@ void Contact::ResolvePenetration() {
     a->position -= normal * depthAdjustA;
     b->position += normal * depthAdjustB;
 }
+
+void Contact::ResolveCollision() {
+    ResolvePenetration();
+    float elasticity = std::min(a->restitution, b->restitution);
+
+    Vec2 relativeVelocity = a->velocity - b->velocity;
+
+    float  impulseMagnitude = -(1 + elasticity) * relativeVelocity.Dot(normal) / (a->invMass + b->invMass);
+    Vec2 impulseDirection = normal;
+
+    Vec2 impulse = impulseDirection * impulseMagnitude;
+
+    a->ApplyImpulse(impulse);
+    b->ApplyImpulse(-impulse);
+}
