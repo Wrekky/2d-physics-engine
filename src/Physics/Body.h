@@ -18,6 +18,7 @@ struct Body
     float angularVelocity;
     float rotation;
 
+    float restitution;
     float mass;
     float invMass;
     float I;
