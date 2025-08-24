@@ -1,4 +1,5 @@
 #include "Body.h"
+#include <math.h>
 
 Body::Body(const Shape& shape, float x, float y, float mass) {
     this->shape = shape.Clone();
@@ -33,7 +34,14 @@ Body::~Body() {
     delete shape;
 }
 
+void Body::IsStatic() {
+    const float epsilon = 0.005f;
+    return fabs(invMass - 0.0) < epsilon;
+}
 void Body::IntegrateLinear(float dt) {
+    if (IsStatic()) {
+        return;
+    }
     acceleration = sumForces * invMass;
     velocity += acceleration * dt;
     position += velocity * dt;
