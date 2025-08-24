@@ -1,7 +1,7 @@
 #include "Contact.h"
 //Moves both objects depending on depth and mass to the correct position to resolve the collision.
 void Contact::ResolvePenetration() {
-    if (a->IsStatic && b->IsStatic) {
+    if (a->IsStatic() && b->IsStatic()) {
         return;
     }
     

@@ -34,7 +34,7 @@ Body::~Body() {
     delete shape;
 }
 
-bool Body::IsStatic() {
+bool Body::IsStatic() const {
     const float epsilon = 0.005f;
     return fabs(invMass - 0.0) < epsilon;
 }
