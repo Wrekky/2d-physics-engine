@@ -82,3 +82,11 @@ void Body::Update(float deltaTime)
         polygonShape->UpdateVertices(rotation, position);
     }
 }
+
+void Body::ApplyImpulse(const Vec2& j) {
+    if (IsStatic()) {
+        return;
+    }
+
+    velocity += j * invMass;
+}

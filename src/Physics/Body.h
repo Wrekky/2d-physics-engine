@@ -28,6 +28,7 @@ struct Body
     void Update(float deltaTime);
 
     bool IsStatic() const;
+    void ApplyImpulse(const Vec2& j);
     void AddForce(const Vec2& force);
     void ClearForces();
     void AddTorque(float torque);
