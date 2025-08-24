@@ -14,7 +14,7 @@ Body::Body(const Shape& shape, float x, float y, float mass) {
     this->angularAcceleration = 0.0;
     this->sumForces = Vec2(0, 0);
     this->sumTorque = 0.0;
-    this->restitution = 0.0;
+    this->restitution = 1.0;
     if (I != 0.0) {
         this->invI = 1.0 / I;
     }
