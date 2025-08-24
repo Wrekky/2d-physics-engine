@@ -2,6 +2,7 @@
 #include "./Physics/Constants.h"
 #include "./Physics/CollisionDetection.h"
 #include "./Physics/Contact.h"
+#include "./Physics/Collision.h"
 #include <iostream>
 
 bool Application::IsRunning() {
@@ -117,6 +118,7 @@ void Application::Update() {
                     a->isColliding = true;
                     b->isColliding = true;
                     contact.ResolvePenetration();
+                    Collision::ResolveCollision(contact);
                 }
             }
         }

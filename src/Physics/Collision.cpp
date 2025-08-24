@@ -8,7 +8,7 @@ void Collision::ResolveCollision(Contact& contact) {
 
     Vec2 relativeVelocity = a->velocity - b->velocity;
 
-    float  impulseMagnitude = -(1 + elasticity) * Vec2::Dot(relativeVelocity, contact.normal) / (a->invMass + b->invMass);
+    float  impulseMagnitude = -(1 + elasticity) * relativeVelocity.Dot(contact.normal) / (a->invMass + b->invMass);
     Vec2 impulseDirection = contact.normal;
 
     Vec2 impulse = impulseDirection * impulseMagnitude;
