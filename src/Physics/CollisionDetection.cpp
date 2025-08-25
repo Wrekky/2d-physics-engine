@@ -3,7 +3,7 @@ bool CollisionDetection::IsColliding(Body* a, Body* b, Contact& contact) {
     bool aIsCircle = a->shape->GetType() == CIRCLE;
     bool bIsCircle = b->shape->GetType() == CIRCLE;
 
-    if (aIsCircle == bIsCircle) {
+    if (aIsCircle && bIsCircle) {
         return IsCollidingCircleCircle(a, b, contact);
     }
     else {
