@@ -13,6 +13,13 @@ bool Application::IsRunning() {
 ///////////////////////////////////////////////////////////////////////////////
 void Application::Setup() {
     running = Graphics::OpenWindow();
+    Body* boxA = new Body(BoxShape(200,200), Graphics::Width() / 2, Graphics::Height() / 2, 1.0);
+    Body* boxB = new Body(BoxShape(200,200), Graphics::Width() / 2, Graphics::Height() / 2, 1.0);
+    boxA->angularVelocity = 0.4;
+    boxB->angularVelocity = 0.1;
+    bodies.push_back(boxA);
+    bodies.push_back(boxB);
+    
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -28,31 +35,19 @@ void Application::Input() {
             case SDL_KEYDOWN:
                 if (event.key.keysym.sym == SDLK_ESCAPE)
                     running = false;
-                if (event.key.keysym.sym == SDLK_UP)
-                    pushForce.y = -50 * PIXELS_PER_METER;
-                if (event.key.keysym.sym == SDLK_LEFT)
-                    pushForce.x = -50 * PIXELS_PER_METER;
-                if (event.key.keysym.sym == SDLK_RIGHT)
-                    pushForce.x = 50 * PIXELS_PER_METER;
-                if (event.key.keysym.sym == SDLK_DOWN)
-                    pushForce.y = 50 * PIXELS_PER_METER;
                 break;
             case SDL_KEYUP:
-                if (event.key.keysym.sym == SDLK_UP)
-                    pushForce.y = 0;
-                if (event.key.keysym.sym == SDLK_LEFT)
-                    pushForce.x = 0;
-                if (event.key.keysym.sym == SDLK_RIGHT)
-                    pushForce.x = 0;
-                if (event.key.keysym.sym == SDLK_DOWN)
-                    pushForce.y = 0;
                 break;
-            case SDL_MOUSEBUTTONDOWN:
+            case SDL_MOUSEMOTION:
+                int x, y;
+                SDL_GetMouseState(&x, &y);
+                bodies[0]->position.x = x;
+                bodies[0]->position.y = y;
                 if (event.button.button == SDL_BUTTON_LEFT) {
                     int x, y;
                     SDL_GetMouseState(&x, &y);
-                    Body* body = new Body(CircleShape(50), x, y, 1.0);
-                    bodies.push_back(body);
+                   // Body* body = new Body(CircleShape(50), x, y, 1.0);
+                    //bodies.push_back(body);
                 }
                 break;
         }
@@ -83,9 +78,9 @@ void Application::Update() {
     {
         if (body->shape->GetType() == CIRCLE)
         {
-            weight = Vec2(0.0, body->mass * gravity);
-            body->AddForce(weight);
-            body->AddForce(pushForce);
+            //weight = Vec2(0.0, body->mass * gravity);
+            //body->AddForce(weight);
+            //body->AddForce(pushForce);
         }
     }
 
@@ -116,7 +111,7 @@ void Application::Update() {
                     Graphics::DrawLine(contact.start.x, contact.start.y, contact.start.x + contact.normal.x * 15, contact.start.y + contact.normal.y * 15, 0xFFFFFFFF);
                     a->isColliding = true;
                     b->isColliding = true;
-                    contact.ResolveCollision();
+                    //contact.ResolveCollision();
                 }
             }
         }
