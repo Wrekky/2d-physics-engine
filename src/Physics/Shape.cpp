@@ -31,6 +31,12 @@ float PolygonShape::GetMomentOfInertia() const {
     return 0;
 }
 
+Vec2 PolygonShape::EdgeAt(int index) const {
+    int currVertex = index;
+    int nextVertex = (index + 1) % worldVertices.size(); //trick to wrap back to the start
+    
+    return worldVertices[nextVertex] - worldVertices[currVertex];
+}
 void PolygonShape::UpdateVertices(float rotation, const Vec2& position) {
     for(int i = 0; i < localVertices.size(); i++) {
         worldVertices[i] = localVertices[i].Rotate(rotation);

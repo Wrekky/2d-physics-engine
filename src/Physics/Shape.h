@@ -41,6 +41,8 @@ struct PolygonShape: public Shape {
 
     float GetMomentOfInertia() const override;
 
+    Vec2 EdgeAt(int index) const;
+
     void UpdateVertices(float rotation, const Vec2& position);
 };
 
