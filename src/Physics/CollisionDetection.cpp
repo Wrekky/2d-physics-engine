@@ -41,60 +41,41 @@ bool CollisionDetection::IsCollidingCircleCircle(Body* a, Body* b, Contact& cont
     return isColliding;
 };
 
-float FindMinSeparation(const PolygonShape& a, const PolygonShape& b, Contact& contact) {
-    float separation = std::numeric_limits<float>::lowest();
-
-    //Can optimize this a bit potentially.
-    //  exit when first separation is found and use that.
-    //  will cause issues if objects are moving too fast but should be fine otherwise.
-    int endVerticeA = 0;
-    int endVerticeB = 0;
-    for (int i = 0; i < a.worldVertices.size(); i++) {
-        Vec2 va = a.worldVertices[i];
-        Vec2 normal = a.EdgeAt(i).Normal();
-
-        float minSep = std::numeric_limits<float>::max();
-
-        for (int j = 0; j < b.worldVertices.size(); j++) {
-            Vec2 vb = b.worldVertices[j];
-            if (minSep > (vb - va).Dot(normal)) {
-                minSep = (vb - va).Dot(normal);
-                endVerticeB = j;
-            }
-        }
-        if (separation < minSep) {
-            contact.end = b.worldVertices[endVerticeB];
-            separation = minSep;
-            endVerticeA = i;
-            contact.normal = normal;
-        }
-    }
-    contact.depth = -separation;
-    contact.start = contact.end + (contact.normal * contact.depth);
-    
-
-    return separation;
-}
-
 bool CollisionDetection::IsCollidingPolygonPolygon(Body* a, Body* b, Contact& contact) {
     const PolygonShape* aPolygonShape = (PolygonShape*) a->shape;
     const PolygonShape* bPolygonShape = (PolygonShape*) b->shape;
     
-    contact.a = a;
-    contact.b = b;
-    Contact testContact = contact;
-    if (FindMinSeparation(*aPolygonShape, *bPolygonShape, testContact) >= 0) {
+    Vec2 aAxis, bAxis;
+    Vec2 aPoint, bPoint;
+    float abSeparation = aPolygonShape->FindMinSeparation(bPolygonShape, aAxis, aPoint);
+    float baSeparation = bPolygonShape->FindMinSeparation(aPolygonShape, bAxis, bPoint);
+    if (abSeparation >= 0) {
         return false;
-    }
-    else {
-        contact.depth = testContact.depth;
-        contact.end = testContact.end;
-        contact.start = testContact.start;
-        contact.normal = testContact.normal;
     }
 
-    if (FindMinSeparation(*bPolygonShape, *aPolygonShape, contact) >= 0) {
+    if (baSeparation >= 0) {
         return false;
     }
+
+    if (abSeparation > baSeparation)
+    {
+        contact.normal = -aAxis.Normal();
+        contact.end = aPoint;
+        contact.start = contact.end + (contact.normal * abSeparation);
+        contact.depth = abSeparation;
+        contact.a = a;
+        contact.b = b;
+    }
+
+    if (baSeparation > abSeparation)
+    {
+        contact.normal = -bAxis.Normal();
+        contact.end = bPoint;
+        contact.start = contact.end + (contact.normal * baSeparation);
+        contact.depth = baSeparation;
+        contact.a = b;
+        contact.b = a;
+    }
+
     return true;
 };

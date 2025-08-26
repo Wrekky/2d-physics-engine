@@ -3,6 +3,7 @@
 
 #include "Vec2.h"
 #include <vector>
+#include <limits>
 enum ShapeType {
     CIRCLE,
     POLYGON,
@@ -44,6 +45,8 @@ struct PolygonShape: public Shape {
     Vec2 EdgeAt(int index) const;
 
     void UpdateVertices(float rotation, const Vec2& position);
+
+    float FindMinSeparation(const PolygonShape* other, Vec2& axis, Vec2& point) const;
 };
 
 struct BoxShape: public PolygonShape {
