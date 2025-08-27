@@ -48,33 +48,28 @@ bool CollisionDetection::IsCollidingPolygonPolygon(Body* a, Body* b, Contact& co
     Vec2 aAxis, bAxis;
     Vec2 aPoint, bPoint;
     float abSeparation = aPolygonShape->FindMinSeparation(bPolygonShape, aAxis, aPoint);
-    float baSeparation = bPolygonShape->FindMinSeparation(aPolygonShape, bAxis, bPoint);
     if (abSeparation >= 0) {
         return false;
     }
-
+    float baSeparation = bPolygonShape->FindMinSeparation(aPolygonShape, bAxis, bPoint);
     if (baSeparation >= 0) {
         return false;
     }
-
+    contact.a = a;
+    contact.b = b;
     if (abSeparation > baSeparation)
     {
-        contact.normal = -aAxis.Normal();
-        contact.end = aPoint;
-        contact.start = contact.end + (contact.normal * abSeparation);
-        contact.depth = abSeparation;
-        contact.a = a;
-        contact.b = b;
+        contact.depth = -abSeparation;
+        contact.normal = aAxis.Normal();
+        contact.start = aPoint;
+        contact.end = aPoint + contact.normal * contact.depth;
     }
-
-    if (baSeparation > abSeparation)
+    else
     {
+        contact.depth = -baSeparation;
         contact.normal = -bAxis.Normal();
+        contact.start = bPoint - contact.normal * contact.depth;
         contact.end = bPoint;
-        contact.start = contact.end + (contact.normal * baSeparation);
-        contact.depth = baSeparation;
-        contact.a = b;
-        contact.b = a;
     }
 
     return true;
