@@ -13,7 +13,7 @@ bool Application::IsRunning() {
 ///////////////////////////////////////////////////////////////////////////////
 void Application::Setup() {
     running = Graphics::OpenWindow();
-    Body* bigBox = new Body(BoxShape(200,200), Graphics::Width() / 2, Graphics::Height() / 2, 1.0);
+    Body* bigBox = new Body(BoxShape(200,200), Graphics::Width() / 2, Graphics::Height() / 2, 0.0);
     bigBox->rotation = 20;
     Body* floor = new Body(BoxShape(Graphics::Width() - 50, 50), Graphics::Width() / 2, Graphics::Height() - 50, 0.0);
     bodies.push_back(bigBox);
@@ -37,13 +37,11 @@ void Application::Input() {
                 break;
             case SDL_KEYUP:
                 break;
-            case SDL_MOUSEMOTION:
-                int x, y;
-                SDL_GetMouseState(&x, &y);
+            case SDL_MOUSEBUTTONDOWN:
                 if (event.button.button == SDL_BUTTON_LEFT) {
                     int x, y;
                     SDL_GetMouseState(&x, &y);
-                    Body* body = new Body(CircleShape(50), x, y, 1.0);
+                    Body* body = new Body(BoxShape(50, 50), x, y, 1.0);
                     bodies.push_back(body);
                 }
                 break;
@@ -73,12 +71,9 @@ void Application::Update() {
 
     for (auto body : bodies)
     {
-        if (body->shape->GetType() == CIRCLE)
-        {
-            //weight = Vec2(0.0, body->mass * gravity);
-            //body->AddForce(weight);
-            //body->AddForce(pushForce);
-        }
+        weight = Vec2(0.0, body->mass * gravity);
+        body->AddForce(weight);
+        body->AddForce(pushForce);
     }
 
     //apply forces
