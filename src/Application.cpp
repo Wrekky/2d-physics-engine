@@ -13,11 +13,14 @@ bool Application::IsRunning() {
 ///////////////////////////////////////////////////////////////////////////////
 void Application::Setup() {
     running = Graphics::OpenWindow();
-    Body* bigBox = new Body(BoxShape(200,200), Graphics::Width() / 2, Graphics::Height() / 2, 0.0);
-    bigBox->rotation = 20;
-    Body* floor = new Body(BoxShape(Graphics::Width() - 50, 50), Graphics::Width() / 2, Graphics::Height() - 50, 0.0);
-    bodies.push_back(bigBox);
+    Body* floor = new Body(BoxShape(Graphics::Width() - 50, 50), Graphics::Width() / 2.0, Graphics::Height() - 50, 0.0);
+    floor->restitution = 0.2;
     bodies.push_back(floor);
+
+    Body* bigBox = new Body(BoxShape(200,200), Graphics::Width() / 2.0, Graphics::Height() / 2.0, 0.0);
+    bigBox->rotation = 1.4;
+    bigBox->restitution = 0.5;
+    bodies.push_back(bigBox);
     
 }
 
@@ -38,12 +41,10 @@ void Application::Input() {
             case SDL_KEYUP:
                 break;
             case SDL_MOUSEBUTTONDOWN:
-                if (event.button.button == SDL_BUTTON_LEFT) {
-                    int x, y;
-                    SDL_GetMouseState(&x, &y);
-                    Body* body = new Body(BoxShape(50, 50), x, y, 1.0);
-                    bodies.push_back(body);
-                }
+                int x, y;
+                SDL_GetMouseState(&x, &y);
+                Body *box = new Body(BoxShape(50, 50), x, y, 1.0);
+                bodies.push_back(box);
                 break;
         }
     }
@@ -73,7 +74,6 @@ void Application::Update() {
     {
         weight = Vec2(0.0, body->mass * gravity);
         body->AddForce(weight);
-        body->AddForce(pushForce);
     }
 
     //apply forces
@@ -84,31 +84,23 @@ void Application::Update() {
 
     //check for a collision
 
-
-    if(bodies.size() > 1) {
-        for(int i = 0; i < bodies.size(); i++) {
-            bodies[i]->isColliding = false;
-        }
-        for (int i = 0; i <= bodies.size() - 1; i++)
+    for (int i = 0; i <= bodies.size() - 1; i++)
+    {
+        for (int j = i + 1; j < bodies.size(); j++)
         {
-            for (int j = i + 1; j < bodies.size(); j++)
+            Body *a = bodies[i];
+            Body *b = bodies[j];
+            a->isColliding = false;
+            b->isColliding = false;
+            Contact contact;
+            if (CollisionDetection::IsColliding(a, b, contact))
             {
-                Body *a = bodies[i];
-                Body *b = bodies[j];
-                Contact contact;
-                if (CollisionDetection::IsColliding(a, b, contact))
-                {
-                    Graphics::DrawFillCircle(contact.start.x, contact.start.y, 3, 0xFFFFFFFF);
-                    Graphics::DrawFillCircle(contact.end.x, contact.end.y, 3, 0xFFFFFFFF);
-                    Graphics::DrawLine(contact.start.x, contact.start.y, contact.start.x + contact.normal.x * 15, contact.start.y + contact.normal.y * 15, 0xFFFFFFFF);
-                    a->isColliding = true;
-                    b->isColliding = true;
-                    //contact.ResolveCollision();
-                }
+                contact.ResolveCollision();
+                a->isColliding = true;
+                b->isColliding = true;
             }
         }
     }
-
 
     //game logic (move above checking collision potentially)
     for (auto body : bodies)

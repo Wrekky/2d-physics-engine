@@ -10,7 +10,6 @@ class Application {
     private:
         bool running = false;
         std::vector<Body*> bodies;
-        Vec2 pushForce = Vec2(0, 0);
 
     public:
         Application() = default;
