@@ -13,12 +13,11 @@ bool Application::IsRunning() {
 ///////////////////////////////////////////////////////////////////////////////
 void Application::Setup() {
     running = Graphics::OpenWindow();
-    Body* boxA = new Body(BoxShape(200,200), Graphics::Width() / 2, Graphics::Height() / 2, 1.0);
-    Body* boxB = new Body(BoxShape(200,200), Graphics::Width() / 2, Graphics::Height() / 2, 1.0);
-    boxA->angularVelocity = 0.4;
-    boxB->angularVelocity = 0.1;
-    bodies.push_back(boxA);
-    bodies.push_back(boxB);
+    Body* bigBox = new Body(BoxShape(200,200), Graphics::Width() / 2, Graphics::Height() / 2, 1.0);
+    bigBox->rotation = 20;
+    Body* floor = new Body(BoxShape(Graphics::Width() - 50, 50), Graphics::Width() / 2, Graphics::Height() - 50, 0.0);
+    bodies.push_back(bigBox);
+    bodies.push_back(floor);
     
 }
 
@@ -41,13 +40,11 @@ void Application::Input() {
             case SDL_MOUSEMOTION:
                 int x, y;
                 SDL_GetMouseState(&x, &y);
-                bodies[0]->position.x = x;
-                bodies[0]->position.y = y;
                 if (event.button.button == SDL_BUTTON_LEFT) {
                     int x, y;
                     SDL_GetMouseState(&x, &y);
-                   // Body* body = new Body(CircleShape(50), x, y, 1.0);
-                    //bodies.push_back(body);
+                    Body* body = new Body(CircleShape(50), x, y, 1.0);
+                    bodies.push_back(body);
                 }
                 break;
         }
