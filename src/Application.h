@@ -5,12 +5,12 @@
 #include "./Physics/Body.h"
 #include "./Physics/Force.h"
 #include <vector>
-
+#include "./Text.h"
 class Application {
     private:
         bool running = false;
         std::vector<Body*> bodies;
-
+        std::vector<Text*> textObjects;
     public:
         Application() = default;
         ~Application() = default;

@@ -3,7 +3,6 @@
 #include "./Physics/CollisionDetection.h"
 #include "./Physics/Contact.h"
 #include <iostream>
-
 bool Application::IsRunning() {
     return running;
 }
@@ -13,6 +12,21 @@ bool Application::IsRunning() {
 ///////////////////////////////////////////////////////////////////////////////
 void Application::Setup() {
     running = Graphics::OpenWindow();
+
+    if (TTF_Init() == -1) {
+        std::cout << "ttf init failed" << std::endl;
+    }
+
+    TTF_Font* roboto = TTF_OpenFont("./assets/roboto.ttf", 36);
+    if (!roboto)
+    {
+        std::cout << "load failed" << std::endl;
+    }
+
+    SDL_Color white = {255,255,255,255};
+    Text* text = new Text(500, 500, "testing font", roboto, white);
+    textObjects.push_back(text);
+
     Body* floor = new Body(BoxShape(Graphics::Width() - 50, 50), Graphics::Width() / 2.0, Graphics::Height() - 50, 0.0);
     floor->restitution = 0.2;
     bodies.push_back(floor);
@@ -21,7 +35,6 @@ void Application::Setup() {
     bigBox->rotation = 1.4;
     bigBox->restitution = 0.5;
     bodies.push_back(bigBox);
-    
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -164,6 +177,10 @@ void Application::Render() {
             Graphics::DrawPolygon(body->position.x, body->position.y, boxShape->worldVertices, color);
         }
     }
+    
+    for (auto text : textObjects) {
+        Graphics::DrawTexture(text->x, text->y, text->width, text->height, 0, text->finishedTexture);
+    }
     Graphics::RenderFrame();
 }
 
@@ -171,8 +188,11 @@ void Application::Render() {
 // Destroy function to delete objects and close the window
 ///////////////////////////////////////////////////////////////////////////////
 void Application::Destroy() {
-    for (auto body: bodies) {
+    for (auto body : bodies) {
         delete body;
+    }
+    for (auto text: textObjects) {
+        delete text;
     }
     Graphics::CloseWindow();
 }
