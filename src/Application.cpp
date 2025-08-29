@@ -3,6 +3,7 @@
 #include "./Physics/CollisionDetection.h"
 #include "./Physics/Contact.h"
 #include <iostream>
+#include <string>
 bool Application::IsRunning() {
     return running;
 }
@@ -182,10 +183,11 @@ void Application::Render() {
     }
     
     if (debug) {
+        std::string objectCountString = "Object Count: " + std::to_string(bodies.size());
+        objectCountText->ChangeText(objectCountString.c_str());
         int boxWidth = 300;
         int boxHeight = textObjects.size() * textObjects[0]->height;
         Graphics::DrawFillRect(0 + boxWidth / 2, 0 + boxHeight / 2, boxWidth, boxHeight, 0xFF33cc33);
-        
         for (int i = 0; i < textObjects.size(); i++) {
             Graphics::DrawTexture(0 + (textObjects[i]->width / 2.0) + 5, i * textObjects[i]->height + (textObjects[i]->height / 2), textObjects[i]->width, textObjects[i]->height, 0, textObjects[i]->finishedTexture);
         }
