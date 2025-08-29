@@ -11,7 +11,11 @@ struct Text {
     int height;
     int x;
     int y;
+    TTF_Font* font;
+    SDL_Color color;
     Text(int x, int y, const char* text, TTF_Font* font, SDL_Color color);
     ~Text() = default;
+
+    void ChangeText(const char* text);
 };
 #endif
