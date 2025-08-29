@@ -16,13 +16,29 @@ void Contact::ResolveCollision() {
     ResolvePenetration();
     float elasticity = std::min(a->restitution, b->restitution);
 
-    Vec2 relativeVelocity = a->velocity - b->velocity;
+    Vec2 ra = end - a->position;
+    Vec2 rb = start - b->position;
 
-    float  impulseMagnitude = -(1 + elasticity) * relativeVelocity.Dot(normal) / (a->invMass + b->invMass);
+    Vec2 va = a->velocity + Vec2(-a->angularVelocity * ra.y, a->angularVelocity * ra.x);
+    Vec2 vb = b->velocity + Vec2(-b->angularVelocity * rb.y, b->angularVelocity * rb.x);
+
+    Vec2 relativeVelocity = va - vb;
+
+    float vrelDotNormal = relativeVelocity.Dot(normal);
+
     Vec2 impulseDirection = normal;
+
+    float  impulseMagnitude = 
+    -(1 + elasticity) * vrelDotNormal 
+    / 
+    ((a->invMass + b->invMass) 
+    + 
+    ra.Cross(normal) * ra.Cross(normal) * a->invI 
+    + 
+    rb.Cross(normal) * rb.Cross(normal) * b->invI);
 
     Vec2 impulse = impulseDirection * impulseMagnitude;
 
-    a->ApplyImpulse(impulse);
-    b->ApplyImpulse(-impulse);
+    a->ApplyImpulse(impulse, ra);
+    b->ApplyImpulse(-impulse, rb);
 }
