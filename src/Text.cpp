@@ -20,7 +20,7 @@ void Text::ChangeText(const char* text) {
     if (!textTexture) {
         std:: cout << "text failed" << std::endl;
     }
-    std::cout << "this is hitting..." << std::endl;
+    
     this->width = textSurface->w;
     this->height = textSurface->h;
 
