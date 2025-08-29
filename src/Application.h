@@ -9,8 +9,11 @@
 class Application {
     private:
         bool running = false;
+        bool debug = false;
         std::vector<Body*> bodies;
         std::vector<Text*> textObjects;
+        TTF_Font* roboto;
+        Text* objectCountText;
     public:
         Application() = default;
         ~Application() = default;

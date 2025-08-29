@@ -17,15 +17,15 @@ void Application::Setup() {
         std::cout << "ttf init failed" << std::endl;
     }
 
-    TTF_Font* roboto = TTF_OpenFont("./assets/roboto.ttf", 36);
+    roboto = TTF_OpenFont("./assets/roboto.ttf", 36);
     if (!roboto)
     {
         std::cout << "load failed" << std::endl;
     }
 
     SDL_Color white = {255,255,255,255};
-    Text* text = new Text(500, 500, "testing font", roboto, white);
-    textObjects.push_back(text);
+    objectCountText = new Text(500, 500, "testing font", roboto, white);
+    textObjects.push_back(objectCountText);
 
     Body* floor = new Body(BoxShape(Graphics::Width() - 50, 50), Graphics::Width() / 2.0, Graphics::Height() - 50, 0.0);
     floor->restitution = 0.2;
@@ -50,6 +50,9 @@ void Application::Input() {
             case SDL_KEYDOWN:
                 if (event.key.keysym.sym == SDLK_ESCAPE)
                     running = false;
+                if (event.key.keysym.sym == SDLK_d) {
+                    debug = !debug;
+                }
                 break;
             case SDL_KEYUP:
                 break;
@@ -178,9 +181,16 @@ void Application::Render() {
         }
     }
     
-    for (auto text : textObjects) {
-        Graphics::DrawTexture(text->x, text->y, text->width, text->height, 0, text->finishedTexture);
+    if (debug) {
+        int boxWidth = 300;
+        int boxHeight = textObjects.size() * textObjects[0]->height;
+        Graphics::DrawFillRect(0 + boxWidth / 2, 0 + boxHeight / 2, boxWidth, boxHeight, 0xFF33cc33);
+        
+        for (int i = 0; i < textObjects.size(); i++) {
+            Graphics::DrawTexture(0 + (textObjects[i]->width / 2.0) + 5, i * textObjects[i]->height + (textObjects[i]->height / 2), textObjects[i]->width, textObjects[i]->height, 0, textObjects[i]->finishedTexture);
+        }
     }
+
     Graphics::RenderFrame();
 }
 
@@ -190,9 +200,6 @@ void Application::Render() {
 void Application::Destroy() {
     for (auto body : bodies) {
         delete body;
-    }
-    for (auto text: textObjects) {
-        delete text;
     }
     Graphics::CloseWindow();
 }
