@@ -1,4 +1,5 @@
 #include "Contact.h"
+#include "../Graphics.h"
 //Moves both objects depending on depth and mass to the correct position to resolve the collision.
 void Contact::ResolvePenetration() {
     if (a->IsStatic() && b->IsStatic()) {
@@ -14,6 +15,7 @@ void Contact::ResolvePenetration() {
 
 void Contact::ResolveCollision() {
     ResolvePenetration();
+    //General collision
     float elasticity = std::min(a->restitution, b->restitution);
 
     Vec2 ra = end - a->position;
@@ -37,8 +39,27 @@ void Contact::ResolveCollision() {
     + 
     rb.Cross(normal) * rb.Cross(normal) * b->invI);
 
-    Vec2 impulse = impulseDirection * impulseMagnitude;
+    //Friction between objects
+    float frictionCoeffecient = std::min(a->friction, b->friction);
+    Vec2 tangent = normal.Normal();
+    float vrelDotTangent = relativeVelocity.Dot(tangent);
+    Vec2 impulseDirectionT = tangent;
+    float impulseMagnitudeT = 
+    frictionCoeffecient * 
+    -(1 + elasticity) * vrelDotTangent 
+    / 
+    ((a->invMass + b->invMass) 
+    + 
+    ra.Cross(tangent) * ra.Cross(tangent) * a->invI 
+    + 
+    rb.Cross(tangent) * rb.Cross(tangent) * b->invI);
 
-    a->ApplyImpulse(impulse, ra);
-    b->ApplyImpulse(-impulse, rb);
+    Vec2 jT = impulseDirectionT * impulseMagnitudeT;
+    Vec2 jN = impulseDirection * impulseMagnitude;
+    Vec2 j = jT + jN;
+
+    Graphics::DrawLine(a->position.x, a->position.y, a->position.x + tangent.x * 15, a->position.y + tangent.y * 15, 0xFFFF00FF);
+
+    a->ApplyImpulse(j, ra);
+    b->ApplyImpulse(-j, rb);
 }
