@@ -12,7 +12,7 @@ ShapeType CircleShape::GetType() const {
 };
 
 float CircleShape::GetMomentOfInertia() const {
-    return (1/2) * (radius * radius);
+    return (0.5) * (radius * radius);
 }
 
 PolygonShape::PolygonShape(const std::vector<Vec2> vertices) {
