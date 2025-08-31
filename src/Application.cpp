@@ -32,10 +32,22 @@ void Application::Setup() {
     floor->restitution = 0.2;
     bodies.push_back(floor);
 
-    Body* bigBox = new Body(BoxShape(200,200), Graphics::Width() / 2.0, Graphics::Height() / 2.0, 0.0);
-    bigBox->rotation = 1.4;
-    bigBox->restitution = 0.5;
-    bodies.push_back(bigBox);
+    Body* leftWall = new Body(BoxShape(50, Graphics::Height() - 50), 50, Graphics::Height() / 2, 0.0);
+    floor->restitution = 0.2;
+    bodies.push_back(leftWall);
+
+    Body* rightWall = new Body(BoxShape(50, Graphics::Height() - 50), Graphics::Width() - 50, Graphics::Height() / 2, 0.0);
+    floor->restitution = 0.2;
+    bodies.push_back(rightWall);
+
+    Body* roof = new Body(BoxShape(Graphics::Width() - 50, 50), Graphics::Width() / 2.0, 0 + 50, 0.0);
+    floor->restitution = 0.2;
+    bodies.push_back(roof);
+
+    Body* bigCircle = new Body(BoxShape(200, 200), Graphics::Width() / 2.0, Graphics::Height() / 2.0, 0.0);
+    bigCircle->rotation = 1.4;
+    bigCircle->restitution = 0.5;
+    bodies.push_back(bigCircle);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -60,7 +72,7 @@ void Application::Input() {
             case SDL_MOUSEBUTTONDOWN:
                 int x, y;
                 SDL_GetMouseState(&x, &y);
-                Body *box = new Body(BoxShape(50, 50), x, y, 1.0);
+                Body *box = new Body(CircleShape(50), x, y, 1.0);
                 bodies.push_back(box);
                 break;
         }
@@ -119,24 +131,6 @@ void Application::Update() {
         }
     }
 
-    //game logic (move above checking collision potentially)
-    for (auto body : bodies)
-    {
-        if (body->shape->GetType() == CIRCLE)
-        {
-            CircleShape *circleShape = (CircleShape *)body->shape;
-            if (body->position.x >= Graphics::Width() - circleShape->radius)
-            {
-                body->position.x = Graphics::Width() - circleShape->radius;
-                body->velocity.x *= -1;
-            }
-            else if (body->position.x <= 0 + circleShape->radius)
-            {
-                body->position.x = 0.0 + circleShape->radius;
-                body->velocity.x *= -1;
-            }
-
-            if (body->position.y >= Graphics::Height() - circleShape->radius)
             {
                 body->position.y = Graphics::Height() - circleShape->radius;
                 body->velocity.y *= -1;
