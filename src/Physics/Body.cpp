@@ -6,7 +6,7 @@ Body::Body(const Shape& shape, float x, float y, float mass) {
     this->position = Vec2(x, y);
     this->mass = mass;
     this->I = shape.GetMomentOfInertia() * mass;
-    this.friction = 0.7;
+    this->friction = 0.7;
     this->velocity = Vec2(0, 0);
     this->acceleration = Vec2(0, 0);
     this->rotation = 0.0;
