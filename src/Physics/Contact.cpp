@@ -1,5 +1,4 @@
 #include "Contact.h"
-#include "../Graphics.h"
 //Moves both objects depending on depth and mass to the correct position to resolve the collision.
 void Contact::ResolvePenetration() {
     if (a->IsStatic() && b->IsStatic()) {
@@ -57,8 +56,6 @@ void Contact::ResolveCollision() {
     Vec2 jT = impulseDirectionT * impulseMagnitudeT;
     Vec2 jN = impulseDirection * impulseMagnitude;
     Vec2 j = jT + jN;
-
-    Graphics::DrawLine(a->position.x, a->position.y, a->position.x + tangent.x * 15, a->position.y + tangent.y * 15, 0xFFFF00FF);
 
     a->ApplyImpulse(j, ra);
     b->ApplyImpulse(-j, rb);
