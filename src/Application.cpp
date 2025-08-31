@@ -131,14 +131,6 @@ void Application::Update() {
         }
     }
 
-            {
-                body->position.y = Graphics::Height() - circleShape->radius;
-                body->velocity.y *= -1;
-            }
-            else if (body->position.y <= 0 + circleShape->radius)
-            {
-                body->position.y = 0.0 + circleShape->radius;
-                body->velocity.y *= -1;
             }
         }
     }
