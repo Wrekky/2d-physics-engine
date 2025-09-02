@@ -2,6 +2,7 @@
 #include <limits>
 #include <cmath>
 #include "../Graphics.h"
+#include <iostream>
 bool CollisionDetection::IsColliding(Body* a, Body* b, Contact& contact) {
     bool aIsCircle = a->shape->GetType() == CIRCLE;
     bool bIsCircle = b->shape->GetType() == CIRCLE;
@@ -88,10 +89,11 @@ bool CollisionDetection::IsCollidingPolygonPolygon(Body* a, Body* b, Contact& co
 bool CollisionDetection::IsCollidingCirclePolygon(Body* aCircle, Body* bPolygon, Contact& contact) {
     PolygonShape* polygonShape = (PolygonShape*) bPolygon->shape;
     std::vector<Vec2>& polygonVertices = polygonShape->worldVertices;
-
+    CircleShape* circleShape = (CircleShape*) aCircle->shape;
     Vec2 minCurrVertex;
     Vec2 minNextVertex;
-
+    bool inside = true;
+    float distanceCircleEdge = std::numeric_limits<float>::lowest();
     for (int i = 0; i < polygonVertices.size();  i++) {
         int currVertex = i;
         int nextVertex = (i + 1) % polygonVertices.size();
@@ -102,14 +104,79 @@ bool CollisionDetection::IsCollidingCirclePolygon(Body* aCircle, Body* bPolygon,
 
         float projection = circleCenter.Dot(normal);
 
-        if(projection > 0) {
+        if (projection > 0) {
             minCurrVertex = polygonShape->worldVertices[currVertex];
             minNextVertex = polygonShape->worldVertices[nextVertex];
+            inside = false;
+            distanceCircleEdge = projection;
             break;
         }
+        else {
+            if (projection > distanceCircleEdge) {
+                distanceCircleEdge = projection;
+                minCurrVertex = polygonShape->worldVertices[currVertex];
+                minNextVertex = polygonShape->worldVertices[nextVertex];
+            }
+        }
+    }
+    
+    if (!inside) {
+        Vec2 AB = (minCurrVertex - minNextVertex);
+        Vec2 AC = (minCurrVertex - aCircle->position);
+        Vec2 BC = (minNextVertex - aCircle->position);
+        Vec2 BA = (minNextVertex - minCurrVertex);
+        if (AC.Dot(AB) < 0) {
+            //region a
+            if (AC.Magnitude() > circleShape->radius) {
+                return false;
+            }
+            else {
+                contact.a = bPolygon;
+                contact.b = aCircle;
+                contact.depth = circleShape->radius - AC.Magnitude();
+                contact.normal = -AC.Normalize();
+                contact.start = aCircle->position + (contact.normal * -circleShape->radius);
+                contact.end = contact.start + (contact.normal * contact.depth);
+            }
+        }
+        else if (BC.Dot(BA) < 0) {
+            //region b
+            if (BC.Magnitude() > circleShape->radius) {
+                return false;
+            }
+            else {
+                contact.a = bPolygon;
+                contact.b = aCircle;
+                contact.depth = circleShape->radius - BC.Magnitude();
+                contact.normal = -BC.Normalize();
+                contact.start = aCircle->position + (contact.normal * -circleShape->radius);
+                contact.end = contact.start + (contact.normal * contact.depth);
+            }
+        }
+        else {
+            //region c
+            if (distanceCircleEdge > circleShape->radius) {
+                return false;
+            }
+            else {
+                contact.a = bPolygon;
+                contact.b = aCircle;
+                contact.depth = circleShape->radius - distanceCircleEdge;
+                contact.normal = (minNextVertex - minCurrVertex).Normal();
+                contact.start = aCircle->position - (contact.normal * circleShape->radius);
+                contact.end = contact.start + (contact.normal * contact.depth);
+            }
+        }
+    }
+    else {
+        //same as if in region c
+        contact.a = bPolygon;
+        contact.b = aCircle;
+        contact.depth = circleShape->radius - distanceCircleEdge;
+        contact.normal = (minNextVertex - minCurrVertex).Normal();
+        contact.start = aCircle->position - (contact.normal * circleShape->radius);
+        contact.end = contact.start + (contact.normal * contact.depth);
     }
 
-    Graphics::DrawFillCircle(minCurrVertex.x, minCurrVertex.y, 5, 0xFF00FFFF);
-    Graphics::DrawFillCircle(minNextVertex.x, minNextVertex.y, 5, 0xFF00FFFF);
-    return false;
+    return true;
 }
