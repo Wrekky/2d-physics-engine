@@ -28,31 +28,31 @@ void Application::Setup() {
     objectCountText = new Text(500, 500, "testing font", roboto, white);
     textObjects.push_back(objectCountText);
 
-    // Body* floor = new Body(BoxShape(Graphics::Width() - 50, 50), Graphics::Width() / 2.0, Graphics::Height() - 50, 0.0);
-    // floor->restitution = 0.2;
-    // bodies.push_back(floor);
+    Body* bigCircle = new Body(CircleShape(100), Graphics::Width() / 2.0, Graphics::Height() / 2.0, 0.0);
+    bigCircle->rotation = 1.4;
+    bigCircle->restitution = 0.5;
+    bodies.push_back(bigCircle);
 
-    // Body* leftWall = new Body(BoxShape(50, Graphics::Height() - 50), 50, Graphics::Height() / 2, 0.0);
-    // floor->restitution = 0.2;
-    // bodies.push_back(leftWall);
+    Body* floor = new Body(BoxShape(Graphics::Width() - 50, 50), Graphics::Width() / 2.0, Graphics::Height() - 50, 0.0);
+    floor->restitution = 0.2;
+    bodies.push_back(floor);
 
-    // Body* rightWall = new Body(BoxShape(50, Graphics::Height() - 50), Graphics::Width() - 50, Graphics::Height() / 2, 0.0);
-    // floor->restitution = 0.2;
-    // bodies.push_back(rightWall);
+    Body* leftWall = new Body(BoxShape(50, Graphics::Height() - 50), 50, Graphics::Height() / 2, 0.0);
+    floor->restitution = 0.2;
+    bodies.push_back(leftWall);
 
-    // Body* roof = new Body(BoxShape(Graphics::Width() - 50, 50), Graphics::Width() / 2.0, 0 + 50, 0.0);
-    // floor->restitution = 0.2;
-    // bodies.push_back(roof);
+    Body* rightWall = new Body(BoxShape(50, Graphics::Height() - 50), Graphics::Width() - 50, Graphics::Height() / 2, 0.0);
+    floor->restitution = 0.2;
+    bodies.push_back(rightWall);
+
+    Body* roof = new Body(BoxShape(Graphics::Width() - 50, 50), Graphics::Width() / 2.0, 0 + 50, 0.0);
+    floor->restitution = 0.2;
+    bodies.push_back(roof);
 
     Body* bigBox = new Body(BoxShape(200, 200), Graphics::Width() / 2.0, Graphics::Height() / 2.0, 0.0);
     bigBox->rotation = 1.4;
     bigBox->restitution = 0.5;
     bodies.push_back(bigBox);
-
-    Body* bigCircle = new Body(CircleShape(100), Graphics::Width() / 2.0, Graphics::Height() / 2.0, 0.0);
-    bigCircle->rotation = 1.4;
-    bigCircle->restitution = 0.5;
-    bodies.push_back(bigCircle);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -60,7 +60,9 @@ void Application::Setup() {
 ///////////////////////////////////////////////////////////////////////////////
 void Application::Input() {
     SDL_Event event;
+    int x, y;
     while (SDL_PollEvent(&event)) {
+        
         switch (event.type) {
             case SDL_QUIT:
                 running = false;
@@ -74,16 +76,14 @@ void Application::Input() {
                 break;
             case SDL_KEYUP:
                 break;
-            case SDL_MOUSEBUTTONDOWN:
-                //int x, y;
-               // SDL_GetMouseState(&x, &y);
-                //Body *box = new Body(CircleShape(50), x, y, 1.0);
-               // bodies.push_back(box);
-                break;
             case SDL_MOUSEMOTION:
-                int x, y;
                 SDL_GetMouseState(&x, &y);
-                bodies[1]->position = Vec2(x, y);
+                bodies[0]->position = Vec2(x, y);
+                break;
+            case SDL_MOUSEBUTTONDOWN:
+                SDL_GetMouseState(&x, &y);
+                Body *box = new Body(CircleShape(50), x, y, 1.0);
+                bodies.push_back(box);
                 break;
         }
     }
@@ -112,7 +112,7 @@ void Application::Update() {
     for (auto body : bodies)
     {
         weight = Vec2(0.0, body->mass * gravity);
-        //body->AddForce(weight);
+        body->AddForce(weight);
     }
 
     //apply forces
