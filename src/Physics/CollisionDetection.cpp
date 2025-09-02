@@ -1,5 +1,7 @@
 #include "CollisionDetection.h"
 #include <limits>
+#include <cmath>
+#include "../Graphics.h"
 bool CollisionDetection::IsColliding(Body* a, Body* b, Contact& contact) {
     bool aIsCircle = a->shape->GetType() == CIRCLE;
     bool bIsCircle = b->shape->GetType() == CIRCLE;
@@ -12,6 +14,14 @@ bool CollisionDetection::IsColliding(Body* a, Body* b, Contact& contact) {
     
     if (aIsPolygon && bIsPolygon) {
         return IsCollidingPolygonPolygon(a, b, contact);
+    }
+    
+    if(aIsCircle && bIsPolygon) {
+        return IsCollidingCirclePolygon(a, b, contact);
+    }
+
+    if(bIsCircle && aIsPolygon) {
+        return IsCollidingCirclePolygon(b, a, contact);
     }
 
     return false;
@@ -74,3 +84,32 @@ bool CollisionDetection::IsCollidingPolygonPolygon(Body* a, Body* b, Contact& co
 
     return true;
 };
+
+bool CollisionDetection::IsCollidingCirclePolygon(Body* aCircle, Body* bPolygon, Contact& contact) {
+    PolygonShape* polygonShape = (PolygonShape*) bPolygon->shape;
+    std::vector<Vec2>& polygonVertices = polygonShape->worldVertices;
+
+    Vec2 minCurrVertex;
+    Vec2 minNextVertex;
+
+    for (int i = 0; i < polygonVertices.size();  i++) {
+        int currVertex = i;
+        int nextVertex = (i + 1) % polygonVertices.size();
+        Vec2 edge = polygonShape->EdgeAt(currVertex);
+        Vec2 normal = edge.Normal();
+
+        Vec2 circleCenter = aCircle->position - polygonVertices[currVertex];
+
+        float projection = circleCenter.Dot(normal);
+
+        if(projection > 0) {
+            minCurrVertex = polygonShape->worldVertices[currVertex];
+            minNextVertex = polygonShape->worldVertices[nextVertex];
+            break;
+        }
+    }
+
+    Graphics::DrawFillCircle(minCurrVertex.x, minCurrVertex.y, 5, 0xFF00FFFF);
+    Graphics::DrawFillCircle(minNextVertex.x, minNextVertex.y, 5, 0xFF00FFFF);
+    return false;
+}
