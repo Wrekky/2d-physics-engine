@@ -82,8 +82,10 @@ void Application::Input() {
                 break;
             case SDL_MOUSEBUTTONDOWN:
                 SDL_GetMouseState(&x, &y);
-                Body *box = new Body(CircleShape(50), x, y, 1.0);
-                bodies.push_back(box);
+                std::vector<Vec2> vertices = {Vec2(100, 100), Vec2(-100, 100), Vec2(-150, 0), Vec2(-100, -100), Vec2(100, -100), Vec2(150, 0)};
+                Body *polygon = new Body(PolygonShape(vertices), x, y, 1.0);
+                polygon->restitution = 0.1;
+                bodies.push_back(polygon);
                 break;
         }
     }
@@ -177,6 +179,11 @@ void Application::Render() {
         {
             BoxShape *boxShape = (BoxShape*)body->shape;
             Graphics::DrawPolygon(body->position.x, body->position.y, boxShape->worldVertices, color);
+        }
+        else if(body->shape->GetType() == POLYGON) 
+        {
+            PolygonShape *polygonShape = (PolygonShape*)body->shape;
+            Graphics::DrawPolygon(body->position.x, body->position.y, polygonShape->worldVertices, color);
         }
     }
     
