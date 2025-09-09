@@ -52,6 +52,7 @@ void Application::Setup() {
     Body* bigBox = new Body(BoxShape(200, 200), Graphics::Width() / 2.0, Graphics::Height() / 2.0, 0.0);
     bigBox->rotation = 1.4;
     bigBox->restitution = 0.5;
+    bigBox->SetTexture("./assets/crate.png");
     bodies.push_back(bigBox);
 }
 
@@ -82,10 +83,11 @@ void Application::Input() {
                 break;
             case SDL_MOUSEBUTTONDOWN:
                 SDL_GetMouseState(&x, &y);
-                std::vector<Vec2> vertices = {Vec2(100, 100), Vec2(-100, 100), Vec2(-150, 0), Vec2(-100, -100), Vec2(100, -100), Vec2(150, 0)};
-                Body *polygon = new Body(PolygonShape(vertices), x, y, 1.0);
-                polygon->restitution = 0.1;
-                bodies.push_back(polygon);
+                //std::vector<Vec2> vertices = {Vec2(100, 100), Vec2(-100, 100), Vec2(-150, 0), Vec2(-100, -100), Vec2(100, -100), Vec2(150, 0)};
+                Body *circle = new Body(CircleShape(50), x, y, 1.0);
+                circle->restitution = 1.0;
+                circle->SetTexture("./assets/basketball.png");
+                bodies.push_back(circle);
                 break;
         }
     }
@@ -173,12 +175,22 @@ void Application::Render() {
         if (body->shape->GetType() == CIRCLE)
         {
             CircleShape *circleShape = (CircleShape*)body->shape;
-            Graphics::DrawCircle(body->position.x, body->position.y, circleShape->radius, body->rotation, color);
+            if (body->texture != nullptr && !debug) {
+                Graphics::DrawTexture(body->position.x, body->position.y, circleShape->radius * 2, circleShape->radius*2, body->rotation, body->texture);
+            }
+            else {
+                Graphics::DrawCircle(body->position.x, body->position.y, circleShape->radius, body->rotation, color);
+            }
         }
         else if(body->shape->GetType() == BOX) 
         {
             BoxShape *boxShape = (BoxShape*)body->shape;
-            Graphics::DrawPolygon(body->position.x, body->position.y, boxShape->worldVertices, color);
+            if (body->texture != nullptr && !debug) {
+                Graphics::DrawTexture(body->position.x, body->position.y, boxShape->width, boxShape->height, body->rotation, body->texture);
+            }
+            else {
+                Graphics::DrawPolygon(body->position.x, body->position.y, boxShape->worldVertices, color);
+            }
         }
         else if(body->shape->GetType() == POLYGON) 
         {
