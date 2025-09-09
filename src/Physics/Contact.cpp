@@ -15,7 +15,7 @@ void Contact::ResolvePenetration() {
 void Contact::ResolveCollision() {
     ResolvePenetration();
     //General collision
-    float elasticity = std::min(a->restitution, b->restitution);
+    float elasticity = std::max(a->restitution, b->restitution);
 
     Vec2 ra = end - a->position;
     Vec2 rb = start - b->position;
