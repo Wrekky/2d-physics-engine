@@ -2,15 +2,14 @@
 #define APPLICATION_H
 
 #include "./Graphics.h"
-#include "./Physics/Body.h"
-#include "./Physics/Force.h"
+#include "./Physics/World.h"
 #include <vector>
 #include "./Text.h"
 class Application {
     private:
         bool running = false;
         bool debug = false;
-        std::vector<Body*> bodies;
+        World* world;
         std::vector<Text*> textObjects;
         TTF_Font* roboto;
         Text* objectCountText;

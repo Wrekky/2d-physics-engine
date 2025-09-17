@@ -1,7 +1,5 @@
 #include "Application.h"
 #include "./Physics/Constants.h"
-#include "./Physics/CollisionDetection.h"
-#include "./Physics/Contact.h"
 #include <iostream>
 #include <string>
 bool Application::IsRunning() {
@@ -23,7 +21,7 @@ void Application::Setup() {
     {
         std::cout << "load failed" << std::endl;
     }
-
+    world = World(9.8 * PIXELS_PER_METER);
     SDL_Color white = {255,255,255,255};
     objectCountText = new Text(500, 500, "testing font", roboto, white);
     textObjects.push_back(objectCountText);
@@ -107,50 +105,9 @@ void Application::Update() {
         deltaTime = 0.016;
     }
     int physicsTime = MILLISECS_PER_FRAME - (SDL_GetTicks() - timePreviousFrame);
-
-    //apply physics
-    Vec2 wind(10.0 * PIXELS_PER_METER, 0.0);//adding forces
-    float gravity = 9.8 * PIXELS_PER_METER;
-    Vec2 weight(0.0, 0.0);
-
-    for (auto body : bodies)
-    {
-        weight = Vec2(0.0, body->mass * gravity);
-        body->AddForce(weight);
-    }
-
     //apply forces
-    for (auto body : bodies)
-    {
-        body->Update(deltaTime);
-    }
-
-    //check for a collision
-
-    for (int i = 0; i <= bodies.size() - 1; i++)
-    {
-        for (int j = i + 1; j < bodies.size(); j++)
-        {
-            Body *a = bodies[i];
-            Body *b = bodies[j];
-            a->isColliding = false;
-            b->isColliding = false;
-            Contact contact;
-            if (CollisionDetection::IsColliding(a, b, contact))
-            {
-                contact.ResolveCollision();
-                if (debug) {
-                    Graphics::DrawFillCircle(contact.start.x, contact.start.y, 3, 0xFFFF00FF);
-                    Graphics::DrawFillCircle(contact.end.x, contact.end.y, 3, 0xFFFF00FF);
-                    Graphics::DrawLine(contact.start.x, contact.start.y, contact.start.x + contact.normal.x * 15, contact.start.y + contact.normal.y * 15, 0xFFFF00FF);
-                    a->isColliding = true;
-                    b->isColliding = true;
-                }
-
-            }
-        }
-    }
-
+    world->Update(deltaTime);
+    world->CheckCollisions();
     /////////////////////////////////////////////
     int timeToWait = MILLISECS_PER_FRAME - (SDL_GetTicks() - timePreviousFrame);;
     timePreviousFrame = SDL_GetTicks();
@@ -169,6 +126,7 @@ void Application::Update() {
 // Render function (called several times per second to draw objects)
 ///////////////////////////////////////////////////////////////////////////////
 void Application::Render() {
+    std::vector<Body*> bodies = world->GetBodies();
     for (auto body : bodies)
     {
         Uint32 color = body->isColliding ? 0xFF0000FF : 0xFFFFFFFF;
