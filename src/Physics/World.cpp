@@ -1,8 +1,6 @@
-#include "./World.h"
-#include "./Contact.h"
-#include "./CollisionDetection.h"
+#include "World.h"
 World::World(float gravity) {
-    this.G = gravity;
+    this->G = gravity;
 }
 
 World::~World() {
@@ -17,16 +15,16 @@ void World::AddBody(Body* body) {
 }
 
 std::vector<Body*>& World::GetBodies() {
-    return &bodies;
+    return bodies;
 }
 
 void World::AddForce(const Vec2& force) {
     forces.push_back(force);
 }
 
-void World::AddTorque(float torque) {
-    torque.push_back(torque);
-};
+void World::AddTorque(float t) {
+    torque.push_back(t);
+}
 
 void World::Update(float dt) {
     //apply world forces

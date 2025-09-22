@@ -1,7 +1,10 @@
 #ifndef WORLD_H
 #define WORLD_H
 
-#include "./Body.h"
+#include "Body.h"
+#include "Contact.h"
+#include "CollisionDetection.h"
+
 #include <vector>
 class World {
     private:
@@ -22,6 +25,6 @@ class World {
         void Update(float dt);
 
         void CheckCollisions();
-}
+};
 
 #endif

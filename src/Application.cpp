@@ -21,7 +21,7 @@ void Application::Setup() {
     {
         std::cout << "load failed" << std::endl;
     }
-    world = World(9.8 * PIXELS_PER_METER);
+    world = new World(9.8 * PIXELS_PER_METER);
     SDL_Color white = {255,255,255,255};
     objectCountText = new Text(500, 500, "testing font", roboto, white);
     textObjects.push_back(objectCountText);
@@ -29,29 +29,29 @@ void Application::Setup() {
     Body* bigCircle = new Body(CircleShape(100), Graphics::Width() / 2.0, Graphics::Height() / 2.0, 0.0);
     bigCircle->rotation = 1.4;
     bigCircle->restitution = 0.5;
-    bodies.push_back(bigCircle);
+    world->AddBody(bigCircle);
 
     Body* floor = new Body(BoxShape(Graphics::Width() - 50, 50), Graphics::Width() / 2.0, Graphics::Height() - 50, 0.0);
     floor->restitution = 0.2;
-    bodies.push_back(floor);
+    world->AddBody(floor);
 
     Body* leftWall = new Body(BoxShape(50, Graphics::Height() - 50), 50, Graphics::Height() / 2, 0.0);
     floor->restitution = 0.2;
-    bodies.push_back(leftWall);
+    world->AddBody(leftWall);
 
     Body* rightWall = new Body(BoxShape(50, Graphics::Height() - 50), Graphics::Width() - 50, Graphics::Height() / 2, 0.0);
     floor->restitution = 0.2;
-    bodies.push_back(rightWall);
+    world->AddBody(rightWall);
 
     Body* roof = new Body(BoxShape(Graphics::Width() - 50, 50), Graphics::Width() / 2.0, 0 + 50, 0.0);
     floor->restitution = 0.2;
-    bodies.push_back(roof);
+    world->AddBody(roof);
 
     Body* bigBox = new Body(BoxShape(200, 200), Graphics::Width() / 2.0, Graphics::Height() / 2.0, 0.0);
     bigBox->rotation = 1.4;
     bigBox->restitution = 0.5;
     bigBox->SetTexture("./assets/crate.png");
-    bodies.push_back(bigBox);
+    world->AddBody(bigBox);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -77,7 +77,7 @@ void Application::Input() {
                 break;
             case SDL_MOUSEMOTION:
                 SDL_GetMouseState(&x, &y);
-                bodies[0]->position = Vec2(x, y);
+                world->GetBodies()[0]->position = Vec2(x, y);
                 break;
             case SDL_MOUSEBUTTONDOWN:
                 SDL_GetMouseState(&x, &y);
@@ -85,7 +85,7 @@ void Application::Input() {
                 Body *circle = new Body(CircleShape(50), x, y, 1.0);
                 circle->restitution = 1.0;
                 circle->SetTexture("./assets/basketball.png");
-                bodies.push_back(circle);
+                world->AddBody(circle);
                 break;
         }
     }
@@ -175,9 +175,7 @@ void Application::Render() {
 // Destroy function to delete objects and close the window
 ///////////////////////////////////////////////////////////////////////////////
 void Application::Destroy() {
-    for (auto body : bodies) {
-        delete body;
-    }
+    //world->~World();
     Graphics::CloseWindow();
 }
 
