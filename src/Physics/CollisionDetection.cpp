@@ -26,7 +26,7 @@ bool CollisionDetection::IsColliding(Body* a, Body* b, Contact& contact) {
     }
 
     return false;
-};
+}
 
 bool CollisionDetection::IsCollidingCircleCircle(Body* a, Body* b, Contact& contact) {
     CircleShape* aCircleShape = (CircleShape*) a->shape;
@@ -50,7 +50,7 @@ bool CollisionDetection::IsCollidingCircleCircle(Body* a, Body* b, Contact& cont
     contact.depth = (contact.end - contact.start).Magnitude();
 
     return isColliding;
-};
+}
 
 bool CollisionDetection::IsCollidingPolygonPolygon(Body* a, Body* b, Contact& contact) {
     const PolygonShape* aPolygonShape = (PolygonShape*) a->shape;
@@ -84,7 +84,7 @@ bool CollisionDetection::IsCollidingPolygonPolygon(Body* a, Body* b, Contact& co
     }
 
     return true;
-};
+}
 
 bool CollisionDetection::IsCollidingCirclePolygon(Body* aCircle, Body* bPolygon, Contact& contact) {
     PolygonShape* polygonShape = (PolygonShape*) bPolygon->shape;

@@ -2,14 +2,14 @@
 
 CircleShape::CircleShape(float radius) {
     this->radius = radius;
-};
+}
 CircleShape::~CircleShape() {};
 Shape* CircleShape::Clone() const {
     return new CircleShape(radius);
-};
+}
 ShapeType CircleShape::GetType() const {
     return CIRCLE;
-};
+}
 
 float CircleShape::GetMomentOfInertia() const {
     return (0.5) * (radius * radius);
@@ -20,14 +20,14 @@ PolygonShape::PolygonShape(const std::vector<Vec2> vertices) {
         localVertices.push_back(vertex);
         worldVertices.push_back(vertex);
     }
-};
+}
 PolygonShape::~PolygonShape() {};
 Shape* PolygonShape::Clone() const {
     return new PolygonShape(localVertices);
-};
+}
 ShapeType PolygonShape::GetType() const {
     return POLYGON;
-};
+}
 
 float PolygonShape::GetMomentOfInertia() const {
     //TODO:
@@ -90,14 +90,14 @@ BoxShape::BoxShape(float width, float height) {
     worldVertices.push_back(Vec2(width / 2.0, -height / 2.0));
     worldVertices.push_back(Vec2(width / 2.0, height / 2.0));
     worldVertices.push_back(Vec2(-width / 2.0, height / 2.0));
-};
+}
 BoxShape::~BoxShape() {};
 Shape* BoxShape::Clone() const {
     return new BoxShape(width, height);
-};
+}
 ShapeType BoxShape::GetType() const {
     return BOX;
-};
+}
 
 float BoxShape::GetMomentOfInertia() const {
     return (0.083333) * (width * width + height * height);

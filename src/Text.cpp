@@ -1,12 +1,11 @@
 #include "Text.h"
-#include <iostream>
 Text::Text(int x, int y, const char* text, TTF_Font* font, SDL_Color color) {
     this->x = x;
     this->y = y;
     this->font = font;
     this->color = color;
     ChangeText(text);
-};
+}
 
 void Text::ChangeText(const char* text) {
     SDL_Surface* textSurface = TTF_RenderText_Solid(font, text, color);
