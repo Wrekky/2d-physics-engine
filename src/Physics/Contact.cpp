@@ -10,6 +10,9 @@ void Contact::ResolvePenetration() {
 
     a->position -= normal * depthAdjustA;
     b->position += normal * depthAdjustB;
+    
+    a->shape->UpdateVertices(a->rotation, a->position);
+    b->shape->UpdateVertices(b->rotation, b->position);
 }
 
 void Contact::ResolveCollision() {

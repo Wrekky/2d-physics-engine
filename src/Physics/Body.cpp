@@ -88,12 +88,7 @@ void Body::Update(float deltaTime)
 {
     IntegrateLinear(deltaTime);
     IntegrateAngular(deltaTime);
-    bool isPolygon = shape->GetType() == POLYGON || shape->GetType() == BOX;
-    if (isPolygon)
-    {
-        PolygonShape* polygonShape = (PolygonShape*)shape;
-        polygonShape->UpdateVertices(rotation, position);
-    }
+    shape->UpdateVertices(this->rotation, this->position);
 }
 
 void Body::ApplyImpulse(const Vec2& j) {

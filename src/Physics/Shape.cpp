@@ -15,6 +15,10 @@ float CircleShape::GetMomentOfInertia() const {
     return (0.5) * (radius * radius);
 }
 
+void CircleShape::UpdateVertices(float rotation, const Vec2& position) {
+    return; //nothing to do here.
+}
+
 PolygonShape::PolygonShape(const std::vector<Vec2> vertices) {
     for (auto vertex: vertices) {
         localVertices.push_back(vertex);
@@ -41,6 +45,7 @@ Vec2 PolygonShape::EdgeAt(int index) const {
     
     return worldVertices[nextVertex] - worldVertices[currVertex];
 }
+
 void PolygonShape::UpdateVertices(float rotation, const Vec2& position) {
     for(int i = 0; i < localVertices.size(); i++) {
         worldVertices[i] = localVertices[i].Rotate(rotation);
