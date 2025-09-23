@@ -83,7 +83,7 @@ void Application::Input() {
                 SDL_GetMouseState(&x, &y);
                 //std::vector<Vec2> vertices = {Vec2(100, 100), Vec2(-100, 100), Vec2(-150, 0), Vec2(-100, -100), Vec2(100, -100), Vec2(150, 0)};
                 Body *circle = new Body(CircleShape(50), x, y, 1.0);
-                circle->restitution = 1.0;
+                circle->restitution = 0.8;
                 circle->SetTexture("./assets/basketball.png");
                 world->AddBody(circle);
                 break;
@@ -175,7 +175,8 @@ void Application::Render() {
 // Destroy function to delete objects and close the window
 ///////////////////////////////////////////////////////////////////////////////
 void Application::Destroy() {
-    //world->~World();
+    world->~World();
+    delete world;
     Graphics::CloseWindow();
 }
 
