@@ -82,10 +82,10 @@ void Application::Input() {
             case SDL_MOUSEBUTTONDOWN:
                 SDL_GetMouseState(&x, &y);
                 //std::vector<Vec2> vertices = {Vec2(100, 100), Vec2(-100, 100), Vec2(-150, 0), Vec2(-100, -100), Vec2(100, -100), Vec2(150, 0)};
-                Body *circle = new Body(CircleShape(50), x, y, 1.0);
-                circle->restitution = 0.8;
-                circle->SetTexture("./assets/basketball.png");
-                world->AddBody(circle);
+                Body *box = new Body(BoxShape(50, 50), x, y, 1.0);
+                box->restitution = 0.1;
+                box->SetTexture("./assets/crate.png");
+                world->AddBody(box);
                 break;
         }
     }
@@ -107,7 +107,6 @@ void Application::Update() {
     int physicsTime = MILLISECS_PER_FRAME - (SDL_GetTicks() - timePreviousFrame);
     //apply forces
     world->Update(deltaTime);
-    world->CheckCollisions();
     /////////////////////////////////////////////
     int timeToWait = MILLISECS_PER_FRAME - (SDL_GetTicks() - timePreviousFrame);;
     timePreviousFrame = SDL_GetTicks();
