@@ -175,7 +175,6 @@ void Application::Render() {
 // Destroy function to delete objects and close the window
 ///////////////////////////////////////////////////////////////////////////////
 void Application::Destroy() {
-    world->~World();
     delete world;
     Graphics::CloseWindow();
 }
