@@ -38,9 +38,12 @@ void World::Update(float dt) {
             body->AddTorque(t);
         }
     }
+
     for (auto body : bodies) {
         body->Update(dt);
     }
+    
+    CheckCollisions();
 }
 
 void World::CheckCollisions() {

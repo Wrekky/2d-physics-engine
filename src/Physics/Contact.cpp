@@ -8,15 +8,17 @@ void Contact::ResolvePenetration() {
     float depthAdjustA = (depth / (a->invMass + b->invMass)) * a->invMass;
     float depthAdjustB = (depth / (a->invMass + b->invMass)) * b->invMass;
 
-    a->position -= normal * depthAdjustA;
-    b->position += normal * depthAdjustB;
+    a->position -= normal * depthAdjustA * 0.1;
+    b->position += normal * depthAdjustB * 0.1;
     
     a->shape->UpdateVertices(a->rotation, a->position);
     b->shape->UpdateVertices(b->rotation, b->position);
 }
 
 void Contact::ResolveCollision() {
-    ResolvePenetration();
+    for (int i = 0; i < 10; i++) {
+        ResolvePenetration();
+    }
     //General collision
     float elasticity = std::max(a->restitution, b->restitution);
 
