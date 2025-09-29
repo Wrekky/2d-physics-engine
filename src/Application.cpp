@@ -104,17 +104,10 @@ void Application::Update() {
         //If it pauses for whatever reason and deltaTime has a large gap for whatever reason
         deltaTime = 0.016;
     }
-    int physicsTime = MILLISECS_PER_FRAME - (SDL_GetTicks() - timePreviousFrame);
-    //apply forces
     world->Update(deltaTime);
     /////////////////////////////////////////////
     int timeToWait = MILLISECS_PER_FRAME - (SDL_GetTicks() - timePreviousFrame);;
     timePreviousFrame = SDL_GetTicks();
-    physicsTime = (physicsTime - timeToWait);
-    
-    if (physicsTime > MILLISECS_PER_FRAME) {
-        std::cout << "Took: " << physicsTime << " miliseconds to calculate physics" << std::endl;
-    }
     
     if (timeToWait > 0) {
         SDL_Delay(timeToWait);
