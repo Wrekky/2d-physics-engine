@@ -16,10 +16,11 @@ void Contact::ResolvePenetration() {
 }
 
 void Contact::ResolveCollision() {
+    
     for (int i = 0; i < 10; i++) {
         ResolvePenetration();
     }
-    //General collision
+
     float elasticity = std::max(a->restitution, b->restitution);
 
     Vec2 ra = end - a->position;
@@ -43,7 +44,6 @@ void Contact::ResolveCollision() {
     + 
     rb.Cross(normal) * rb.Cross(normal) * b->invI);
 
-    //Friction between objects
     float frictionCoeffecient = std::min(a->friction, b->friction);
     Vec2 tangent = normal.Normal();
     float vrelDotTangent = relativeVelocity.Dot(tangent);

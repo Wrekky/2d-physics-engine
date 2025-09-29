@@ -17,10 +17,12 @@ void Application::Setup() {
     }
 
     roboto = TTF_OpenFont("./assets/roboto.ttf", 36);
+
     if (!roboto)
     {
         std::cout << "load failed" << std::endl;
     }
+
     world = new World(9.8 * PIXELS_PER_METER);
     SDL_Color white = {255,255,255,255};
     objectCountText = new Text(500, 500, "testing font", roboto, white);
@@ -61,7 +63,6 @@ void Application::Input() {
     SDL_Event event;
     int x, y;
     while (SDL_PollEvent(&event)) {
-        
         switch (event.type) {
             case SDL_QUIT:
                 running = false;
@@ -81,7 +82,6 @@ void Application::Input() {
                 break;
             case SDL_MOUSEBUTTONDOWN:
                 SDL_GetMouseState(&x, &y);
-                //std::vector<Vec2> vertices = {Vec2(100, 100), Vec2(-100, 100), Vec2(-150, 0), Vec2(-100, -100), Vec2(100, -100), Vec2(150, 0)};
                 Body *box = new Body(BoxShape(50, 50), x, y, 1.0);
                 box->restitution = 0.1;
                 box->SetTexture("./assets/crate.png");
@@ -97,15 +97,15 @@ void Application::Input() {
 void Application::Update() {
     Graphics::ClearScreen(0xFF056263);
     // TODO: update all objects in the scene
-    //Check fps
     static int timePreviousFrame;
     float deltaTime = (SDL_GetTicks() - timePreviousFrame) / 1000.0f;
     if (deltaTime > 0.016) {
-        //If it pauses for whatever reason and deltaTime has a large gap for whatever reason
+        //If it pauses for whatever reason and deltaTime has a large gap.
         deltaTime = 0.016;
     }
+
     world->Update(deltaTime);
-    /////////////////////////////////////////////
+
     int timeToWait = MILLISECS_PER_FRAME - (SDL_GetTicks() - timePreviousFrame);;
     timePreviousFrame = SDL_GetTicks();
     
@@ -169,8 +169,4 @@ void Application::Render() {
 void Application::Destroy() {
     delete world;
     Graphics::CloseWindow();
-}
-
-void CreateBox() {
-
 }
