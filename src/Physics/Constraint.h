@@ -5,13 +5,13 @@
 
 class Constraint {
     public:
-        Body* a;
-        Body* b;
+        //Body* a;
+        //Body* b;
 
         //TODO Helper matrix & vector class:
-        MatMN GetInvM(6, 6);
-        VecN vec();
-        void Solve();
+        //MatMN GetInvM(6, 6);
+        //VecN vec();
+        //void Solve();
 };
 
 #endif
