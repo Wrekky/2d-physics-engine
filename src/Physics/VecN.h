@@ -13,9 +13,9 @@ struct VecN {
     
     void Zero();
     VecN& operator = (const VecN& v);
-    VecN operator + (const VecN& v);
-    VecN operator - (const VecN& v);
-    VecN operator * (const float n);
+    VecN operator + (const VecN& v) const;
+    VecN operator - (const VecN& v) const;
+    VecN operator * (const float n) const;
     const VecN& operator += (const VecN& v);
     const VecN& operator -= (const VecN& v);
     const VecN& operator *= (const float n);

@@ -38,21 +38,21 @@ VecN& VecN::operator = (const VecN& v) {
     return *this;
 }
 
-VecN VecN::operator + (const VecN& v) { 
+VecN VecN::operator + (const VecN& v) const { 
     VecN result = *this;
     for (int i = 0; i < N; i++)
         result.data[i] += v.data[i];
     return result;
 }
 
-VecN VecN::operator - (const VecN &v) {
+VecN VecN::operator - (const VecN &v) const {
     VecN result = *this;
     for (int i = 0; i < N; i++)
         result.data[i] -= v.data[i];
     return result;
 }
 
-VecN VecN::operator * (const float n) {
+VecN VecN::operator * (const float n) const {
     VecN result = *this;
     for (int i = 0; i < N; i++)
         result.data[i] *= n;
