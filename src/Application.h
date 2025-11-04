@@ -5,21 +5,14 @@
 #include "./Physics/World.h"
 #include <vector>
 #include "./Text.h"
+#include "./Scene/Scene.h"
 class Application {
     private:
-        bool running = false;
-        bool debug = false;
-        World* world;
-        std::vector<Text*> textObjects;
-        TTF_Font* roboto;
-        Text* objectCountText;
     public:
+    //TODO: create scene on application constructor
+        Scene* scene;
         Application() = default;
         ~Application() = default;
-        bool IsRunning();
-        void Setup();
-        void Input();
-        void Update();
         void Render();
         void Destroy();
 };
