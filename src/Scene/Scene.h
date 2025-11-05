@@ -22,18 +22,22 @@ class Scene {
 
         bool IsRunning();
         void FontSetup();
-        void Setup();
-        void Input();
-        void Update();
+        virtual void Setup();
+        virtual void Input();
+        virtual void Update();
 
         Scene() = default;
         ~Scene() = default;
 };
 
 //TODO make overrides for different scenes
-//class SceneOne: public Scene {
-//    Text* objectCountText;
-//};
+class SceneOne: public Scene {
+    private:
+    public:
+        void Setup() override;
+        void Input() override;
+        void Update() override;
+};
 
 //TODO: Menu scene, scrolling list of all scenes?
 #endif

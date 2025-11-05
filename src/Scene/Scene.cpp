@@ -114,3 +114,66 @@ void Scene::Update() {
     }
 }
 
+void SceneOne::Setup() {
+    running = Graphics::OpenWindow();
+    FontSetup();
+    world = new World(9.8 * PIXELS_PER_METER);
+}
+
+void SceneOne::Update() {
+    //TODO this should be generic to all scenes.
+    Graphics::ClearScreen(0xFF056263);
+    // TODO: update all objects in the scene
+    static int timePreviousFrame;
+    float deltaTime = (SDL_GetTicks() - timePreviousFrame) / 1000.0f;
+    if (deltaTime > 0.016) {
+        //If it pauses for whatever reason and deltaTime has a large gap.
+        deltaTime = 0.016;
+    }
+
+    world->Update(deltaTime);
+
+    int timeToWait = MILLISECS_PER_FRAME - (SDL_GetTicks() - timePreviousFrame);;
+    timePreviousFrame = SDL_GetTicks();
+    
+    if (timeToWait > 0) {
+        SDL_Delay(timeToWait);
+    }
+
+    if (debug) {
+        std::string objectCountString = "Object Count: " + std::to_string(world->GetBodies().size());
+        textObjects[0]->ChangeText(objectCountString.c_str());
+    }
+}
+
+void SceneOne::Input() {
+    SDL_Event event;
+    int x, y;
+    while (SDL_PollEvent(&event)) {
+        switch (event.type) {
+            case SDL_QUIT:
+                running = false;
+                break;
+            case SDL_KEYDOWN:
+                if (event.key.keysym.sym == SDLK_ESCAPE)
+                    running = false;
+                if (event.key.keysym.sym == SDLK_d) {
+                    debug = !debug;
+                }
+                break;
+            case SDL_KEYUP:
+                break;
+            case SDL_MOUSEMOTION:
+                SDL_GetMouseState(&x, &y);
+                world->GetBodies()[0]->position = Vec2(x, y);
+                break;
+            case SDL_MOUSEBUTTONDOWN:
+                SDL_GetMouseState(&x, &y);
+                Body *box = new Body(BoxShape(50, 50), x, y, 1.0);
+                box->restitution = 0.1;
+                box->SetTexture("./assets/crate.png");
+                world->AddBody(box);
+                break;
+        }
+    }
+}
