@@ -38,9 +38,6 @@ void Application::Render() {
     }
     
     if (scene->debug) {
-        std::string objectCountString = "Object Count: " + std::to_string(bodies.size());
-        //TODO: Fix temp code (textObjects)
-        scene->textObjects[0]->ChangeText(objectCountString.c_str());
         int boxWidth = 300;
         int boxHeight = scene->textObjects.size() * scene->textObjects[0]->height;
         Graphics::DrawFillRect(0 + boxWidth / 2, 0 + boxHeight / 2, boxWidth, boxHeight, 0xFF33cc33);

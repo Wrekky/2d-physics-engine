@@ -107,5 +107,10 @@ void Scene::Update() {
     if (timeToWait > 0) {
         SDL_Delay(timeToWait);
     }
+
+    if (debug) {
+        std::string objectCountString = "Object Count: " + std::to_string(world->GetBodies().size());
+        textObjects[0]->ChangeText(objectCountString.c_str());
+    }
 }
 
