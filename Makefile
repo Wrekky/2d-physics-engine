@@ -1,6 +1,9 @@
 build:
 	g++ -std=c++17 -Wall ./src/*.cpp ./src/Physics/*.cpp ./src/Scene/*.cpp -lm -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_gfx -o app
 
+debug: 
+	g++ -std=c++17 -g -Wall ./src/*.cpp ./src/Physics/*.cpp ./src/Scene/*.cpp -lm -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_gfx -o app
+
 run:
 	./app
 
