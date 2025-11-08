@@ -118,6 +118,11 @@ void SceneOne::Setup() {
     running = Graphics::OpenWindow();
     FontSetup();
     world = new World(9.8 * PIXELS_PER_METER);
+    Body* bigBox = new Body(BoxShape(200, 200), Graphics::Width() / 2.0, Graphics::Height() / 2.0, 0.0);
+    bigBox->rotation = 1.4;
+    bigBox->restitution = 0.5;
+    bigBox->SetTexture("./assets/crate.png");
+    world->AddBody(bigBox);
 }
 
 void SceneOne::Update() {
