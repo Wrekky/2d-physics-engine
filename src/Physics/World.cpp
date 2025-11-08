@@ -47,21 +47,23 @@ void World::Update(float dt) {
 }
 
 void World::CheckCollisions() {
-    for (int i = 0; i <= bodies.size() - 1; i++)
-    {
-        for (int j = i + 1; j < bodies.size(); j++)
+    if (bodies.size() > 1) {
+        for (int i = 0; i <= bodies.size() - 1; i++)
         {
-            Body *a = bodies[i];
-            Body *b = bodies[j];
-            //TODO: remove isColliding bool
-            a->isColliding = false;
-            b->isColliding = false;
-            Contact contact;
-            if (CollisionDetection::IsColliding(a, b, contact))
+            for (int j = i + 1; j < bodies.size(); j++)
             {
-                contact.ResolveCollision();
-                a->isColliding = true;
-                b->isColliding = true;
+                Body *a = bodies[i];
+                Body *b = bodies[j];
+                //TODO: remove isColliding bool
+                a->isColliding = false;
+                b->isColliding = false;
+                Contact contact;
+                if (CollisionDetection::IsColliding(a, b, contact))
+                {
+                    contact.ResolveCollision();
+                    a->isColliding = true;
+                    b->isColliding = true;
+                }
             }
         }
     }
