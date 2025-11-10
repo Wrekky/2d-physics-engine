@@ -5,10 +5,14 @@
 #ifndef SCENE_H
 #define SCENE_H
 
+#include <vector>
+#include <iostream>
+#include <string>
+
 #include "../Graphics.h"
 #include "../Physics/World.h"
-#include <vector>
 #include "../Text.h"
+#include "../Physics/Constants.h"
 
 
 class Scene {

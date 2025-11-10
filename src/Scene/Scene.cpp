@@ -1,9 +1,5 @@
 #include "Scene.h"
 
-#include "../Physics/Constants.h"
-#include <iostream>
-#include <string>
-
 bool Scene::IsRunning() {
     return running;
 }
@@ -89,8 +85,6 @@ void Scene::Input() {
 }
 
 void Scene::Update() {
-    //TODO this should be generic to all scenes.
-    Graphics::ClearScreen(0xFF056263);
     // TODO: update all objects in the scene
     static int timePreviousFrame;
     float deltaTime = (SDL_GetTicks() - timePreviousFrame) / 1000.0f;
@@ -126,8 +120,6 @@ void SceneOne::Setup() {
 }
 
 void SceneOne::Update() {
-    //TODO this should be generic to all scenes.
-    Graphics::ClearScreen(0xFF056263);
     // TODO: update all objects in the scene
     static int timePreviousFrame;
     float deltaTime = (SDL_GetTicks() - timePreviousFrame) / 1000.0f;

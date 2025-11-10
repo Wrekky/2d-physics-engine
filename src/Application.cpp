@@ -6,6 +6,7 @@
 // Render function (called several times per second to draw objects)
 ///////////////////////////////////////////////////////////////////////////////
 void Application::Render() {
+    Graphics::ClearScreen(0xFF056263);
     std::vector<Body*> bodies = scene->world->GetBodies();
     for (auto body : bodies)
     {
