@@ -14,16 +14,17 @@
 #include "../Text.h"
 #include "../Physics/Constants.h"
 
-
 class Scene {
     private:
     public:
         World* world;
         std::vector<Text*> textObjects;
         TTF_Font* defaultFont;
+        
+        int nextScene = 0;
+        bool switchScene = false;
         bool running = false;
         bool debug = false;
-
         bool IsRunning();
         void FontSetup();
         virtual void Setup();
@@ -41,7 +42,14 @@ class SceneOne: public Scene {
         void Setup() override;
         void Input() override;
         void Update() override;
-};
+}; 
 
-//TODO: Menu scene, scrolling list of all scenes?
+//Probably bad to do stuff like this but i'm messing around.
+class TitleScreen: public Scene {
+    private:
+    public:
+        void Setup() override;
+        void Input() override;
+        void Update() override;
+};
 #endif

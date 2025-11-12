@@ -27,6 +27,9 @@ void Application::Render() {
             if (body->texture != nullptr && !scene->debug) {
                 Graphics::DrawTexture(body->position.x, body->position.y, boxShape->width, boxShape->height, body->rotation, body->texture);
             }
+            else if (body->color != NULL && !scene->debug) {
+                Graphics::DrawFillRect(body->position.x, body->position.y, boxShape->width, boxShape->height, body->color);
+            }
             else {
                 Graphics::DrawPolygon(body->position.x, body->position.y, boxShape->worldVertices, color);
             }
@@ -54,7 +57,7 @@ void Application::Render() {
 ///////////////////////////////////////////////////////////////////////////////
 // Destroy function to delete objects and close the window
 ///////////////////////////////////////////////////////////////////////////////
+
 void Application::Destroy() {
-    //TODO: add scene destructor 
     Graphics::CloseWindow();
 }

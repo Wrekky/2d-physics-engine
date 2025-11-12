@@ -180,3 +180,21 @@ bool CollisionDetection::IsCollidingCirclePolygon(Body* aCircle, Body* bPolygon,
 
     return true;
 }
+
+bool CollisionDetection::IsInside(Vec2 point, Body* box) {
+    if (box->shape->GetType() != BOX) {
+        return false;
+    }
+    BoxShape* boxShape = (BoxShape*) box->shape;
+    Vec2 posAdjusted;
+    posAdjusted = box->position;
+    posAdjusted.x = posAdjusted.y - boxShape->width / 2;
+    posAdjusted.y = posAdjusted.y - boxShape->height / 2;
+    if (point.x > posAdjusted.x && point.x < posAdjusted.x + boxShape->width
+    && point.y > posAdjusted.y && point.y < posAdjusted.y + boxShape->height) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}

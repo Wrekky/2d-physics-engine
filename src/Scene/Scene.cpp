@@ -15,7 +15,6 @@ void Scene::FontSetup() {
 }
 
 void Scene::Setup() {
-    running = Graphics::OpenWindow(); //TODO: Refactor running to be in application
     FontSetup();
     //Default scene should be the menu screen but in this case it will be the collision test scene.
 
@@ -62,7 +61,8 @@ void Scene::Input() {
                 break;
             case SDL_KEYDOWN:
                 if (event.key.keysym.sym == SDLK_ESCAPE)
-                    running = false;
+                    switchScene = true;
+                    nextScene = 0;
                 if (event.key.keysym.sym == SDLK_d) {
                     debug = !debug;
                 }
@@ -109,7 +109,6 @@ void Scene::Update() {
 }
 
 void SceneOne::Setup() {
-    running = Graphics::OpenWindow();
     FontSetup();
     world = new World(9.8 * PIXELS_PER_METER);
     Body* bigBox = new Body(BoxShape(200, 200), Graphics::Width() / 2.0, Graphics::Height() / 2.0, 0.0);
@@ -153,7 +152,8 @@ void SceneOne::Input() {
                 break;
             case SDL_KEYDOWN:
                 if (event.key.keysym.sym == SDLK_ESCAPE)
-                    running = false;
+                    switchScene = true;
+                    nextScene = 0;
                 if (event.key.keysym.sym == SDLK_d) {
                     debug = !debug;
                 }

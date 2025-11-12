@@ -27,6 +27,8 @@ struct Body
     float I;
     float invI;
 
+    Uint32 color;
+    
     Shape* shape = NULL;
 
     SDL_Texture* texture = nullptr;
