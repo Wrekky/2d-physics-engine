@@ -4,8 +4,11 @@ void TitleScreen::Setup() {
     //TODO: setup static display menus
     FontSetup();
     world = new World(9.8 * PIXELS_PER_METER);
-    Body *box = new Body(BoxShape(200, 100), 200, 200, 0.0);
-    world->AddBody(box);
+    Body *sceneOne = new Body(BoxShape(200, 100), 200, 200, 0.0);
+    world->AddBody(sceneOne);
+
+    Body *sceneTwo = new Body(BoxShape(200, 100), 200, 400, 0.0);
+    world->AddBody(sceneTwo);
 }
 void TitleScreen::Input()
 {
@@ -26,20 +29,25 @@ void TitleScreen::Input()
             break;
         case SDL_MOUSEMOTION:
             SDL_GetMouseState(&x, &y);
-            if (CollisionDetection::IsInside(Vec2(x,y), world->GetBodies()[0])) {
-                world->GetBodies()[0]->color = 0xFFF51284;
-            }
-            else {
-                world->GetBodies()[0]->color = 0xFFF11214;
+            for (int i = 0; i < world->GetBodies().size(); i++) {
+                if (!CollisionDetection::IsInside(Vec2(x, y), world->GetBodies()[i])) {
+                    world->GetBodies()[i]->color = 0xFFF51284;
+                }
+                else {
+                    world->GetBodies()[i]->color = 0xFFF11214;
+                }
             }
             break;
         case SDL_MOUSEBUTTONDOWN:
             SDL_GetMouseState(&x, &y);
-            if (CollisionDetection::IsInside(Vec2(x,y), world->GetBodies()[0])) {
-                world->GetBodies()[0]->color = 0xFFF54284;
-                switchScene = true;
-                nextScene = 1;
+            for (int i = 0; i < world->GetBodies().size(); i++) {
+                if (CollisionDetection::IsInside(Vec2(x, y), world->GetBodies()[i])) {
+                    world->GetBodies()[i]->color = 0xFFF54284;
+                    switchScene = true;
+                    nextScene = i + 1;//for now
+                }
             }
+
             break;
         }
     }
