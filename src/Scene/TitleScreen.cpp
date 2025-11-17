@@ -1,5 +1,6 @@
 #include "Scene.h"
 #include "../Physics/CollisionDetection.h"
+
 void TitleScreen::Setup() {
     //TODO: setup static display menus
     FontSetup();
@@ -9,6 +10,9 @@ void TitleScreen::Setup() {
 
     Body *sceneTwo = new Body(BoxShape(200, 100), 200, 400, 0.0);
     world->AddBody(sceneTwo);
+
+    TextButton *textButton = new TextButton("test", defaultFont, Vec2(800, 800), Vec2(500, 200), SDL_Color{255,255,255,255}, 0xFFF51284, true);
+    UIObjects.push_back(textButton);
 }
 void TitleScreen::Input()
 {

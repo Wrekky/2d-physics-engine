@@ -1,6 +1,7 @@
 #ifndef UIOBJECT_H
 #define UIOBJECT_H
-#include "Vec2.h"
+#include "../Physics/Vec2.h"
+#include "../Text.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 struct UIObject
@@ -10,15 +11,19 @@ struct UIObject
 
     Uint32 color;
     SDL_Texture* texture = nullptr;
-    
+    bool visible = false;
+    bool clickable = false;
+
     virtual void Draw();
 
-    UIObject() = default;
-    UIObject()~ = default;
+    virtual ~UIObject() = default;
 };
 
 struct TextButton : public UIObject {
-    TextButton(String text, Vec2 pos, Vec2 size);
+    Text* text;
+    SDL_Color textColor;
+    TextButton(const char* text, TTF_Font* font, Vec2 pos, Vec2 size, SDL_Color textColor, Uint32 color, bool clickable);
     void Draw() override;
+    //TODO add a click function which can be adjusted based on a scenes needs. try to make it work like how events work
 };
 #endif

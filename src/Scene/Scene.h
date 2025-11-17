@@ -13,11 +13,13 @@
 #include "../Physics/World.h"
 #include "../Text.h"
 #include "../Physics/Constants.h"
+#include "../UI/UIObject.h"
 
 class Scene {
     private:
     public:
         World* world;
+        std::vector<UIObject*> UIObjects;
         std::vector<Text*> textObjects;
         TTF_Font* defaultFont;
         

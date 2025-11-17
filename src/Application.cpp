@@ -41,6 +41,12 @@ void Application::Render() {
         }
     }
     
+    for (auto uiObj : scene->UIObjects) {
+        //temp
+        TextButton *textButton = (TextButton*)uiObj;
+        
+        textButton->Draw();
+    }
     if (scene->debug) {
         int boxWidth = 300;
         int boxHeight = scene->textObjects.size() * scene->textObjects[0]->height;
