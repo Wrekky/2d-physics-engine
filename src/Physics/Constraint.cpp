@@ -27,6 +27,3 @@ VecN Constraint::GetVelocities() const {
     V[5] = b->angularVelocity;
     return V;
 }
-void Constraint::Solve() {
-    
-}
