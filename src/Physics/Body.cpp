@@ -49,24 +49,31 @@ bool Body::IsStatic() const {
     const float epsilon = 0.005f;
     return fabs(invMass - 0.0) < epsilon;
 }
-void Body::IntegrateLinear(float dt) {
+
+void Body::IntegrateForces(const float dt) {
     if (IsStatic()) {
         return;
     }
+
     acceleration = sumForces * invMass;
     velocity += acceleration * dt;
-    position += velocity * dt;
+
+    angularAcceleration = sumTorque * invI;
+    angularVelocity += angularAcceleration * dt;
+
     ClearForces();
+    ClearTorque();
 }
 
-void Body::IntegrateAngular(float dt) {
+void Body::IntegrateVelocities(const float dt) {
     if (IsStatic()) {
         return;
     }
-    angularAcceleration = sumTorque * invI;
-    angularVelocity += angularAcceleration * dt;
+
+    position += velocity * dt;
     rotation += angularVelocity * dt;
-    ClearTorque();
+
+    shape->UpdateVertices(rotation, position);
 }
 
 void Body::AddForce(const Vec2& force) {
@@ -83,13 +90,6 @@ void Body::AddTorque(float torque) {
 
 void Body::ClearTorque() {
     sumTorque = 0;
-}
-
-void Body::Update(float deltaTime)
-{
-    IntegrateLinear(deltaTime);
-    IntegrateAngular(deltaTime);
-    shape->UpdateVertices(this->rotation, this->position);
 }
 
 void Body::ApplyImpulse(const Vec2& j) {

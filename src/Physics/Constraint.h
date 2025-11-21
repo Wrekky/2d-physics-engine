@@ -8,6 +8,9 @@ class Constraint {
         Body* a;
         Body* b;
 
+        Vec2 aPoint;
+        Vec2 bPoint;
+
         virtual ~Constraint() = default;
 
         //TODO Helper matrix & vector class:
@@ -17,11 +20,19 @@ class Constraint {
         virtual void Solve() {}
 };
 
-class DistanceConstraint : public Constraint {
-    //void Solve() override;
+class JointConstraint : public Constraint {
+    private:
+        MatMN jacobian;
+    public:
+        JointConstraint();
+        JointConstraint(Body* a, Body* b, const Vec2& anchorPoint);
+        void Solve() override;
 };
 
 class PenetrationConstraint : public Constraint {
-    //void Solve() override;
+    private:
+        MatMN jacobian;
+    public: 
+        //void Solve() override;
 };
 #endif

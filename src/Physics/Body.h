@@ -33,8 +33,6 @@ struct Body
 
     SDL_Texture* texture = nullptr;
 
-    void Update(float deltaTime);
-
     bool IsStatic() const;
     void ApplyImpulse(const Vec2& j);
     void ApplyImpulse(const Vec2& j, const Vec2& r);
@@ -42,8 +40,6 @@ struct Body
     void ClearForces();
     void AddTorque(float torque);
     void ClearTorque();
-    void IntegrateLinear(float dt);
-    void IntegrateAngular(float dt);
 
     void SetTexture(const char* textureFileName);
 
@@ -51,6 +47,8 @@ struct Body
     Vec2 LocalSpaceToWorldSpace(const Vec2& point) const;
     Vec2 WorldSpaceToLocalSpace(const Vec2& point) const;
     
+    void IntegrateForces(const float dt);
+    void IntegrateVelocities(const float dt);
     Body(const Shape& shape, float x, float y, float mass);
     ~Body();
 };

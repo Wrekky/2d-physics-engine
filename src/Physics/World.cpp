@@ -40,7 +40,16 @@ void World::Update(float dt) {
     }
 
     for (auto body : bodies) {
-        body->Update(dt);
+        body->IntegrateForces(dt);
+    }
+    //solve all constraints
+    for (auto& constraint : constraints)  {
+        constraint->Solve();
+    }
+        
+    //integrate velocities
+    for (auto body : bodies) {
+        body->IntegrateVelocities(dt);
     }
     
     CheckCollisions();
@@ -67,4 +76,12 @@ void World::CheckCollisions() {
             }
         }
     }
+}
+
+void World::AddConstraint(Constraint* constraint) {
+    constraints.push_back(constraint);
+}
+
+std::vector<Constraint*>& World::GetConstraints() {
+    return constraints;
 }

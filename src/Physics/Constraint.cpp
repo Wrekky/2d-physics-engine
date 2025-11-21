@@ -27,3 +27,20 @@ VecN Constraint::GetVelocities() const {
     V[5] = b->angularVelocity;
     return V;
 }
+
+//creates a MatMN & initializes with default constraint constructor
+JointConstraint::JointConstraint(): Constraint(), jacobian(1, 6) {
+
+}
+
+JointConstraint::JointConstraint(Body* a, Body* b, const Vec2& anchorPoint): Constraint(), jacobian(1, 6) {
+    this->a = a;
+    this->b = b;
+
+    this->aPoint = a->WorldSpaceToLocalSpace(anchorPoint);
+    this->bPoint = b->WorldSpaceToLocalSpace(anchorPoint);
+}
+
+void JointConstraint::Solve() {
+    //TODO
+}
