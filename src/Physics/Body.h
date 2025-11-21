@@ -47,6 +47,10 @@ struct Body
 
     void SetTexture(const char* textureFileName);
 
+
+    Vec2 LocalSpaceToWorldSpace(const Vec2& point) const;
+    Vec2 WorldSpaceToLocalSpace(const Vec2& point) const;
+    
     Body(const Shape& shape, float x, float y, float mass);
     ~Body();
 };
