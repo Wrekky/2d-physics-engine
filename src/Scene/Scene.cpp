@@ -115,6 +115,8 @@ void SceneOne::Setup() {
     //add two rigid bodies
     Body* a = new Body(CircleShape(30), Graphics::Width() / 2.0, Graphics::Height() / 2.0, 0.0f);
     Body* b = new Body(CircleShape(20), a->position.x - 100.0, a->position.y, 1.0f);
+    world->AddBody(a);
+    world->AddBody(b);
     //add a joint constraint
     JointConstraint* joint = new JointConstraint(a, b, a->position);
     world->AddConstraint(joint);
@@ -164,7 +166,7 @@ void SceneOne::Input() {
                 break;
             case SDL_MOUSEMOTION:
                 SDL_GetMouseState(&x, &y);
-                world->GetBodies()[0]->position = Vec2(x, y);
+                //world->GetBodies()[0]->position = Vec2(x, y);
                 break;
             case SDL_MOUSEBUTTONDOWN:
                 SDL_GetMouseState(&x, &y);

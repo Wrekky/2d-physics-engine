@@ -92,7 +92,7 @@ void Body::ClearTorque() {
     sumTorque = 0;
 }
 
-void Body::ApplyImpulse(const Vec2& j) {
+void Body::ApplyImpulseLinear(const Vec2& j) {
     if (IsStatic()) {
         return;
     }
@@ -100,8 +100,16 @@ void Body::ApplyImpulse(const Vec2& j) {
     velocity += j * invMass;
 }
 
+void Body::ApplyImpulseAngular(const float j) {
+    if (IsStatic()) {
+        return;
+    }
+
+    angularVelocity += j * invI;
+}
+
 //overload that applies angular velocity, r is distance from collision impact
-void Body::ApplyImpulse(const Vec2& j, const Vec2& r) {
+void Body::ApplyImpulseAtPoint(const Vec2& j, const Vec2& r) {
     if (IsStatic()) {
         return;
     }
