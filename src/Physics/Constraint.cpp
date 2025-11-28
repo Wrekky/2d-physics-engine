@@ -29,11 +29,11 @@ VecN Constraint::GetVelocities() const {
 }
 
 //creates a MatMN & initializes with default constraint constructor
-JointConstraint::JointConstraint(): Constraint(), jacobian(1, 6), cachedLambda(1) {
+JointConstraint::JointConstraint(): Constraint(), jacobian(1, 6), cachedLambda(1), bias(0.0f) {
     this->cachedLambda.Zero();
 }
 
-JointConstraint::JointConstraint(Body* a, Body* b, const Vec2& anchorPoint): Constraint(), jacobian(1, 6), cachedLambda(1) {
+JointConstraint::JointConstraint(Body* a, Body* b, const Vec2& anchorPoint): Constraint(), jacobian(1, 6), cachedLambda(1), bias(0.0f) {
     this->cachedLambda.Zero();
     this->a = a;
     this->b = b;
@@ -51,6 +51,7 @@ void JointConstraint::Solve() {
     
     MatMN lhs = J * invM * Jt;
     VecN rhs = J * V * -1.0f;
+    rhs[0] -= bias;
     
     VecN lambda = MatMN::SolveGaussSeidel(lhs, rhs);
     cachedLambda += lambda;
@@ -63,7 +64,7 @@ void JointConstraint::Solve() {
     b->ApplyImpulseAngular(impulses[5]);
 }
 
-void JointConstraint::PreSolve() {
+void JointConstraint::PreSolve(const float dt) {
     // Get anchor point in world space
     const Vec2 pa = a->LocalSpaceToWorldSpace(aPoint);
     const Vec2 pb = b->LocalSpaceToWorldSpace(bPoint);
@@ -96,6 +97,12 @@ void JointConstraint::PreSolve() {
     a->ApplyImpulseAngular(impulses[2]);
     b->ApplyImpulseLinear(Vec2(impulses[3], impulses[4]));
     b->ApplyImpulseAngular(impulses[5]);
+
+    //calculate bias
+    const float beta = 0.1f;
+    float C = (pb - pa).Dot(pb - pa);
+    C = std::max(0.0f, C - 0.01f);
+    bias = (beta / dt) * C;
 }
 
 void JointConstraint::PostSolve() {
