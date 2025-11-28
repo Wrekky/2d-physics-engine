@@ -43,12 +43,17 @@ void World::Update(float dt) {
         body->IntegrateForces(dt);
     }
     //solve all constraints
-    for (int i = 0; i < 50; i++) {
+    for (auto& constraint: constraints) {
+        constraint->PreSolve();
+    }
+    for (int i = 0; i < 5; i++) {
         for (auto& constraint : constraints)  {
             constraint->Solve();
         }
     }
-
+    for (auto& constraint: constraints) {
+        constraint-> PostSolve();
+    }
         
     //integrate velocities
     for (auto body : bodies) {

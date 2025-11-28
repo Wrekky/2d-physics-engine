@@ -29,11 +29,12 @@ VecN Constraint::GetVelocities() const {
 }
 
 //creates a MatMN & initializes with default constraint constructor
-JointConstraint::JointConstraint(): Constraint(), jacobian(1, 6) {
-
+JointConstraint::JointConstraint(): Constraint(), jacobian(1, 6), cachedLambda(1) {
+    this->cachedLambda.Zero();
 }
 
-JointConstraint::JointConstraint(Body* a, Body* b, const Vec2& anchorPoint): Constraint(), jacobian(1, 6) {
+JointConstraint::JointConstraint(Body* a, Body* b, const Vec2& anchorPoint): Constraint(), jacobian(1, 6), cachedLambda(1) {
+    this->cachedLambda.Zero();
     this->a = a;
     this->b = b;
 
@@ -42,6 +43,27 @@ JointConstraint::JointConstraint(Body* a, Body* b, const Vec2& anchorPoint): Con
 }
 
 void JointConstraint::Solve() {
+    const VecN V = GetVelocities();
+    const MatMN invM = GetInvM();
+    
+    const MatMN J = jacobian;
+    const MatMN Jt = jacobian.Transpose();
+    
+    MatMN lhs = J * invM * Jt;
+    VecN rhs = J * V * -1.0f;
+    
+    VecN lambda = MatMN::SolveGaussSeidel(lhs, rhs);
+    cachedLambda += lambda;
+    //final impulses
+    VecN impulses = Jt * lambda;
+
+    a->ApplyImpulseLinear(Vec2(impulses[0], impulses[1]));
+    a->ApplyImpulseAngular(impulses[2]);
+    b->ApplyImpulseLinear(Vec2(impulses[3], impulses[4]));
+    b->ApplyImpulseAngular(impulses[5]);
+}
+
+void JointConstraint::PreSolve() {
     // Get anchor point in world space
     const Vec2 pa = a->LocalSpaceToWorldSpace(aPoint);
     const Vec2 pb = b->LocalSpaceToWorldSpace(bPoint);
@@ -66,22 +88,16 @@ void JointConstraint::Solve() {
     float J4 = rb.Cross(pb - pa) * 2.0;
     jacobian.rows[0][5] = J4;
 
-    const VecN V = GetVelocities();
-    const MatMN invM = GetInvM();
-    
-    const MatMN J = jacobian;
+    //applying cached lambda
     const MatMN Jt = jacobian.Transpose();
-    
-    MatMN lhs = J * invM * Jt;
-    VecN rhs = J * V * -1.0f;
-    
-    VecN lambda = MatMN::SolveGaussSeidel(lhs, rhs);
-
-    //final impulses
-    VecN impulses = Jt * lambda;
+    VecN impulses = Jt * cachedLambda;
 
     a->ApplyImpulseLinear(Vec2(impulses[0], impulses[1]));
     a->ApplyImpulseAngular(impulses[2]);
     b->ApplyImpulseLinear(Vec2(impulses[3], impulses[4]));
     b->ApplyImpulseAngular(impulses[5]);
+}
+
+void JointConstraint::PostSolve() {
+    
 }
