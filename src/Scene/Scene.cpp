@@ -85,23 +85,24 @@ void Scene::Input() {
 }
 
 void Scene::Update() {
-    // TODO: update all objects in the scene
+    //world stuff, order is very important.
     static int timePreviousFrame;
+
+    int timeToWait = MILLISECS_PER_FRAME - (SDL_GetTicks() - timePreviousFrame);;
+    if (timeToWait > 0) {
+        SDL_Delay(timeToWait);
+    }
+
     float deltaTime = (SDL_GetTicks() - timePreviousFrame) / 1000.0f;
     if (deltaTime > 0.016) {
         //If it pauses for whatever reason and deltaTime has a large gap.
         deltaTime = 0.016;
     }
 
+    timePreviousFrame = SDL_GetTicks();
     world->Update(deltaTime);
 
-    int timeToWait = MILLISECS_PER_FRAME - (SDL_GetTicks() - timePreviousFrame);;
-    timePreviousFrame = SDL_GetTicks();
-    
-    if (timeToWait > 0) {
-        SDL_Delay(timeToWait);
-    }
-
+    //ui stuff
     if (debug) {
         std::string objectCountString = "Object Count: " + std::to_string(world->GetBodies().size());
         textObjects[0]->ChangeText(objectCountString.c_str());
@@ -130,23 +131,24 @@ void SceneOne::Setup() {
 }
 
 void SceneOne::Update() {
-    // TODO: update all objects in the scene
+    //world stuff, order is very important.
     static int timePreviousFrame;
+
+    int timeToWait = MILLISECS_PER_FRAME - (SDL_GetTicks() - timePreviousFrame);;
+    if (timeToWait > 0) {
+        SDL_Delay(timeToWait);
+    }
+
     float deltaTime = (SDL_GetTicks() - timePreviousFrame) / 1000.0f;
     if (deltaTime > 0.016) {
         //If it pauses for whatever reason and deltaTime has a large gap.
         deltaTime = 0.016;
     }
 
+    timePreviousFrame = SDL_GetTicks();
     world->Update(deltaTime);
 
-    int timeToWait = MILLISECS_PER_FRAME - (SDL_GetTicks() - timePreviousFrame);;
-    timePreviousFrame = SDL_GetTicks();
-    
-    if (timeToWait > 0) {
-        SDL_Delay(timeToWait);
-    }
-
+    //ui stuff
     if (debug) {
         std::string objectCountString = "Object Count: " + std::to_string(world->GetBodies().size());
         textObjects[0]->ChangeText(objectCountString.c_str());
