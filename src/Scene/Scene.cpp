@@ -113,13 +113,20 @@ void SceneOne::Setup() {
     world = new World(9.8 * PIXELS_PER_METER);
 
     //add two rigid bodies
-    Body* a = new Body(CircleShape(30), Graphics::Width() / 2.0, Graphics::Height() / 2.0, 0.0f);
-    Body* b = new Body(CircleShape(20), a->position.x - 100.0, a->position.y, 1.0f);
+    Body* a = new Body(CircleShape(20), Graphics::Width() / 2.0, Graphics::Height() / 2, 0.0f);
     world->AddBody(a);
-    world->AddBody(b);
-    //add a joint constraint
-    JointConstraint* joint = new JointConstraint(a, b, a->position);
-    world->AddConstraint(joint);
+    for (int i = 1; i < 5; i++) {
+        Body* b = new Body(CircleShape(20), a->position.x - 20 * i, a->position.y + (100 * i), 1.0f);
+        world->AddBody(b);
+    }
+
+    for (int i = 1; i < world->GetBodies().size(); i++) {
+            //add a joint constraint
+            Body* a = world->GetBodies()[i - 1];
+            Body* b = world->GetBodies()[i];
+            JointConstraint* joint = new JointConstraint(a, b, a->position);
+            world->AddConstraint(joint);
+    }
 }
 
 void SceneOne::Update() {
