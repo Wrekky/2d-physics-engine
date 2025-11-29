@@ -28,7 +28,7 @@ void Application::Render() {
                 Graphics::DrawTexture(body->position.x, body->position.y, boxShape->width, boxShape->height, body->rotation, body->texture);
             }
             else if (body->color != NULL && !scene->debug) {
-                Graphics::DrawFillRect(body->position.x, body->position.y, boxShape->width, boxShape->height, body->color);
+                Graphics::DrawPolygon(body->position.x, body->position.y, boxShape->worldVertices, body->color);
             }
             else {
                 Graphics::DrawPolygon(body->position.x, body->position.y, boxShape->worldVertices, color);
