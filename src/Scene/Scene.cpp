@@ -114,20 +114,50 @@ void SceneOne::Setup() {
     world = new World(9.8 * PIXELS_PER_METER);
 
     //add two rigid bodies
-    Body* a = new Body(CircleShape(20), Graphics::Width() / 2.0, Graphics::Height() / 2, 0.0f);
-    world->AddBody(a);
-    for (int i = 1; i < 5; i++) {
-        Body* b = new Body(CircleShape(20), a->position.x - 20 * i, a->position.y + (100 * i), 1.0f);
-        world->AddBody(b);
-    }
+    //ragdoll test
+    Body* head = new Body(CircleShape(25), 0.0, 0.0, 0.0f);
+    Body* torso = new Body(BoxShape(50,100), 0.0, 0.0, 1.0f);
+    Body* leftArm = new Body(BoxShape(15, 70), 0.0, 0.0, 1.0f);
+    Body* rightArm = new Body(BoxShape(15, 70), 0.0, 0.0, 1.0f);
+    Body* leftLeg = new Body(BoxShape(20, 90), 0.0, 0.0, 1.0f);
+    Body* rightLeg = new Body(BoxShape(20, 90), 0.0, 0.0, 1.0f);
+    world->AddBody(head);
+    world->AddBody(torso);
+    world->AddBody(leftArm);
+    world->AddBody(rightArm);
+    world->AddBody(leftLeg);
+    world->AddBody(rightLeg);
 
-    for (int i = 1; i < world->GetBodies().size(); i++) {
-            //add a joint constraint
-            Body* a = world->GetBodies()[i - 1];
-            Body* b = world->GetBodies()[i];
-            JointConstraint* joint = new JointConstraint(a, b, a->position);
-            world->AddConstraint(joint);
-    }
+    //constraint between head and torso
+    JointConstraint* ht = new JointConstraint(head, torso, Vec2(torso->position.x, head->position.y + 25));
+    //constraint between torso and left arm
+    JointConstraint* tla = new JointConstraint(torso, leftArm, Vec2(25.0, 50.0));
+    //constraint between torso and right arm
+    JointConstraint* tra = new JointConstraint(torso, rightArm, Vec2(-25.0, 50.0));
+    //constraint between torso and left leg
+    JointConstraint* tll = new JointConstraint(torso, leftLeg, Vec2(-8.0, -45.0));
+    //constraint between torso and right leg
+    JointConstraint* trl = new JointConstraint(torso, rightLeg, Vec2(8.0, -45.0));
+
+    world->AddConstraint(ht);
+    world->AddConstraint(tla);
+    world->AddConstraint(tra);
+    world->AddConstraint(tll);
+    world->AddConstraint(trl);
+    //Body* a = new Body(CircleShape(20), Graphics::Width() / 2.0, Graphics::Height() / 2, 0.0f);
+    // world->AddBody(a);
+    // for (int i = 1; i < 5; i++) {
+    //     Body* b = new Body(CircleShape(20), a->position.x - 20 * i, a->position.y + (100 * i), 1.0f);
+    //     world->AddBody(b);
+    // }
+
+    // for (int i = 1; i < world->GetBodies().size(); i++) {
+    //         //add a joint constraint
+    //         Body* a = world->GetBodies()[i - 1];
+    //         Body* b = world->GetBodies()[i];
+    //         JointConstraint* joint = new JointConstraint(a, b, a->position);
+    //         world->AddConstraint(joint);
+    // }
 }
 
 void SceneOne::Update() {
@@ -175,13 +205,12 @@ void SceneOne::Input() {
                 break;
             case SDL_MOUSEMOTION:
                 SDL_GetMouseState(&x, &y);
-                //world->GetBodies()[0]->position = Vec2(x, y);
+                world->GetBodies()[0]->position = Vec2(x, y);
                 break;
             case SDL_MOUSEBUTTONDOWN:
                 SDL_GetMouseState(&x, &y);
                 Body *box = new Body(BoxShape(50, 50), x, y, 1.0);
                 box->restitution = 0.1;
-                box->SetTexture("./assets/crate.png");
                 world->AddBody(box);
                 break;
         }
