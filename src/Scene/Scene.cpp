@@ -101,12 +101,6 @@ void Scene::Update() {
 
     timePreviousFrame = SDL_GetTicks();
     world->Update(deltaTime);
-
-    //ui stuff
-    if (debug) {
-        std::string objectCountString = "Object Count: " + std::to_string(world->GetBodies().size());
-        textObjects[0]->ChangeText(objectCountString.c_str());
-    }
 }
 
 void SceneOne::Setup() {
@@ -177,12 +171,6 @@ void SceneOne::Update() {
 
     timePreviousFrame = SDL_GetTicks();
     world->Update(deltaTime);
-
-    //ui stuff
-    if (debug) {
-        std::string objectCountString = "Object Count: " + std::to_string(world->GetBodies().size());
-        textObjects[0]->ChangeText(objectCountString.c_str());
-    }
 }
 
 void SceneOne::Input() {

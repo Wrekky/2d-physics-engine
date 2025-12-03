@@ -47,23 +47,24 @@ void Application::Render() {
         
         textButton->Draw();
     }
-    for (int i = 0; i < scene->world->GetConstraints().size(); i++)
-    {
-        std::vector<Constraint *> constraints = scene->world->GetConstraints();
-        Constraint *constraint = constraints[i];
-        Vec2 pointA = constraint->a->LocalSpaceToWorldSpace(constraint->aPoint);
-        Vec2 pointB = constraint->b->LocalSpaceToWorldSpace(constraint->bPoint);
-        Graphics::DrawLine(pointA.x, pointA.y, pointB.x, pointB.y, 0xFF33cc33);
-    }
     if (scene->debug) {
-        int boxWidth = 300;
-        int boxHeight = scene->textObjects.size() * scene->textObjects[0]->height;
-        Graphics::DrawFillRect(0 + boxWidth / 2, 0 + boxHeight / 2, boxWidth, boxHeight, 0xFF33cc33);
-        for (int i = 0; i < scene->textObjects.size(); i++) {
-            Graphics::DrawTexture(0 + (scene->textObjects[i]->width / 2.0) + 5, i * scene->textObjects[i]->height + (scene->textObjects[i]->height / 2), scene->textObjects[i]->width, scene->textObjects[i]->height, 
-            0, scene->textObjects[i]->finishedTexture);
+        if (scene->textObjects.size() > 0) {
+                int boxWidth = 300;
+                int boxHeight = scene->textObjects.size() * scene->textObjects[0]->height;
+                Graphics::DrawFillRect(0 + boxWidth / 2, 0 + boxHeight / 2, boxWidth, boxHeight, 0xFF33cc33);
+                for (int i = 0; i < scene->textObjects.size(); i++)
+                {
+                    Graphics::DrawTexture(0 + (scene->textObjects[i]->width / 2.0) + 5, i * scene->textObjects[i]->height + (scene->textObjects[i]->height / 2), scene->textObjects[i]->width, scene->textObjects[i]->height,
+                                          0, scene->textObjects[i]->finishedTexture);
+                }
         }
-
+        for (int i = 0; i < scene->world->GetConstraints().size(); i++) {
+            std::vector<Constraint *> constraints = scene->world->GetConstraints();
+            Constraint *constraint = constraints[i];
+            Vec2 pointA = constraint->a->LocalSpaceToWorldSpace(constraint->aPoint);
+            Vec2 pointB = constraint->b->LocalSpaceToWorldSpace(constraint->bPoint);
+            Graphics::DrawLine(pointA.x, pointA.y, pointB.x, pointB.y, 0xFF33cc33);
+        }
     }
 
     Graphics::RenderFrame();
