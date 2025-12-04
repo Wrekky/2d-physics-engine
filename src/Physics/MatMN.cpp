@@ -80,6 +80,10 @@ VecN MatMN::SolveGaussSeidel(const MatMN& A, const VecN& b) {
 
     for (int iterations = 0; iterations < N; iterations++) {
         for (int i = 0; i < N; i++) {
+            float dx = (b[i] / A.rows[i][i]) - (A.rows[i].Dot(X) / A.rows[i][i]);
+            if (dx == dx)/*nan test*/ {
+                X[i] += dx;
+            }
             if (A.rows[i][i] != 0.0f) {
                 X[i] += (b[i] / A.rows[i][i]) - (A.rows[i].Dot(X) / A.rows[i][i]);
             }
