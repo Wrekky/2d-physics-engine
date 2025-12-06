@@ -8,6 +8,10 @@ World::~World() {
         body->~Body();
         delete body;
     }
+    for (auto constraint : constraints) {
+        constraint->~Constraint();
+        delete constraint;
+    }
 }
 
 void World::AddBody(Body* body) {
@@ -27,8 +31,10 @@ void World::AddTorque(float t) {
 }
 
 void World::Update(float dt) {
+    //Createa a vector of penetration constraints that will be solved per frame
+    std::vector<PenetrationConstraint> penetrations;
     //apply world forces
-    for (auto body : bodies) {
+    for (auto& body : bodies) {
         Vec2 weight = Vec2(0.0, body->mass * G);
         body->AddForce(weight);
         for (auto f : forces) {
@@ -39,51 +45,54 @@ void World::Update(float dt) {
         }
     }
 
-    for (auto body : bodies) {
+    for (auto& body : bodies) {
         body->IntegrateForces(dt);
     }
-    //solve all constraints
-    for (auto& constraint: constraints) {
-        constraint->PreSolve(dt);
-    }
-    for (int i = 0; i < 5; i++) {
-        for (auto& constraint : constraints)  {
-            constraint->Solve();
-        }
-    }
-    for (auto& constraint: constraints) {
-        constraint-> PostSolve();
-    }
-        
-    //integrate velocities
-    for (auto body : bodies) {
-        body->IntegrateVelocities(dt);
-    }
-    
-    CheckCollisions();
-}
 
-void World::CheckCollisions() {
-    if (bodies.size() > 1) {
+    if (bodies.size() > 1)
+    {
         for (int i = 0; i <= bodies.size() - 1; i++)
         {
             for (int j = i + 1; j < bodies.size(); j++)
             {
                 Body *a = bodies[i];
                 Body *b = bodies[j];
-                //TODO: remove isColliding bool
-                a->isColliding = false;
-                b->isColliding = false;
                 Contact contact;
                 if (CollisionDetection::IsColliding(a, b, contact))
                 {
-                    contact.ResolveCollision();
-                    a->isColliding = true;
-                    b->isColliding = true;
+                    //add a newpenetration constraint
+                    PenetrationConstraint penetration = PenetrationConstraint(contact.a, contact.b, contact.start, contact.end, contact.normal);
+                    penetrations.push_back(penetration);
                 }
             }
         }
     }
+    //solve all constraints
+    for (auto& constraint: constraints) {
+        constraint->PreSolve(dt);
+    }
+    for (auto& constraint: penetrations) {
+        constraint.PreSolve(dt);
+    }
+    for (int i = 0; i < 5; i++) {
+        for (auto& constraint : constraints)  {
+            constraint->Solve();
+        }
+        for (auto& constraint: penetrations) {
+            constraint.Solve();
+        }
+    }
+    for (auto& constraint: penetrations) {
+        constraint.PostSolve();
+    }
+    for (auto& constraint: constraints) {
+        constraint-> PostSolve();
+    }
+    //integrate velocities
+    for (auto& body : bodies) {
+        body->IntegrateVelocities(dt);
+    }
+    
 }
 
 void World::AddConstraint(Constraint* constraint) {

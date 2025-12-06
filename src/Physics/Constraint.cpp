@@ -108,3 +108,82 @@ void JointConstraint::PreSolve(const float dt) {
 void JointConstraint::PostSolve() {
     
 }
+
+PenetrationConstraint::PenetrationConstraint(): Constraint(), jacobian(1,6), cachedLambda(1), bias(0.0f) {
+    cachedLambda.Zero();
+}
+PenetrationConstraint::PenetrationConstraint(Body* a, Body* b, const Vec2& aCollisionPoint, 
+    const Vec2& bCollisionPoint, const Vec2& normal): Constraint(), jacobian(1,6), cachedLambda(1), bias(0.0f)  {
+        this->a = a;
+        this->b = b;
+        this->aPoint = a->WorldSpaceToLocalSpace(aCollisionPoint);
+        this->bPoint = b->WorldSpaceToLocalSpace(bCollisionPoint);
+        this->normal = a->WorldSpaceToLocalSpace(normal);
+        cachedLambda.Zero();
+}
+
+void PenetrationConstraint::PreSolve(const float dt) {
+    //Get the collision points in world space
+    const Vec2 pa = a->LocalSpaceToWorldSpace(aPoint);
+    const Vec2 pb = b->LocalSpaceToWorldSpace(bPoint);
+
+    Vec2 n = a->LocalSpaceToWorldSpace(normal);
+
+    const Vec2 ra = pa - a->position;
+    const Vec2 rb = pb - b->position;
+
+    jacobian.Zero();
+
+    Vec2 J1 = -n;
+    jacobian.rows[0][0] = J1.x;
+    jacobian.rows[0][1] = J1.y;
+
+    float J2 = -ra.Cross(n);
+    jacobian.rows[0][2] = J2;
+
+    Vec2 J3 = n;
+    jacobian.rows[0][3] = J3.x;
+    jacobian.rows[0][4] = J3.y;
+
+    float J4 = rb.Cross(n);
+    jacobian.rows[0][5] = J4;
+
+    //Warm starting -- apply cached lambda
+    //const MatMN Jt = jacobian.Transpose();
+    //VecN impulses = Jt * cachedLambda;
+
+    //a->ApplyImpulseLinear(Vec2(impulses[0], impulses[1]));
+    //a->ApplyImpulseAngular(impulses[2]);
+    //b->ApplyImpulseLinear(Vec2(impulses[3], impulses[4]));
+    //b->ApplyImpulseAngular(impulses[5]);
+
+    const float beta = 0.2f;
+    float C = (pb - pa).Dot(-n);
+    C = std::min(0.0f, C + 0.01f);
+    bias = (beta/dt) * C;
+}
+
+void PenetrationConstraint::Solve() {
+    const VecN V = GetVelocities();
+    const MatMN invM = GetInvM();
+    
+    const MatMN J = jacobian;
+    const MatMN Jt = jacobian.Transpose();
+    
+    MatMN lhs = J * invM * Jt;
+    VecN rhs = J * V * -1.0f;
+    rhs[0] -= bias;
+    
+    VecN lambda = MatMN::SolveGaussSeidel(lhs, rhs);
+    /*cachedLambda += lambda;*/
+    //final impulses
+    VecN impulses = Jt * lambda;
+
+    a->ApplyImpulseLinear(Vec2(impulses[0], impulses[1]));
+    a->ApplyImpulseAngular(impulses[2]);
+    b->ApplyImpulseLinear(Vec2(impulses[3], impulses[4]));
+    b->ApplyImpulseAngular(impulses[5]);
+}
+void PenetrationConstraint::PostSolve() {
+
+}

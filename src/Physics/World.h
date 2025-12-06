@@ -27,8 +27,6 @@ class World {
         void AddTorque(float torque);
 
         void Update(float dt);
-
-        void CheckCollisions();
 };
 
 #endif
