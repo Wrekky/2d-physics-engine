@@ -149,13 +149,13 @@ void PenetrationConstraint::PreSolve(const float dt) {
     jacobian.rows[0][5] = J4;
 
     //Warm starting -- apply cached lambda
-    //const MatMN Jt = jacobian.Transpose();
-    //VecN impulses = Jt * cachedLambda;
+    const MatMN Jt = jacobian.Transpose();
+    VecN impulses = Jt * cachedLambda;
 
-    //a->ApplyImpulseLinear(Vec2(impulses[0], impulses[1]));
-    //a->ApplyImpulseAngular(impulses[2]);
-    //b->ApplyImpulseLinear(Vec2(impulses[3], impulses[4]));
-    //b->ApplyImpulseAngular(impulses[5]);
+    a->ApplyImpulseLinear(Vec2(impulses[0], impulses[1]));
+    a->ApplyImpulseAngular(impulses[2]);
+    b->ApplyImpulseLinear(Vec2(impulses[3], impulses[4]));
+    b->ApplyImpulseAngular(impulses[5]);
 
     const float beta = 0.2f;
     float C = (pb - pa).Dot(-n);
@@ -175,7 +175,12 @@ void PenetrationConstraint::Solve() {
     rhs[0] -= bias;
     
     VecN lambda = MatMN::SolveGaussSeidel(lhs, rhs);
-    /*cachedLambda += lambda;*/
+
+    //accumlate impulses and CLAMP it within constraint limits.
+    VecN oldLambda = cachedLambda;
+    cachedLambda += lambda;
+    cachedLambda[0] = (cachedLambda[0] < 0.0f ? 0.0f : cachedLambda[0]);
+    lambda = cachedLambda - oldLambda; 
     //final impulses
     VecN impulses = Jt * lambda;
 
