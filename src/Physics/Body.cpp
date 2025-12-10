@@ -129,8 +129,7 @@ Vec2 Body::WorldSpaceToLocalSpace(const Vec2& point) const {
     float translateX = point.x - position.x;
     float translateY = point.y - position.y;
 
-    float rotatedX = cos(-rotation) * translateX - sin(-rotation) * translateY;
-    float rotatedY = cos(-rotation) * translateY - sin(-rotation) * translateX;
+    Vec2 rotated = Vec2(translateX, translateY).Rotate(-rotation);
 
-    return Vec2(rotatedX, rotatedY);
+    return rotated;
 }
