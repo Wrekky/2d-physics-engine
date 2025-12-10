@@ -65,7 +65,7 @@ void Scene::Input() {
                 break;
             case SDL_MOUSEBUTTONDOWN:
                 SDL_GetMouseState(&x, &y);
-                Body *box = new Body(BoxShape(50, 50), x, y, 1.0);
+                Body *box = new Body(BoxShape(200, 200), x, y, 1.0);
                 box->restitution = 0.1;
                 box->SetTexture("./assets/crate.png");
                 world->AddBody(box);

@@ -41,7 +41,8 @@ class PenetrationConstraint : public Constraint {
         VecN cachedLambda;
         float bias;
 
-        Vec2 normal;
+        Vec2 normal; //normal direction of the penetration in  A's local space.
+        float friction; //friction coeffecient of two penetrations
     public: 
         //TODO: presolve, postsolve, solve
         PenetrationConstraint();
