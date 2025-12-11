@@ -3,6 +3,7 @@
 
 #include "Body.h"
 #include "MatMN.h"
+#include <algorithm>
 class Constraint {
     public:
         Body* a;

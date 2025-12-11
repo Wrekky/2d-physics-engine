@@ -189,7 +189,11 @@ void PenetrationConstraint::Solve() {
     
     VecN lambda = MatMN::SolveGaussSeidel(lhs, rhs);
 
-    //accumlate impulses and CLAMP it within constraint limits.
+    if (friction > 0.0) {
+        const float maxFriction = cachedLambda[0] * friction;
+        cachedLambda[1] = std::clamp(cachedLambda[1], -maxFriction, maxFriction);
+    }
+    
     VecN oldLambda = cachedLambda;
     cachedLambda += lambda;
     cachedLambda[0] = (cachedLambda[0] < 0.0f ? 0.0f : cachedLambda[0]);
