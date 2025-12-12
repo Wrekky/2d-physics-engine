@@ -150,6 +150,12 @@ void PenetrationConstraint::PreSolve(const float dt) {
     float J4 = rb.Cross(n);
     jacobian.rows[0][5] = J4;
 
+    //elasticity stuff
+    Vec2 va = a->velocity + Vec2(-a->angularVelocity* ra.y, a->angularVelocity * ra.x);
+    Vec2 vb = b->velocity + Vec2(-b->angularVelocity* rb.y, a->angularVelocity * rb.x);
+    float relativeVelocityDotNormal = (va - vb).Dot(n);
+
+    float e = std::min(a->restitution, b->restitution);
     //friction stuff
     friction = std::max(a->friction, b->friction);
     if (friction > 0.0) {
@@ -173,7 +179,7 @@ void PenetrationConstraint::PreSolve(const float dt) {
     const float beta = 0.2f;
     float C = (pb - pa).Dot(-n);
     C = std::min(0.0f, C + 0.01f);
-    bias = (beta/dt) * C;
+    bias = (beta/dt) * C + (e * relativeVelocityDotNormal);
 }
 
 void PenetrationConstraint::Solve() {
