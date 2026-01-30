@@ -198,3 +198,19 @@ bool CollisionDetection::IsInside(Vec2 point, Body* box) {
         return false;
     }
 }
+
+//IsInside Method for a text object.
+bool CollisionDetection::IsInside(Vec2 point, UIObject* textButton) {
+    TextButton* txtButton = (TextButton*) textButton;
+    Vec2 posAdjusted;
+    posAdjusted = txtButton->position;
+    posAdjusted.x = posAdjusted.x - txtButton->size.x / 2;
+    posAdjusted.y = posAdjusted.y - txtButton->size.y / 2;
+    if (point.x > posAdjusted.x && point.x < posAdjusted.x + txtButton->size.x
+    && point.y > posAdjusted.y && point.y < posAdjusted.y + txtButton->size.y) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}

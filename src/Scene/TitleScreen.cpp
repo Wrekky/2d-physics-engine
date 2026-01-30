@@ -5,11 +5,12 @@ void TitleScreen::Setup() {
     //TODO: setup static display menus
     FontSetup();
     world = new World(9.8 * PIXELS_PER_METER);
-    Body *sceneOne = new Body(BoxShape(200, 100), 200, 200, 0.0);
-    world->AddBody(sceneOne);
 
-    Body *sceneTwo = new Body(BoxShape(200, 100), 200, 400, 0.0);
-    world->AddBody(sceneTwo);
+    TextButton *sceneOne = new TextButton("Scene one", defaultFont, Vec2(200, 200), Vec2(200, 100), SDL_Color{255,255,255,255}, 0xFFF51284, true);
+    UIObjects.push_back(sceneOne);
+
+    TextButton *sceneTwo = new TextButton("Scene two", defaultFont, Vec2(200, 400), Vec2(200, 100), SDL_Color{255,255,255,255}, 0xFFF51284, true);
+    UIObjects.push_back(sceneTwo);
 
     TextButton *textButton = new TextButton("test", defaultFont, Vec2(800, 800), Vec2(500, 200), SDL_Color{255,255,255,255}, 0xFFF51284, true);
     UIObjects.push_back(textButton);
@@ -33,20 +34,20 @@ void TitleScreen::Input()
             break;
         case SDL_MOUSEMOTION:
             SDL_GetMouseState(&x, &y);
-            for (int i = 0; i < world->GetBodies().size(); i++) {
-                if (!CollisionDetection::IsInside(Vec2(x, y), world->GetBodies()[i])) {
-                    world->GetBodies()[i]->color = 0xFFF51284;
+            for (int i = 0; i < UIObjects.size(); i++) {
+                if (!CollisionDetection::IsInside(Vec2(x, y), UIObjects[i])) {
+                    UIObjects[i]->color = 0xFFF51284;
                 }
                 else {
-                    world->GetBodies()[i]->color = 0xFFF11214;
+                    UIObjects[i]->color = 0xFFF11214;
                 }
             }
             break;
         case SDL_MOUSEBUTTONDOWN:
             SDL_GetMouseState(&x, &y);
-            for (int i = 0; i < world->GetBodies().size(); i++) {
-                if (CollisionDetection::IsInside(Vec2(x, y), world->GetBodies()[i])) {
-                    world->GetBodies()[i]->color = 0xFFF54284;
+            for (int i = 0; i < UIObjects.size(); i++) {
+                if (CollisionDetection::IsInside(Vec2(x, y), UIObjects[i])) {
+                    UIObjects[i]->color = 0xFFF54284;
                     switchScene = true;
                     nextScene = i + 1;//for now
                 }
