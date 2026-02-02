@@ -12,6 +12,9 @@ void TitleScreen::Setup() {
     TextButton *sceneTwo = new TextButton("Scene two", defaultFont, Vec2(200, 400), Vec2(200, 100), SDL_Color{255,255,255,255}, 0xFFF51284, true);
     UIObjects.push_back(sceneTwo);
 
+    TextButton *testScene = new TextButton("Test scene", defaultFont, Vec2(200, 600), Vec2(200, 100), SDL_Color{255,255,255,255}, 0xFFF51284, true);
+    UIObjects.push_back(testScene);
+
     TextButton *textButton = new TextButton("test", defaultFont, Vec2(800, 800), Vec2(500, 200), SDL_Color{255,255,255,255}, 0xFFF51284, true);
     UIObjects.push_back(textButton);
 }

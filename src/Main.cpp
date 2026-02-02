@@ -6,7 +6,7 @@ int main(int argc, char *args[]) {
     app.scene = new TitleScreen();
     app.scene->running = Graphics::OpenWindow();
     app.scene->Setup();
-    while (app.scene->IsRunning()) { //TODO: cleanup
+    while (app.scene->IsRunning()) { //TODO: Move to scene class.
         if (app.scene->switchScene) {
             if (app.scene->nextScene == 0) {
                 app.scene->~Scene();
@@ -23,6 +23,12 @@ int main(int argc, char *args[]) {
             else if (app.scene->nextScene == 2) {
                 app.scene->~Scene();
                 app.scene = new Scene();
+                app.scene->Setup();
+                app.scene->running = true;
+            }
+            else if (app.scene->nextScene == 3) {
+                app.scene->~Scene();
+                app.scene = new TestScene();
                 app.scene->Setup();
                 app.scene->running = true;
             }

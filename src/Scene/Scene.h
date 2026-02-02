@@ -50,4 +50,12 @@ class TitleScreen: public Scene {
         void Input() override;
         void Update() override;
 };
+
+class TestScene: public Scene {
+    private:
+    public:
+        void Setup() override;
+        void Input() override;
+        void Update() override;
+};
 #endif
