@@ -58,17 +58,19 @@ void World::Update(float dt) {
                 Body *a = bodies[i];
                 Body *b = bodies[j];
                 //TODO Find an algorithm for finding all edge contact points.
-                Contact contact;
-                if (CollisionDetection::IsColliding(a, b, contact))
+                std::vector<Contact> contacts;
+                if (CollisionDetection::IsColliding(a, b, contacts))
                 {
-                    //debug stuff for drawing collision points
-                    if (debug) {
-                        Graphics::DrawCircle(contact.start.x, contact.start.y, 5, 0.0, 0xFF00FFFF);
-                        Graphics::DrawCircle(contact.end.x, contact.end.y, 2, 0.0, 0xFF00FFFF);
+                    for (auto contact : contacts) {
+                        //debug stuff for drawing collision points
+                        if (debug) {
+                            Graphics::DrawCircle(contact.start.x, contact.start.y, 5, 0.0, 0xFF00FFFF);
+                            Graphics::DrawCircle(contact.end.x, contact.end.y, 2, 0.0, 0xFF00FFFF);
+                        }
+                        //add a newpenetration constraint
+                        PenetrationConstraint penetration = PenetrationConstraint(contact.a, contact.b, contact.start, contact.end, contact.normal);
+                        penetrations.push_back(penetration);
                     }
-                    //add a newpenetration constraint
-                    PenetrationConstraint penetration = PenetrationConstraint(contact.a, contact.b, contact.start, contact.end, contact.normal);
-                    penetrations.push_back(penetration);
                 }
             }
         }
