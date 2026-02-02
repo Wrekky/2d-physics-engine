@@ -27,6 +27,7 @@ class World {
         void AddTorque(float torque);
 
         void Update(float dt);
+        bool debug = false;
 };
 
 #endif
