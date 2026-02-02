@@ -1,8 +1,8 @@
-#include "Application.h"
+#include "Render.h"
 
 int main(int argc, char *args[]) {
     //TODO: Multiple scenes
-    Application app;
+    Render app;
     app.scene = new TitleScreen();
     app.scene->running = Graphics::OpenWindow();
     app.scene->Setup();
@@ -29,7 +29,7 @@ int main(int argc, char *args[]) {
         }
         app.scene->Input();
         app.scene->Update();
-        app.Render();
+        app.RenderScene();
     }
     app.Destroy();
 

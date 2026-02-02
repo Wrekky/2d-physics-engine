@@ -1,11 +1,11 @@
-#include "Application.h"
+#include "Render.h"
 #include "./Physics/Constants.h"
 #include <iostream>
 #include <string>
 ///////////////////////////////////////////////////////////////////////////////
 // Render function (called several times per second to draw objects)
 ///////////////////////////////////////////////////////////////////////////////
-void Application::Render() {
+void Render::RenderScene() {
     Graphics::ClearScreen(0xFF056263);
     std::vector<Body*> bodies = scene->world->GetBodies();
     for (auto body : bodies)
@@ -42,7 +42,6 @@ void Application::Render() {
     }
     
     for (auto uiObj : scene->UIObjects) {
-        //temp
         TextButton *textButton = (TextButton*)uiObj;
         
         textButton->Draw();
@@ -74,6 +73,6 @@ void Application::Render() {
 // Destroy function to delete objects and close the window
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::Destroy() {
+void Render::Destroy() {
     Graphics::CloseWindow();
 }
