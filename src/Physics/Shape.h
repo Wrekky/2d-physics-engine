@@ -47,7 +47,9 @@ struct PolygonShape: public Shape {
     
     void UpdateVertices(float rotation, const Vec2& position) override;
 
-    float FindMinSeparation(const PolygonShape* other, Vec2& axis, Vec2& point) const;
+    float FindMinSeparation(const PolygonShape* other, int& indexReferenceEdge, Vec2& supportPoint) const;
+
+    int FindIncidentEdge(const Vec2& normal) const;
 };
 
 struct BoxShape: public PolygonShape {

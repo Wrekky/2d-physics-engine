@@ -67,9 +67,9 @@ void Body::IntegrateForces(const float dt) {
 }
 
 void Body::IntegrateVelocities(const float dt) {
-    if (IsStatic()) {
-        return;
-    }
+    //if (IsStatic()) {
+    //    return;
+    //}
 
     position += velocity * dt;
     rotation += angularVelocity * dt;
