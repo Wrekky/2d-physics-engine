@@ -50,6 +50,8 @@ struct PolygonShape: public Shape {
     float FindMinSeparation(const PolygonShape* other, int& indexReferenceEdge, Vec2& supportPoint) const;
 
     int FindIncidentEdge(const Vec2& normal) const;
+
+    int ClipSegmentToLine(const std::vector<Vec2>& contactsIn, std::vector<Vec2>& contactsOut, const Vec2& c0, const Vec2& c1) const;
 };
 
 struct BoxShape: public PolygonShape {

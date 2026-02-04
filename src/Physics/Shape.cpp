@@ -95,6 +95,33 @@ int PolygonShape::FindIncidentEdge(const Vec2& normal) const {
     }
     return indexIncidentEdge;
 }
+
+int PolygonShape::ClipSegmentToLine(const std::vector<Vec2>& contactsIn, std::vector<Vec2>& contactsOut, const Vec2& c0, const Vec2& c1) const {
+    int numOut = 0;
+
+    Vec2 normal = (c1 - c0).Normalize();
+    float dist0 = (contactsIn[0] - c0).Cross(normal);
+    float dist1 = (contactsIn[1] - c0).Cross(normal);
+
+    if (dist0 <= 0) {
+        contactsOut[numOut++] = contactsIn[0];
+    }
+    if (dist1 <= 0) {
+        contactsOut[numOut++] = contactsIn[1];
+    }
+
+    if(dist0 * dist1 < 0) {
+        float totalDist = dist0 - dist1;
+
+        //linear interpolation 
+        float t = dist0 / (totalDist);
+
+        Vec2 contact = contactsIn[0] + (contactsIn[1] - contactsIn[0]) * t;
+        contactsOut[numOut] = contact;
+        numOut++;
+    }
+    return numOut;
+}
 BoxShape::BoxShape(float width, float height) {
     this->width = width;
     this->height = height;
