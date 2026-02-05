@@ -76,19 +76,19 @@ bool CollisionDetection::IsCollidingPolygonPolygon(Body* a, Body* b, std::vector
     if (abSeparation > baSeparation) {
         referenceShape = aPolygonShape;
         incidentShape = bPolygonShape;
-        incidentShape = aIndexReferenceEdge;
+        indexReferenceEdge = aIndexReferenceEdge;
     }
     else {
         referenceShape = bPolygonShape;
         incidentShape = aPolygonShape;
-        incidentShape = bIndexReferenceEdge;
+        indexReferenceEdge = bIndexReferenceEdge;
     }
 
     //Find reference edge based on index that returned.
-    Vec2 ReferenceEdge = referenceShape->EdgeAt(indexReferenceEdge);
+    Vec2 referenceEdge = referenceShape->EdgeAt(indexReferenceEdge);
 
     //Find incident edge.
-    int incidentIndex = incidentShape->FindIncidentEdge(ReferenceEdge.Normal()); 
+    int incidentIndex = incidentShape->FindIncidentEdge(referenceEdge.Normal()); 
     int incidentNextIndex = (incidentIndex + 1) % incidentShape->worldVertices.size();
     
     Vec2 v0 = incidentShape->worldVertices[incidentIndex];
@@ -104,21 +104,21 @@ bool CollisionDetection::IsCollidingPolygonPolygon(Body* a, Body* b, std::vector
         Vec2 c0 = referenceShape->worldVertices[i];
         Vec2 c1 = referenceShape->worldVertices[(i + 1) % referenceShape->worldVertices.size()];
 
-        int numClipped = referenceShape.ClipSegmentToLine(contactPoints, clippedPoints, c0, c1);
+        int numClipped = referenceShape->ClipSegmentToLine(contactPoints, clippedPoints, c0, c1);
         if(numClipped > 2) {
             break;
         }
         contactPoints = clippedPoints;
     }
 
-    auto vref = referenceShape->worldVertices[indexReferenceEdge.Normal()];
-    if (auto& vclip: clippedPoints) {
+    auto vref = referenceShape->worldVertices[indexReferenceEdge];
+    for (auto& vclip : clippedPoints) {
         float separation = (vclip - vref).Dot(referenceEdge.Normal());
         if (separation <= 0) {
             Contact contact;
             contact.a = a;
             contact.b = b;
-            contact.normal = ReferenceEdge.Normal();
+            contact.normal = referenceEdge.Normal();
             contact.start = vclip;
             contact.end = vclip + contact.normal * -separation;
             if (baSeparation >= abSeparation) {
