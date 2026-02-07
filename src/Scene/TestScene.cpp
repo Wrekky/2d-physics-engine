@@ -21,6 +21,11 @@ void TestScene::Setup() {
     b->rotation = 0.0;
     world->AddBody(a);
     world->AddBody(b);
+    Vec2 position = Vec2(Graphics::Width() / 2, Graphics::Height() / 2);
+    LightSource* newLight = new LightSource(position, 3.14 / 2, 0xFF33cc33, 100, 1, 180);
+    lightObjects.push_back(newLight);
+    //manual for now
+
 }
 void TestScene::Input()
 {
@@ -84,4 +89,7 @@ void TestScene::Update() {
 
     timePreviousFrame = SDL_GetTicks();
     world->Update(deltaTime);
+    for (auto light : lightObjects) {
+        light->ShootRays();
+    }
 }

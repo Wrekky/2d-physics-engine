@@ -10,13 +10,14 @@
 #include "../Text.h"
 #include "../Physics/Constants.h"
 #include "../UI/UIObject.h"
-
+#include "../Lighting/LightSource.h"
 class Scene {
     private:
     public:
         World* world;
         std::vector<UIObject*> UIObjects;
         std::vector<Text*> textObjects;
+        std::vector<LightSource*> lightObjects;
         TTF_Font* defaultFont;
         
         int nextScene = 0;

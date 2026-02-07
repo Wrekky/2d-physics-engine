@@ -3,6 +3,7 @@
 
 #include "../Physics/Vec2.h"
 #include <SDL2/SDL2_gfxPrimitives.h>
+#include "../Graphics.h"
 #include "Ray.h"
 #include <vector>
 class LightSource {
@@ -17,7 +18,8 @@ class LightSource {
     public:
         void ShootRays();
         void ProcessRays();
-        LightSource();
+        float clampDegree(float degree);
+        LightSource(Vec2 position, float direction, Uint32 color, float intensity, int bounces, int beamSpread);
         ~LightSource();
 };
 #endif
