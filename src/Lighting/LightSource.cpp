@@ -9,6 +9,9 @@ LightSource::LightSource(Vec2 position, float direction, Uint32 color, float int
     this->beamSpread = beamSpread;
 }
 
+void LightSource::AddLightMapObject(LightMapObject* lightObject) {
+    this->lightMap.push_back(lightObject);
+}
 void LightSource::ShootRays() {
     float degreeTotal = DEGREE * beamSpread;
     float startPoint = direction - degreeTotal / 2;
@@ -20,11 +23,14 @@ void LightSource::ShootRays() {
         float endX = position.x + intensity * cos(currentAddDegree);
         float endY = position.y + intensity * sin(currentAddDegree);
         Vec2 endPointRay = Vec2(endX, endY);
-        Ray ray = Ray();
-        ray.distance = intensity;
-        ray.position = position;
-        ray.endPos = Vec2(endX, endY);
-        Graphics::DrawLine(this->position.x, this->position.y, endPointRay.x, endPointRay.y, color);
+        Ray* ray = new Ray();
+        ray->distance = intensity;
+        ray->position = position;
+        ray->endPos = Vec2(endX, endY);
+        for (auto obj : lightMap) {
+            RayIntersect(obj, ray);
+        }
+        Graphics::DrawLine(ray->position.x, ray->position.y, ray->endPos.x, ray->endPos.y, color);
     }
 }
 
@@ -40,14 +46,14 @@ float LightSource::clampDegree(float degree) {
     return degree;
 }
 
-bool LightSource::RayIntersect(LightMapObject* obj, Ray ray) {
-    Vec2 a = ray.position;
-    Vec2 b = ray.endPos;
+bool LightSource::RayIntersect(LightMapObject* obj, Ray* ray) {
+    Vec2 a = ray->position;
+    Vec2 b = ray->endPos;
     //loop through all vertex combinations, return at first hit.
     std::vector<Vec2> worldVertices = obj->GetWorldVertices();
     for (int i = 0; i < worldVertices.size(); i++) {
         int z = 0;
-        if (i == worldVertices.size()) {
+        if (i == worldVertices.size() - 1) {
             z = 0;
         }
         else {
@@ -63,8 +69,14 @@ bool LightSource::RayIntersect(LightMapObject* obj, Ray ray) {
         float u = ((c - a).Cross(s)) / (r.Cross(s));
         
         if ((0 < t && t < 1) && (0 < u && u < 1)) {
-            return true;
-            //return a + (r*t)
+            //TODO: break off into distance class, only call on edistance calculation per loop. seperate later...
+            float oldDist = sqrt(std::pow(ray->endPos.x - ray->position.x, 2) + std::pow(ray->endPos.y - ray->position.y, 2));
+            Vec2 newEnd = a + (r * t);
+            float newDist = sqrt(std::pow(newEnd.x - ray->position.x, 2) + std::pow(newEnd.y - ray->position.y, 2));
+            if (newDist < oldDist) {
+                ray->endPos = a + (r*t);
+            }
         }
     }
+    return true;
 }

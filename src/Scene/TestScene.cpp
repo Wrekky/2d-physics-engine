@@ -17,13 +17,18 @@ void TestScene::Setup() {
 
     Body* a = new Body(BoxShape(200, 200), Graphics::Width()/ 2.0, Graphics::Height() / 2.0, 0.0);
     Body* b = new Body(BoxShape(200, 200), 300, 0, 0.0);
-    a->rotation = 0.0;
-    b->rotation = 0.0;
+    a->rotation = 180;
+    b->rotation = 180;
     world->AddBody(a);
     world->AddBody(b);
-    Vec2 position = Vec2(Graphics::Width() / 2, Graphics::Height() / 2);
-    LightSource* newLight = new LightSource(position, 3.14 / 2, 0xFF33cc33, 100, 1, 180);
+    Vec2 position = Vec2(Graphics::Width() / 2, Graphics::Height() / 4);
+    LightSource* newLight = new LightSource(position, 3.14 / 2, 0xFF33cc33, 500, 1, 180);
     lightObjects.push_back(newLight);
+
+    for (int i = 0; i < world->GetBodies().size(); i++) {
+        LightMapObject* newLightMapObject = new LightMapObject(*world->GetBodies()[i]);
+        newLight->AddLightMapObject(newLightMapObject);
+    }
     //manual for now
 
 }

@@ -18,14 +18,15 @@ class LightSource {
         std::vector<Ray*> currentRays;
         std::vector<LightMapObject*> lightMap;
     public:
+        void AddLightMapObject(LightMapObject* lightObject);
         void ShootRays();
         //Returns true when an object is hit, returns LightMapObject hit.
         LightMapObject* HitObject();
         //TODO: Loops all edges of a polygon object and returns true if the point is on the edge of that object.
         //Think its going to be like this:
         //Grab every object that the ray is going to intersect with, grab closest objected and run this function on it. Rays shouldnt be able to hit multiple objects.
-        bool RayIntersect(LightMapObject* obj, Ray ray);
-        bool RayIntersectCircle(LightMapObject* obj, Ray ray);
+        bool RayIntersect(LightMapObject* obj, Ray* ray);
+        bool RayIntersectCircle(LightMapObject* obj, Ray* ray);
 
         void ProcessRays();
         float clampDegree(float degree);
