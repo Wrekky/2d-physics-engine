@@ -6,8 +6,8 @@
 #include "LightSource.h"
 class Ray {
     public:
-        Ray();
         Vec2 position;
+        Vec2 endPos;
         float direction;
         Uint32 color; //initial color of the light source
         float intensity; //how bright the light is from the source, should decrease over time.
