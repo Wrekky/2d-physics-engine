@@ -46,6 +46,13 @@ float LightSource::clampDegree(float degree) {
     return degree;
 }
 
+float orient(Vec2 a, Vec2 b, Vec2 c) {
+    Vec2 ba;
+    Vec2 ca;
+    ba = b-a;
+    ca = c-a;
+    return  ba.Cross(ca);
+}
 bool LightSource::RayIntersect(LightMapObject* obj, Ray* ray) {
     Vec2 a = ray->position;
     Vec2 b = ray->endPos;
@@ -62,19 +69,18 @@ bool LightSource::RayIntersect(LightMapObject* obj, Ray* ray) {
         Vec2 c = worldVertices[i];
         Vec2 d = worldVertices[z];
 
-        Vec2 r = b - a;
-        Vec2 s = d - c;
-
-        float t = ((c - a).Cross(s)) / (r.Cross(s));
-        float u = ((c - a).Cross(s)) / (r.Cross(s));
+        float oa = orient(c, d, a);
+        float ob = orient(c, d, b);
+        float oc = orient(a, b, c);
+        float od = orient(a, b, d);
         
-        if ((0 < t && t < 1) && (0 < u && u < 1)) {
+        if (oa * ob < 0 && oc * od < 0) {
             //TODO: break off into distance class, only call on edistance calculation per loop. seperate later...
             float oldDist = sqrt(std::pow(ray->endPos.x - ray->position.x, 2) + std::pow(ray->endPos.y - ray->position.y, 2));
-            Vec2 newEnd = a + (r * t);
+            Vec2 newEnd = ((a * ob) - (b * oa)) / (ob-oa); 
             float newDist = sqrt(std::pow(newEnd.x - ray->position.x, 2) + std::pow(newEnd.y - ray->position.y, 2));
             if (newDist < oldDist) {
-                ray->endPos = a + (r*t);
+                ray->endPos = newEnd;
             }
         }
     }
