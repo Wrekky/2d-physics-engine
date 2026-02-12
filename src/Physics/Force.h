@@ -1,7 +1,7 @@
 #ifndef FORCE_H
 #define FORCE_H
 
-#include "Vec2.h"
+#include "../Utility/Vec2.h"
 #include "Body.h"
 #include <vector>
 struct Force {

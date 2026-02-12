@@ -1,7 +1,7 @@
 #ifndef LIGHTSOURCE_H
 #define LIGHTSOURCE_H
 
-#include "../Physics/Vec2.h"
+#include "../Utility/Vec2.h"
 #include <SDL2/SDL2_gfxPrimitives.h>
 #include "../Graphics.h"
 #include "Ray.h"

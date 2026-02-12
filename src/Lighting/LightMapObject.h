@@ -1,6 +1,6 @@
 #ifndef LIGHTMAPOBJECT_H
 #define LIGHTMAPOBJECT_H
-#include "../Physics/Vec2.h"
+#include "../Utility/Vec2.h"
 #include "../Physics/Body.h"
 class LightMapObject {
     public:    

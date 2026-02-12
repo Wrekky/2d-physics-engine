@@ -1,6 +1,6 @@
 #ifndef UIOBJECT_H
 #define UIOBJECT_H
-#include "../Physics/Vec2.h"
+#include "../Utility/Vec2.h"
 #include "../Text.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>

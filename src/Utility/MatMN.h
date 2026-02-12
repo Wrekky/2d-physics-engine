@@ -1,7 +1,7 @@
 #ifndef MATMN_H
 #define MATMN_H
 
-#include "VecN.h"
+#include "../Utility/VecN.h"
 struct MatMN {
     int M; //rows
     int N; //cols

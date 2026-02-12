@@ -1,5 +1,5 @@
 #include "LightSource.h"
-#include "../Physics/Constants.h"
+#include "../Utility/Constants.h"
 LightSource::LightSource(Vec2 position, float direction, Uint32 color, float intensity, int bounces, int beamSpread) {
     this->position = position;
     this->direction = direction;

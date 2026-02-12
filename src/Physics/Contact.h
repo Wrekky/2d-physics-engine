@@ -1,7 +1,7 @@
 #ifndef CONTACT_H
 #define CONTACT_H
 
-#include "Vec2.h"
+#include "../Utility/Vec2.h"
 #include "Body.h"
 
 struct Contact {

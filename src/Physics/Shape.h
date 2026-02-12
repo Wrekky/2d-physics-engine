@@ -1,7 +1,7 @@
 #ifndef SHAPE_H
 #define SHAPE_H
 
-#include "Vec2.h"
+#include "../Utility/Vec2.h"
 #include <vector>
 #include <limits>
 enum ShapeType {

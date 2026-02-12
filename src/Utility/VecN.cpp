@@ -1,4 +1,5 @@
 #include "VecN.h"
+#include "../Utility/Vec2.h"
 
 VecN::VecN(): N(0), data(nullptr) {}
 

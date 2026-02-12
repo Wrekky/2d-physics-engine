@@ -1,4 +1,5 @@
 #include "MatMN.h"
+#include "../Utility/Vec2.h"
 
 MatMN::MatMN(): M(0), N(0) {}
 

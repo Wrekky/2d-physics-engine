@@ -3,7 +3,7 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-#include "Vec2.h"
+#include "../Utility/Vec2.h"
 #include "Shape.h"
 // TODO:
 struct Body

@@ -3,7 +3,7 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL2_gfxPrimitives.h>
-#include "Physics/Vec2.h"
+#include "Utility/Vec2.h"
 #include <vector>
 
 struct Graphics {

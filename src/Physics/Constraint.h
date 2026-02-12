@@ -2,7 +2,9 @@
 #define CONSTRAINT_H
 
 #include "Body.h"
-#include "MatMN.h"
+#include "../Utility/Vec2.h"
+#include "../Utility/VecN.h"
+#include "../Utility/MatMN.h"
 #include <algorithm>
 class Constraint {
     public:
