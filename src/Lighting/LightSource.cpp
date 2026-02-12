@@ -58,6 +58,7 @@ bool LightSource::RayIntersect(LightMapObject* obj, Ray* ray) {
     Vec2 b = ray->endPos;
     //loop through all vertex combinations, return at first hit.
     std::vector<Vec2> worldVertices = obj->GetWorldVertices();
+    float oldDist = Utils::distance(ray->position, ray->endPos);
     for (int i = 0; i < worldVertices.size(); i++) {
         int z = 0;
         if (i == worldVertices.size() - 1) {
@@ -76,11 +77,11 @@ bool LightSource::RayIntersect(LightMapObject* obj, Ray* ray) {
         
         if (oa * ob < 0 && oc * od < 0) {
             //TODO: break off into distance class, only call on edistance calculation per loop. seperate later...
-            float oldDist = sqrt(std::pow(ray->endPos.x - ray->position.x, 2) + std::pow(ray->endPos.y - ray->position.y, 2));
             Vec2 newEnd = ((a * ob) - (b * oa)) / (ob-oa); 
-            float newDist = sqrt(std::pow(newEnd.x - ray->position.x, 2) + std::pow(newEnd.y - ray->position.y, 2));
+            float newDist = Utils::distance(ray->position, newEnd);
             if (newDist < oldDist) {
                 ray->endPos = newEnd;
+                oldDist = newDist;
             }
         }
     }

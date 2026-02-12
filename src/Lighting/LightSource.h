@@ -2,6 +2,7 @@
 #define LIGHTSOURCE_H
 
 #include "../Utility/Vec2.h"
+#include "../Utility/Utils.h"
 #include <SDL2/SDL2_gfxPrimitives.h>
 #include "../Graphics.h"
 #include "Ray.h"
