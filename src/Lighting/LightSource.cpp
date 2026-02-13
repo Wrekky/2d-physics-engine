@@ -30,6 +30,7 @@ void LightSource::ShootRays() {
         for (auto obj : lightMap) {
             RayIntersect(obj, ray);
         }
+        currentRays.push_back(ray);
         Graphics::DrawLine(ray->position.x, ray->position.y, ray->endPos.x, ray->endPos.y, color);
     }
 }
@@ -86,4 +87,21 @@ bool LightSource::RayIntersect(LightMapObject* obj, Ray* ray) {
         }
     }
     return true;
+}
+
+void LightSource::FillRays() {
+    for (int i = 0; i < currentRays.size(); i++) {
+        if (i == currentRays.size() - 1){
+            continue;
+        }
+        int verticeA = i;
+        int verticeB = i + 1;
+        std::vector<Vec2> vertices;
+        vertices.push_back(currentRays[verticeA]->position);
+        vertices.push_back(currentRays[verticeA]->endPos);
+        vertices.push_back(currentRays[verticeB]->endPos);
+        Graphics::DrawFillPolygon(position.x, position.y, vertices, color);
+    }
+    //TODO: clear currentRays somewhere else. should be cleared everyframe in a lightsource.update function.    
+    currentRays.clear();
 }

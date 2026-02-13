@@ -39,7 +39,9 @@ void Render::RenderScene() {
             Graphics::DrawPolygon(body->position.x, body->position.y, polygonShape->worldVertices, color);
         }
     }
-    
+    for (auto lightSource : scene->lightObjects) {
+        lightSource->FillRays();
+    }
     for (auto uiObj : scene->UIObjects) {
         TextButton *textButton = (TextButton*)uiObj;
         
