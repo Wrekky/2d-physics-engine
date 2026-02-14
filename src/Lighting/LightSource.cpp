@@ -16,23 +16,61 @@ void LightSource::ShootRays() {
     float degreeTotal = DEGREE * beamSpread;
     float startPoint = direction - degreeTotal / 2;
     startPoint = clampDegree(startPoint);
+    std::vector<Ray*> rays;
     for (int i = 0; i < beamSpread; i++) {
-        
         float currentAddDegree = startPoint + (i * DEGREE);
         currentAddDegree = clampDegree(currentAddDegree);
         float endX = position.x + intensity * cos(currentAddDegree);
         float endY = position.y + intensity * sin(currentAddDegree);
-        Vec2 endPointRay = Vec2(endX, endY);
         Ray* ray = new Ray();
         ray->distance = intensity;
         ray->position = position;
         ray->endPos = Vec2(endX, endY);
+        ray->angle = currentAddDegree;
+        bool rayIntersect = false;
         for (auto obj : lightMap) {
-            RayIntersect(obj, ray);
+            rayIntersect = RayIntersect(obj, ray);
         }
-        currentRays.push_back(ray);
+        rays.push_back(ray);
         Graphics::DrawLine(ray->position.x, ray->position.y, ray->endPos.x, ray->endPos.y, color);
+        //bounce logic (just one bounce for now):
+        if (rayIntersect)
+        {
+            std::vector<Ray*> newRays;
+            // fire 18 rays, 1 degree * 10
+            
+            float rayH = ray->distance;
+            float rayO = cos(ray->angle) * rayH;
+            float rayWallAngle = asin(rayO / rayH);
+            float bounceStartPoint = startPoint + rayWallAngle;
+            clampDegree(bounceStartPoint);
+            float step = DEGREE * 60;
+            for (int i = 0; i < 180; i += 40)
+            {
+                step *= i;
+                float currentAddDegreeBounce = bounceStartPoint + step;
+                clampDegree(currentAddDegreeBounce);
+                Ray *bounceRay = new Ray();
+                bounceRay->position = ray->endPos;
+                bounceRay->distance = intensity;
+                bounceRay->angle = currentAddDegreeBounce;
+                endX = position.x + intensity * cos(currentAddDegreeBounce);
+                endY = position.y + intensity * sin(currentAddDegreeBounce);
+                bounceRay->endPos = Vec2(endX, endY);
+                for (auto obj : lightMap)
+                {
+                    rayIntersect = RayIntersect(obj, bounceRay);
+                }
+                newRays.push_back(bounceRay);
+                Graphics::DrawLine(bounceRay->position.x, bounceRay->position.y, bounceRay->endPos.x, bounceRay->endPos.y, color);
+            }
+            currentRays.push_back(newRays);
+            // Dont add to currentRays vector yet, drawing inbetween rays will not work.
+            // TODO: Need some function to calculate bounce direction. Simplifying to -x or -y doesnt work.
+            //
+        }
     }
+    currentRays.push_back(rays);
 }
 
 float LightSource::clampDegree(float degree) {
@@ -90,17 +128,21 @@ bool LightSource::RayIntersect(LightMapObject* obj, Ray* ray) {
 }
 
 void LightSource::FillRays() {
-    for (int i = 0; i < currentRays.size(); i++) {
-        if (i == currentRays.size() - 1){
-            continue;
-        }
-        int verticeA = i;
-        int verticeB = i + 1;
-        std::vector<Vec2> vertices;
-        vertices.push_back(currentRays[verticeA]->position);
-        vertices.push_back(currentRays[verticeA]->endPos);
-        vertices.push_back(currentRays[verticeB]->endPos);
-        Graphics::DrawFillPolygon(position.x, position.y, vertices, color);
+    for (auto rays : currentRays) {
+            for (int i = 0; i < rays.size(); i++) {
+                if (i == rays.size() - 1)
+                {
+                    continue;
+                }
+                int verticeA = i;
+                int verticeB = i + 1;
+                std::vector<Vec2> vertices;
+                vertices.push_back(rays[verticeA]->position);
+                vertices.push_back(rays[verticeA]->endPos);
+                vertices.push_back(rays[verticeB]->endPos);
+                Graphics::DrawFillPolygon(position.x, position.y, vertices, color);
+            }
+            rays.clear();//maybewillcrash
     }
     //TODO: clear currentRays somewhere else. should be cleared everyframe in a lightsource.update function.    
     currentRays.clear();

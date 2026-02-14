@@ -8,6 +8,7 @@ class Ray {
     public:
         Vec2 position;
         Vec2 endPos;
+        float angle;
         float direction;
         Uint32 color; //initial color of the light source
         float intensity; //how bright the light is from the source, should decrease over time.

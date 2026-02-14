@@ -16,7 +16,7 @@ class LightSource {
         float intensity; //how bright the light is from the source, should decrease over time.
         int bounces; //amount of bounces for each ray
         int beamSpread; //amount of rays being shot
-        std::vector<Ray*> currentRays;
+        std::vector<std::vector<Ray*>> currentRays;
         std::vector<LightMapObject*> lightMap;
     public:
         void AddLightMapObject(LightMapObject* lightObject);
