@@ -54,8 +54,8 @@ void LightSource::ShootRays() {
                 bounceRay->position = ray->endPos;
                 bounceRay->distance = intensity;
                 bounceRay->angle = currentAddDegreeBounce;
-                endX = position.x + intensity * cos(currentAddDegreeBounce);
-                endY = position.y + intensity * sin(currentAddDegreeBounce);
+                endX = bounceRay->position.x + intensity * cos(currentAddDegreeBounce);
+                endY = bounceRay->position.y + intensity * sin(currentAddDegreeBounce);
                 bounceRay->endPos = Vec2(endX, endY);
                 for (auto obj : lightMap)
                 {
@@ -98,6 +98,7 @@ bool LightSource::RayIntersect(LightMapObject* obj, Ray* ray) {
     //loop through all vertex combinations, return at first hit.
     std::vector<Vec2> worldVertices = obj->GetWorldVertices();
     float oldDist = Utils::distance(ray->position, ray->endPos);
+    bool result = false;
     for (int i = 0; i < worldVertices.size(); i++) {
         int z = 0;
         if (i == worldVertices.size() - 1) {
@@ -122,9 +123,10 @@ bool LightSource::RayIntersect(LightMapObject* obj, Ray* ray) {
                 ray->endPos = newEnd;
                 oldDist = newDist;
             }
+            result = true;
         }
     }
-    return true;
+    return result;
 }
 
 void LightSource::FillRays() {
