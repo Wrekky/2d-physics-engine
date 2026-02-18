@@ -1,5 +1,6 @@
 #include "LightSource.h"
 #include "../Utility/Constants.h"
+#include "iostream"
 LightSource::LightSource(Vec2 position, float direction, Uint32 color, float intensity, int bounces, int beamSpread) {
     this->position = position;
     this->direction = direction;
@@ -32,31 +33,21 @@ void LightSource::ShootRays() {
             rayIntersect = RayIntersect(obj, ray);
         }
         rays.push_back(ray);
-        Graphics::DrawLine(ray->position.x, ray->position.y, ray->endPos.x, ray->endPos.y, color);
+        //Graphics::DrawLine(ray->position.x, ray->position.y, ray->endPos.x, ray->endPos.y, color);
         //bounce logic (just one bounce for now):
         if (rayIntersect)
         {
             std::vector<Ray*> newRays;
             // fire 18 rays, 1 degree * 10
-            
-            float rayH = ray->distance;
-            float rayO = cos(ray->angle) * rayH;
-            float rayWallAngle = asin(rayO / rayH);
-            float bounceStartPoint = startPoint + rayWallAngle;
-            clampDegree(bounceStartPoint);
-            float step = DEGREE * 60;
-            for (int i = 0; i < 180; i += 40)
+            for (int i = 0; i < 180; i += 60)
             {
-                step *= i;
-                float currentAddDegreeBounce = bounceStartPoint + step;
-                clampDegree(currentAddDegreeBounce);
                 Ray *bounceRay = new Ray();
+                //End pos should be segment normal
                 bounceRay->position = ray->endPos;
+                bounceRay->endPos = (ray->bounceDir * ray->intensity) + bounceRay->position;
                 bounceRay->distance = intensity;
-                bounceRay->angle = currentAddDegreeBounce;
-                endX = bounceRay->position.x + intensity * cos(currentAddDegreeBounce);
-                endY = bounceRay->position.y + intensity * sin(currentAddDegreeBounce);
-                bounceRay->endPos = Vec2(endX, endY);
+                //bounceRay->angle = currentAddDegreeBounce;
+                //Graphics::DrawLine(bounceRay->position.x, bounceRay->position.y, bounceRay->endPos.x, bounceRay->endPos.y, color);
                 for (auto obj : lightMap)
                 {
                     rayIntersect = RayIntersect(obj, bounceRay);
@@ -120,7 +111,12 @@ bool LightSource::RayIntersect(LightMapObject* obj, Ray* ray) {
             Vec2 newEnd = ((a * ob) - (b * oa)) / (ob-oa); 
             float newDist = Utils::distance(ray->position, newEnd);
             if (newDist < oldDist) {
+                Vec2 bounceDir = ((c - d).Normal()) 
+                    + 
+                    (((ray->endPos - ray->position) * -1).UnitVector())
+                    .UnitVector();
                 ray->endPos = newEnd;
+                ray->bounceDir = bounceDir;
                 oldDist = newDist;
             }
             result = true;

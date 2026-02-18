@@ -40,7 +40,7 @@ void Render::RenderScene() {
         }
     }
     for (auto lightSource : scene->lightObjects) {
-        lightSource->FillRays();
+        //lightSource->FillRays();
     }
     for (auto uiObj : scene->UIObjects) {
         TextButton *textButton = (TextButton*)uiObj;

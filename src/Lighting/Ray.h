@@ -8,6 +8,7 @@ class Ray {
     public:
         Vec2 position;
         Vec2 endPos;
+        Vec2 bounceDir;
         float angle;
         float direction;
         Uint32 color; //initial color of the light source
