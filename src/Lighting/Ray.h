@@ -4,6 +4,7 @@
 #include "../Utility/Vec2.h"
 #include <SDL2/SDL2_gfxPrimitives.h>
 #include "LightSource.h"
+#include "LightMapObject.h"
 class Ray {
     public:
         Vec2 position;
@@ -16,5 +17,7 @@ class Ray {
         int bounces; //amount of bounces for each ray
         int beamSpread; //amount of rays being shot
         float distance; // maybe.
+        bool hasHit = false;
+        LightMapObject* hitObject;
 };
 #endif

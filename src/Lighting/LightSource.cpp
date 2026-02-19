@@ -39,19 +39,31 @@ void LightSource::ShootRays() {
         {
             std::vector<Ray*> newRays;
             // fire 18 rays, 1 degree * 10
-            for (int i = 0; i < 180; i += 60)
+            Vec2 startPosition = ray->endPos; 
+            Vec2 endPosition = (ray->bounceDir * intensity) + startPosition;
+            float rotatedDegreeRadians = 90 * DEGREE;
+            for (int i = 0; i <= 180; i += 20)//TODO: Optimize if possible
             {
                 Ray *bounceRay = new Ray();
+                float step = rotatedDegreeRadians - (DEGREE * i);
+                step = clampDegree(step);
+                bounceRay->endPos = endPosition - startPosition;
+                bounceRay->endPos = bounceRay->endPos.Rotate(step);
+                bounceRay->endPos += startPosition;
+
+                
+                
                 //End pos should be segment normal
-                bounceRay->position = ray->endPos;
-                bounceRay->endPos = (ray->bounceDir * 100) + bounceRay->position;
+                bounceRay->position = startPosition;
                 std::cout << bounceRay->position.x << " : " << bounceRay->position.y << std::endl;
                 std::cout << bounceRay->endPos.x << " : " << bounceRay->endPos.y << std::endl;
                 bounceRay->distance = intensity;
                 //bounceRay->angle = currentAddDegreeBounce;
-                //Graphics::DrawLine(bounceRay->position.x, bounceRay->position.y, bounceRay->endPos.x, bounceRay->endPos.y, color);
                 for (auto obj : lightMap)
                 {
+                    if (obj == ray->hitObject) {
+                        continue;
+                    }
                     rayIntersect = RayIntersect(obj, bounceRay);
                 }
                 newRays.push_back(bounceRay);
@@ -113,13 +125,13 @@ bool LightSource::RayIntersect(LightMapObject* obj, Ray* ray) {
             Vec2 newEnd = ((a * ob) - (b * oa)) / (ob-oa); 
             float newDist = Utils::distance(ray->position, newEnd);
             if (newDist < oldDist) {
-                Vec2 bounceDir = ((c - d).Normal().UnitVector()) 
-                    + 
-                    (((newEnd - ray->position)).UnitVector());
+                Vec2 bounceDir = ((c - d).Normal().UnitVector());//TODO: Include ray vector some how;
                 ray->endPos = newEnd;
-                ray->bounceDir = (bounceDir / 2) * -1;
+                ray->bounceDir = (bounceDir) * -1;
                 oldDist = newDist;
             }
+            ray->hitObject = obj;
+            ray->hasHit = true;
             result = true;
         }
     }
