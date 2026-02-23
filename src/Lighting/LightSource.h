@@ -35,4 +35,14 @@ class LightSource {
         LightSource(Vec2 position, float direction, Uint32 color, float intensity, int bounces, int beamSpread);
         ~LightSource();
 };
+struct BounceInfo
+{
+    Vec2 furthestLeft;
+    Vec2 furthestRight;
+    Vec2 furthestUp;
+    Vec2 furthestDown;
+    Vec2 currentNormal;
+    Ray* currentRay;
+};
+
 #endif

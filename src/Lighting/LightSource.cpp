@@ -14,19 +14,14 @@ void LightSource::AddLightMapObject(LightMapObject* lightObject) {
     this->lightMap.push_back(lightObject);
 }
 void LightSource::ShootRays() {
-    Vec2 furthestLeft;
-    Vec2 furthestRight;
-    Vec2 furthestUp;
-    Vec2 furthestDown;
     int rayHitCount = 0;
     Vec2 currentNormal;
     float degreeTotal = DEGREE * beamSpread;
     float startPoint = direction - degreeTotal / 2;
     startPoint = clampDegree(startPoint);
     std::vector<Ray*> rays;
-    std::vector<Ray*> bounceRays;
-    Ray* tempRay;
-    for (int i = 0; i < beamSpread; i++) {
+    std::vector<BounceInfo*> bounceInformation;
+    for (int i = 0; i <= 180; i+=2) {
         float currentAddDegree = startPoint + (i * DEGREE);
         currentAddDegree = clampDegree(currentAddDegree);
         float endX = position.x + intensity * cos(currentAddDegree);
@@ -44,90 +39,102 @@ void LightSource::ShootRays() {
         Graphics::DrawLine(ray->position.x, ray->position.y, ray->endPos.x, ray->endPos.y, color);
         //bounce logic (just one bounce for now):
         //Calculate how many different normals there are for each
-
+        int iterationCount = 0;
         if (rayIntersect) {
-            if (rayHitCount == 0) {
-                furthestLeft = ray->endPos;
-                furthestRight = ray->endPos;
-                furthestDown = ray->endPos;
-                furthestUp = ray->endPos;
+            if (rayHitCount == 0 || currentNormal != ray->bounceDir) {
+                BounceInfo* bounceInfo = new BounceInfo();
+                bounceInfo->furthestLeft = ray->endPos;
+                bounceInfo->furthestRight = ray->endPos;
+                bounceInfo->furthestDown = ray->endPos;
+                bounceInfo->furthestUp = ray->endPos;
+                bounceInfo->currentNormal = ray->bounceDir;
+                bounceInfo->currentRay = ray;
                 currentNormal = ray->bounceDir;
-                tempRay = ray;
-            }
+                bounceInformation.push_back(bounceInfo);
+                if (rayHitCount != 0) {
+                    iterationCount++;
+                    rayHitCount++;
+                    continue;
+                }
+            }//TODO: some logic bug with the ray center point being created. dont see it at the moment
             rayHitCount++;
-            
-            //better way?
-            if (ray->endPos.x > furthestRight.x) {
-                furthestRight = ray->endPos;
+            if (ray->endPos.x > bounceInformation[iterationCount]->furthestRight.x) {
+                bounceInformation[iterationCount]->furthestRight = ray->endPos;
             }
-            if (ray->endPos.x < furthestLeft.x) {
-                furthestLeft = ray->endPos;
+            if (ray->endPos.x < bounceInformation[iterationCount]->furthestLeft.x) {
+                bounceInformation[iterationCount]->furthestLeft = ray->endPos;
             }
 
-            if (ray->endPos.y > furthestDown.y) {
-                furthestDown = ray->endPos;
+            if (ray->endPos.y > bounceInformation[iterationCount]->furthestDown.y) {
+                bounceInformation[iterationCount]->furthestDown = ray->endPos;
             }
-            if (ray->endPos.y < furthestUp.y) {
-                furthestUp = ray->endPos;
-            }
-            if (currentNormal != ray->bounceDir) {
-                //need to set end pos, bounce dir
-                //Ray* bouncePosRay = new Ray();
-                //bouncePosRay->endPos = //inbetween all
-                //fuck it just use one side for now.
+            if (ray->endPos.y < bounceInformation[iterationCount]->furthestUp.y) {
+                bounceInformation[iterationCount]->furthestUp = ray->endPos;
             }
         }
     }
     //creating bounce rays:
-    std::vector<Ray *> newRays;
-    if (rayHitCount > 0) {
-        //TODO: adjust intensity of color based on raycount
-        Vec2 centerPoint;
-        Vec2 p1, p2;
-        float leftRightMag = std::abs((furthestLeft - furthestRight).Magnitude());
-        float upDownMag = std::abs((furthestUp - furthestDown).Magnitude());
-        if (leftRightMag > upDownMag) {
-            p1 = furthestLeft;
-            p2 = furthestRight;
-        }
-        else {
-            p1 = furthestUp;
-            p2 = furthestDown;
-        }
-        //Grab the center point between p1 and p2.
-        centerPoint = ((p1-p2) / 2) + p2; //think this is the center point?
-        // bounce stuff
-        
-        // fire 18 rays, 1 degree * 10
-        Vec2 startPosition = centerPoint;
-        Vec2 endPosition = (currentNormal * intensity) + startPosition;
-        float rotatedDegreeRadians = 90 * DEGREE;
-        for (int i = 0; i < 180; i++)
+    for (auto bounceInfo : bounceInformation)
+    {
+        std::vector<Ray *> newRays;
+        if (rayHitCount > 0)
         {
-            Ray *bounceRay = new Ray();
-            float step = rotatedDegreeRadians - (DEGREE * i);
-            step = clampDegree(step);
-            bounceRay->endPos = endPosition - startPosition;
-            bounceRay->endPos = bounceRay->endPos.Rotate(step);
-            bounceRay->endPos += startPosition;
-
-            // End pos should be segment normal
-            bounceRay->position = startPosition;
-            bounceRay->distance = intensity;
-            // bounceRay->angle = currentAddDegreeBounce;
-            for (auto obj : lightMap)
+            // TODO: adjust intensity of color based on raycount
+            Vec2 centerPoint;
+            Vec2 p1, p2;
+            Vec2 furthestLeft = bounceInfo->furthestLeft;
+            Vec2 furthestRight = bounceInfo->furthestRight;
+            Vec2 furthestUp = bounceInfo->furthestUp;
+            Vec2 furthestDown = bounceInfo->furthestDown;
+            currentNormal = bounceInfo->currentNormal;
+            float leftRightMag = std::abs((furthestLeft - furthestRight).Magnitude());
+            float upDownMag = std::abs((furthestUp - furthestDown).Magnitude());
+            if (leftRightMag > upDownMag)
             {
-                if (obj == tempRay->hitObject)
-                {
-                    continue;
-                }
-                RayIntersect(obj, bounceRay);
+                p1 = furthestLeft;
+                p2 = furthestRight;
             }
-            newRays.push_back(bounceRay);
-            Graphics::DrawLine(bounceRay->position.x, bounceRay->position.y, bounceRay->endPos.x, bounceRay->endPos.y, color);
+            else
+            {
+                p1 = furthestUp;
+                p2 = furthestDown;
+            }
+            // Grab the center point between p1 and p2.
+            centerPoint = ((p1 - p2) / 2) + p2; // think this is the center point?
+            // bounce stuff
+
+            // fire 18 rays, 1 degree * 10
+            Vec2 startPosition = centerPoint;
+            Vec2 endPosition = (currentNormal * intensity) + startPosition;
+            float rotatedDegreeRadians = 90 * DEGREE;
+            for (int i = 0; i <= 180; i+=2)
+            {
+                Ray *bounceRay = new Ray();
+                float step = rotatedDegreeRadians - (DEGREE * i);
+                step = clampDegree(step);
+                bounceRay->endPos = endPosition - startPosition;
+                bounceRay->endPos = bounceRay->endPos.Rotate(step);
+                bounceRay->endPos += startPosition;
+
+                // End pos should be segment normal
+                bounceRay->position = startPosition;
+                bounceRay->distance = intensity;
+                // bounceRay->angle = currentAddDegreeBounce;
+                for (auto obj : lightMap)
+                {
+                    if (obj == bounceInfo->currentRay->hitObject)
+                    {
+                        continue;
+                    }
+                    RayIntersect(obj, bounceRay);
+                }
+                newRays.push_back(bounceRay);
+                Graphics::DrawLine(bounceRay->position.x, bounceRay->position.y, bounceRay->endPos.x, bounceRay->endPos.y, color);
+            }
         }
+        currentRays.push_back(newRays);
     }
-    currentRays.push_back(newRays);
+
     currentRays.push_back(rays);
 }
 
