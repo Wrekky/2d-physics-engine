@@ -26,6 +26,9 @@ class Scene {
         bool debug = false;
         bool IsRunning();
         void FontSetup();
+        void ShowFrameTime();
+        void SetFrameTimeObj();
+        Uint64 performanceCounter;
         virtual void Setup();
         virtual void Input();
         virtual void Update();

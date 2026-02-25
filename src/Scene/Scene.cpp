@@ -1,5 +1,5 @@
 #include "Scene.h"
-
+#include <string>
 bool Scene::IsRunning() {
     return running;
 }
@@ -13,7 +13,23 @@ void Scene::FontSetup() {
     if (!defaultFont)
         std::cout << "load failed" << std::endl;
 }
+//creates a text object for framerate. set performanceCounter variable where you want to test perf. assuming first object in array.
+void Scene::SetFrameTimeObj() {
+    SDL_Color white = {255,255,255,255};
+    Text* newText = new Text(200, 100, "0", defaultFont, white);
+    textObjects.push_back(newText);
+    performanceCounter = SDL_GetPerformanceCounter();
+}
 
+//Edits first variable in textObject array to frametime text object object. set performanceCounter variable where you want to test perf. assuming first object in array.
+void Scene::ShowFrameTime() {
+    if (textObjects.size() == 0) {
+        SetFrameTimeObj();
+    }
+    double frametime = (double)((SDL_GetPerformanceCounter() - performanceCounter)  * 1000)/ (double)SDL_GetPerformanceFrequency();//1000 to conver to ms
+    std::string frameTimeText = "Frame Time (ms) " + std::to_string(frametime);
+    textObjects[0]->ChangeText(frameTimeText.c_str());
+}
 void Scene::Setup() {
     FontSetup();
     //Default scene should be the menu screen but in this case it will be the collision test scene.
@@ -77,7 +93,7 @@ void Scene::Input() {
 void Scene::Update() {
     //world stuff, order is very important.
     static int timePreviousFrame;
-
+    //TODO: Move to a seperate function. Seperate it from game logic so performance testing is easier.
     int timeToWait = MILLISECS_PER_FRAME - (SDL_GetTicks() - timePreviousFrame);;
     if (timeToWait > 0) {
         SDL_Delay(timeToWait);

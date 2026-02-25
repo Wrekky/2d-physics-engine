@@ -35,7 +35,10 @@ int main(int argc, char *args[]) {
         }
         app.scene->Input();
         app.scene->Update();
+        
+        app.scene->performanceCounter = SDL_GetPerformanceCounter();
         app.RenderScene();
+        app.scene->SetFrameTimeObj();
     }
     app.Destroy();
 
