@@ -38,7 +38,7 @@ int main(int argc, char *args[]) {
         
         app.scene->performanceCounter = SDL_GetPerformanceCounter();
         app.RenderScene();
-        app.scene->SetFrameTimeObj();
+        app.scene->ShowFrameTime();
     }
     app.Destroy();
 
