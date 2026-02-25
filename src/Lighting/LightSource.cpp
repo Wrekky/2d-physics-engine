@@ -200,20 +200,13 @@ bool LightSource::RayIntersect(LightMapObject* obj, Ray* ray) {
 
 void LightSource::FillRays() {
     for (auto rays : currentRays) {
-            for (int i = 0; i < rays.size(); i++) {
-                if (i == rays.size() - 1)
-                {
-                    continue;
-                }
-                int verticeA = i;
-                int verticeB = i + 1;
-                std::vector<Vec2> vertices;
-                vertices.push_back(rays[verticeA]->position);
-                vertices.push_back(rays[verticeA]->endPos);
-                vertices.push_back(rays[verticeB]->endPos);
-                Graphics::DrawFillPolygon(position.x, position.y, vertices, color);
-            }
-            rays.clear();//maybewillcrash
+        std::vector<Vec2> vertices;
+        vertices.push_back(rays[0]->position);
+        for (int i = 0; i < rays.size(); i++) {
+            vertices.push_back(rays[i]->endPos);
+        }
+        Graphics::DrawFillPolygon(position.x, position.y, vertices, color);
+        rays.clear();//maybewillcrash
     }
     //TODO: clear currentRays somewhere else. should be cleared everyframe in a lightsource.update function.    
     currentRays.clear();
