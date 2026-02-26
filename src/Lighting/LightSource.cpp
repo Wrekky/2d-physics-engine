@@ -21,6 +21,7 @@ void LightSource::ShootRays() {
     startPoint = clampDegree(startPoint);
     std::vector<Ray*> rays;
     std::vector<BounceInfo*> bounceInformation;
+    int iterationCount = 0;
     for (int i = 0; i <= 180; i+=2) {
         float currentAddDegree = startPoint + (i * DEGREE);
         currentAddDegree = clampDegree(currentAddDegree);
@@ -39,7 +40,6 @@ void LightSource::ShootRays() {
         Graphics::DrawLine(ray->position.x, ray->position.y, ray->endPos.x, ray->endPos.y, color);
         //bounce logic (just one bounce for now):
         //Calculate how many different normals there are for each
-        int iterationCount = 0;
         if (rayIntersect) {
             if (rayHitCount == 0 || currentNormal != ray->bounceDir) {
                 BounceInfo* bounceInfo = new BounceInfo();
