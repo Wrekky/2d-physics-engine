@@ -21,7 +21,7 @@ void LightSource::ShootRays() {
     startPoint = clampDegree(startPoint);
     std::vector<Ray*> rays;
     std::vector<BounceInfo*> bounceInformation;
-    int iterationCount = 0;
+    int iterationCount = -1;
     for (int i = 0; i <= 180; i+=2) {
         float currentAddDegree = startPoint + (i * DEGREE);
         currentAddDegree = clampDegree(currentAddDegree);
@@ -34,14 +34,17 @@ void LightSource::ShootRays() {
         ray->angle = currentAddDegree;
         bool rayIntersect = false;
         for (auto obj : lightMap) {
-            rayIntersect = RayIntersect(obj, ray);
+            bool truefalse = RayIntersect(obj, ray);
+            if (!rayIntersect) {
+                rayIntersect = truefalse;
+            }
         }
         rays.push_back(ray);
         Graphics::DrawLine(ray->position.x, ray->position.y, ray->endPos.x, ray->endPos.y, color);
         //bounce logic (just one bounce for now):
         //Calculate how many different normals there are for each
         if (rayIntersect) {
-            if (rayHitCount == 0 || currentNormal != ray->bounceDir) {
+            if (rayHitCount == 0 || currentNormal != ray->bounceDir || ray->hitObject != bounceInformation[iterationCount]->currentRay->hitObject) {
                 BounceInfo* bounceInfo = new BounceInfo();
                 bounceInfo->furthestLeft = ray->endPos;
                 bounceInfo->furthestRight = ray->endPos;
@@ -51,11 +54,7 @@ void LightSource::ShootRays() {
                 bounceInfo->currentRay = ray;
                 currentNormal = ray->bounceDir;
                 bounceInformation.push_back(bounceInfo);
-                if (rayHitCount != 0) {
-                    iterationCount++;
-                    rayHitCount++;
-                    continue;
-                }
+                iterationCount++;
             }//TODO: some logic bug with the ray center point being created. dont see it at the moment
             rayHitCount++;
             if (ray->endPos.x > bounceInformation[iterationCount]->furthestRight.x) {
@@ -74,6 +73,7 @@ void LightSource::ShootRays() {
         }
     }
     //creating bounce rays:
+    //std::cout << bounceInformation.size() << std::endl;
     for (auto bounceInfo : bounceInformation)
     {
         std::vector<Ray *> newRays;
@@ -184,15 +184,17 @@ bool LightSource::RayIntersect(LightMapObject* obj, Ray* ray) {
             //TODO: break off into distance class, only call on edistance calculation per loop. seperate later...
             Vec2 newEnd = ((a * ob) - (b * oa)) / (ob-oa); 
             float newDist = Utils::distance(ray->position, newEnd);
-            if (newDist < oldDist) {
-                Vec2 bounceDir = ((c - d).Normal().UnitVector());//TODO: Include ray vector some how;
+            if (newDist < oldDist)
+            {
+                // TODO: Include ray vector some how;
+                ray->hasHit = true;
+                result = true;
                 ray->endPos = newEnd;
-                ray->bounceDir = (bounceDir) * -1;
                 oldDist = newDist;
+                Vec2 bounceDir = ((c - d).Normal().UnitVector());
+                ray->bounceDir = (bounceDir) * -1;
+                ray->hitObject = obj;
             }
-            ray->hitObject = obj;
-            ray->hasHit = true;
-            result = true;
         }
     }
     return result;
