@@ -200,6 +200,28 @@ bool LightSource::RayIntersect(LightMapObject* obj, Ray* ray) {
     return result;
 }
 
+//minDist controls how complex the polygon is, higher values are less complex. wont return anything if length between any vertice combination is smaller than minDist
+std::vector<Vec2> SimplifyPolygon(std::vector<Vec2> vertices, float minDist) {
+    std::vector<Vec2> newVertices;
+    int i = 0;
+    int next = i+1;
+    while (i < vertices.size()) {
+        if (next == vertices.size()) {
+            next = 0;
+        }
+        if (minDist < std::abs((vertices[i] - vertices[next]).Magnitude())) {
+            newVertices.push_back(vertices[i]);
+            i = next;
+        }
+        if (next == 0) {
+            i = vertices.size();
+        }
+        next++;
+
+    }
+    return newVertices;
+}
+
 void LightSource::FillRays() {
     for (auto rays : currentRays) {
         std::vector<Vec2> vertices;
@@ -207,6 +229,7 @@ void LightSource::FillRays() {
         for (int i = 0; i < rays.size(); i++) {
             vertices.push_back(rays[i]->endPos);
         }
+        vertices = SimplifyPolygon(vertices, 25);
         Graphics::DrawFillPolygon(position.x, position.y, vertices, color);
         rays.clear();//maybewillcrash
     }
