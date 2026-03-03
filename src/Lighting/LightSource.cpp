@@ -22,7 +22,7 @@ void LightSource::ShootRays() {
     std::vector<Ray*> rays;
     std::vector<BounceInfo*> bounceInformation;
     int iterationCount = -1;
-    for (int i = 0; i <= 180; i+=2) {
+    for (float i = 0; i <= 180; i+=0.5) {
         float currentAddDegree = startPoint + (i * DEGREE);
         currentAddDegree = clampDegree(currentAddDegree);
         float endX = position.x + intensity * cos(currentAddDegree);
@@ -107,7 +107,7 @@ void LightSource::ShootRays() {
             Vec2 startPosition = centerPoint;
             Vec2 endPosition = (currentNormal * intensity) + startPosition;
             float rotatedDegreeRadians = 90 * DEGREE;
-            for (int i = 0; i <= 180; i+=2)
+            for (float i = 0; i <= 180; i+=0.5)
             {
                 Ray *bounceRay = new Ray();
                 float step = rotatedDegreeRadians - (DEGREE * i);
@@ -203,10 +203,12 @@ bool LightSource::RayIntersect(LightMapObject* obj, Ray* ray) {
 //minDist controls how complex the polygon is, higher values are less complex. wont return anything if length between any vertice combination is smaller than minDist
 std::vector<Vec2> SimplifyPolygon(std::vector<Vec2> vertices, float minDist) {
     std::vector<Vec2> newVertices;
-    int i = 0;
+    //always add first point of vertices to new vertices.
+    newVertices.push_back(vertices[0]);
+    int i = 1;
     int next = i+1;
-    while (i < vertices.size()) {
-        if (next == vertices.size()) {
+    while (i < vertices.size() - 1) {
+        if (next == vertices.size() - 1) {
             next = 0;
         }
         if (minDist < std::abs((vertices[i] - vertices[next]).Magnitude())) {
@@ -219,6 +221,9 @@ std::vector<Vec2> SimplifyPolygon(std::vector<Vec2> vertices, float minDist) {
         next++;
 
     }
+    //always force last items to new vertices.
+    newVertices.push_back(vertices[vertices.size() - 1]);
+
     return newVertices;
 }
 
