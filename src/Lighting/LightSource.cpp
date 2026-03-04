@@ -22,7 +22,7 @@ void LightSource::ShootRays() {
     std::vector<Ray*> rays;
     std::vector<BounceInfo*> bounceInformation;
     int iterationCount = -1;
-    for (float i = 0; i <= 180; i+=0.5) {
+    for (float i = 0; i <= 180; i+=0.1) {
         float currentAddDegree = startPoint + (i * DEGREE);
         currentAddDegree = clampDegree(currentAddDegree);
         float endX = position.x + intensity * cos(currentAddDegree);
@@ -40,7 +40,7 @@ void LightSource::ShootRays() {
             }
         }
         rays.push_back(ray);
-        Graphics::DrawLine(ray->position.x, ray->position.y, ray->endPos.x, ray->endPos.y, color);
+        //Graphics::DrawLine(ray->position.x, ray->position.y, ray->endPos.x, ray->endPos.y, color);
         //bounce logic (just one bounce for now):
         //Calculate how many different normals there are for each
         if (rayIntersect) {
@@ -107,7 +107,7 @@ void LightSource::ShootRays() {
             Vec2 startPosition = centerPoint;
             Vec2 endPosition = (currentNormal * intensity) + startPosition;
             float rotatedDegreeRadians = 90 * DEGREE;
-            for (float i = 0; i <= 180; i+=0.5)
+            for (float i = 0; i <= 180; i+=0.1)
             {
                 Ray *bounceRay = new Ray();
                 float step = rotatedDegreeRadians - (DEGREE * i);
@@ -129,7 +129,7 @@ void LightSource::ShootRays() {
                     RayIntersect(obj, bounceRay);
                 }
                 newRays.push_back(bounceRay);
-                Graphics::DrawLine(bounceRay->position.x, bounceRay->position.y, bounceRay->endPos.x, bounceRay->endPos.y, color);
+                //Graphics::DrawLine(bounceRay->position.x, bounceRay->position.y, bounceRay->endPos.x, bounceRay->endPos.y, color);
             }
         }
         currentRays.push_back(newRays);
@@ -157,6 +157,7 @@ float orient(Vec2 a, Vec2 b, Vec2 c) {
     ca = c-a;
     return  ba.Cross(ca);
 }
+
 bool LightSource::RayIntersect(LightMapObject* obj, Ray* ray) {
     Vec2 a = ray->position;
     Vec2 b = ray->endPos;
@@ -227,6 +228,70 @@ std::vector<Vec2> SimplifyPolygon(std::vector<Vec2> vertices, float minDist) {
     return newVertices;
 }
 
+std::vector<std::vector<Vec2>> BreakUpPolygon(std::vector<Vec2> polygon, float unitMulti) {
+    std::vector<std::vector<Vec2>> polygons;
+    Vec2 startPos = polygon[0];
+    bool howClose = false;
+    std::vector<Vec2> currentLine;
+    for (int i = 1; i < polygon.size(); i++) {
+        currentLine.push_back(polygon[i]);
+    }
+    while (!howClose)
+    {
+        std::vector<Vec2> nextLine;
+        for (int i = 0; i < currentLine.size(); i++)
+        {
+            //creates new point
+            Vec2 directionVector;
+            directionVector = (startPos - currentLine[i]).UnitVector();
+            Vec2 newPoint = currentLine[i] + directionVector * unitMulti;
+
+            //add new point to next line
+            nextLine.push_back(newPoint);
+            //thats it?
+        }
+        //
+        //iterate through a, b, c, d, and then, c d e f like that.
+        //current line and next line should be the same in length, so whatever the combination both combined will be divisible by two.
+        Vec2 a, b;
+        Vec2 c, d;
+        a = currentLine[0];
+        b = currentLine[1];
+        c = nextLine[0];
+        d = nextLine[1];
+        int polygonCountBefore = polygons.size();
+        for (int i = 2; i < currentLine.size(); i++) {
+            if (i + 1 == currentLine.size()) {
+                continue;
+            }
+            float distToStartC = (c - startPos).Magnitude();
+            float distToStartD = (d - startPos).Magnitude();
+            //Only add polygons if distance is greater than unit multi * 2, c and d should always be the closer point to the start
+            if (distToStartC > unitMulti * 2 || distToStartD > unitMulti * 2)
+            {
+                std::vector<Vec2> newPolygon;
+                newPolygon.push_back(a);
+                newPolygon.push_back(b);
+                newPolygon.push_back(d);
+                newPolygon.push_back(c);
+                polygons.push_back(newPolygon);
+            }
+            a = currentLine[i];
+            b = currentLine[i+1];
+            c = nextLine[i];
+            d = nextLine[i+1];
+        }
+        int polygonCountAfter = polygons.size();
+        if (polygonCountBefore == polygonCountAfter) {
+            //no polygons are being added, end loop
+            howClose = true;
+            continue;
+        }
+        currentLine = nextLine; //save nextLine after storing polygons
+    }
+    return polygons;
+}
+
 void LightSource::FillRays() {
     for (auto rays : currentRays) {
         std::vector<Vec2> vertices;
@@ -234,8 +299,11 @@ void LightSource::FillRays() {
         for (int i = 0; i < rays.size(); i++) {
             vertices.push_back(rays[i]->endPos);
         }
-        vertices = SimplifyPolygon(vertices, 25);
-        Graphics::DrawFillPolygon(position.x, position.y, vertices, color);
+        vertices = SimplifyPolygon(vertices, 10);
+        std::vector<std::vector<Vec2>>polygons = BreakUpPolygon(vertices, 10);
+        for (auto polygon : polygons) {
+            Graphics::DrawFillPolygon(polygon[0].x, polygon[0].y, polygon, color);
+        }
         rays.clear();//maybewillcrash
     }
     //TODO: clear currentRays somewhere else. should be cleared everyframe in a lightsource.update function.    
