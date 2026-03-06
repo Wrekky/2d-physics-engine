@@ -262,9 +262,6 @@ std::vector<std::vector<Vec2>> BreakUpPolygon(std::vector<Vec2> polygon, float u
         int polygonCountBefore = polygons.size();
         bool distanceCheck = false;
         for (int i = 1; i < currentLine.size(); i++) {
-            if (i + 1 == currentLine.size()) {
-                continue;
-            }
             float distToStartC = (c - startPos).Magnitude();
             float distToStartD = (d - startPos).Magnitude();
             //Only add polygons if distance is greater than unit multi * 2, c and d should always be the closer point to the start
@@ -279,6 +276,10 @@ std::vector<std::vector<Vec2>> BreakUpPolygon(std::vector<Vec2> polygon, float u
                 newPolygon.push_back(d);
                 newPolygon.push_back(c);
                 polygons.push_back(newPolygon);
+            }
+            if (i + 1 == currentLine.size())
+            {
+                continue;
             }
             a = currentLine[i];
             b = currentLine[i+1];
