@@ -260,14 +260,18 @@ std::vector<std::vector<Vec2>> BreakUpPolygon(std::vector<Vec2> polygon, float u
         c = nextLine[0];
         d = nextLine[1];
         int polygonCountBefore = polygons.size();
-        for (int i = 2; i < currentLine.size(); i++) {
+        bool distanceCheck = false;
+        for (int i = 1; i < currentLine.size(); i++) {
             if (i + 1 == currentLine.size()) {
                 continue;
             }
             float distToStartC = (c - startPos).Magnitude();
             float distToStartD = (d - startPos).Magnitude();
             //Only add polygons if distance is greater than unit multi * 2, c and d should always be the closer point to the start
-            if (distToStartC > unitMulti * 2 || distToStartD > unitMulti * 2)
+            if (!distanceCheck && (distToStartC > unitMulti * 2 || distToStartD > unitMulti * 2)) {
+                distanceCheck = true;
+            }
+            if (distanceCheck)//should only need to do this test once per line?
             {
                 std::vector<Vec2> newPolygon;
                 newPolygon.push_back(a);
@@ -284,6 +288,9 @@ std::vector<std::vector<Vec2>> BreakUpPolygon(std::vector<Vec2> polygon, float u
         int polygonCountAfter = polygons.size();
         if (polygonCountBefore == polygonCountAfter) {
             //no polygons are being added, end loop
+            //connect next line to start point
+            currentLine.push_back(startPos);
+            polygons.push_back(currentLine);
             howClose = true;
             continue;
         }
@@ -299,8 +306,8 @@ void LightSource::FillRays() {
         for (int i = 0; i < rays.size(); i++) {
             vertices.push_back(rays[i]->endPos);
         }
-        vertices = SimplifyPolygon(vertices, 10);
-        std::vector<std::vector<Vec2>>polygons = BreakUpPolygon(vertices, 10);
+        vertices = SimplifyPolygon(vertices, 30);
+        std::vector<std::vector<Vec2>>polygons = BreakUpPolygon(vertices, 30);
         for (auto polygon : polygons) {
             Graphics::DrawFillPolygon(polygon[0].x, polygon[0].y, polygon, color);
         }
