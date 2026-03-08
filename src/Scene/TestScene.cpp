@@ -20,16 +20,16 @@ void TestScene::Setup() {
     a->rotation = 180;
     b->rotation = 180;
     world->AddBody(a);
-    world->AddBody(b);
+    //world->AddBody(b);
     Vec2 position = Vec2(Graphics::Width() / 2, Graphics::Height() / 4);
     LightSource* newLight = new LightSource(position, 3.14 / 2, 0x33FF0000, 500, 1, 180);
     lightObjects.push_back(newLight);
-    LightSource* newLight2 = new LightSource(Vec2(position.x + 200, position.y), 3.14 / 2, 0x330000FF, 500, 1, 180);
-    lightObjects.push_back(newLight2);
+    //LightSource* newLight2 = new LightSource(Vec2(position.x + 200, position.y), 3.14 / 2, 0x330000FF, 500, 1, 180);
+    //lightObjects.push_back(newLight2);
     for (int i = 0; i < world->GetBodies().size(); i++) {
         LightMapObject* newLightMapObject = new LightMapObject(*world->GetBodies()[i]);
         newLight->AddLightMapObject(newLightMapObject);
-        newLight2->AddLightMapObject(newLightMapObject);
+        //newLight2->AddLightMapObject(newLightMapObject);
     }
     //manual for now
 
@@ -68,11 +68,15 @@ void TestScene::Input()
                 box->SetTexture("./assets/crate.png");
                 box->restitution = 0.2;
                 world->AddBody(box);
+                LightMapObject* newLightMapObject = new LightMapObject(*box);
+                for (auto lightSource : lightObjects) {
+                    lightSource->AddLightMapObject(newLightMapObject);
+                }
             }
             break;
         case SDL_MOUSEMOTION:
             SDL_GetMouseState(&x, &y);
-            Body* box = world->GetBodies()[4];
+            Body* box = world->GetBodies()[3];
             box->position.x = x;
             box->position.y = y;
             break;

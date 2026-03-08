@@ -236,64 +236,81 @@ std::vector<std::vector<Vec2>> BreakUpPolygon(std::vector<Vec2> polygon, float u
     for (int i = 1; i < polygon.size(); i++) {
         currentLine.push_back(polygon[i]);
     }
+
     while (!howClose)
     {
         std::vector<Vec2> nextLine;
+        int counter = 0;
+        int polygonCounter = 0;
+        std::vector<Vec2> currentPolygonTop;
+        std::vector<Vec2> currentPolygonBottom;
+        int currentPolygonsSize;
+        currentPolygonsSize = polygons.size();
         for (int i = 0; i < currentLine.size(); i++)
-        {
-            //creates new point
-            Vec2 directionVector;
-            directionVector = (startPos - currentLine[i]).UnitVector();
-            Vec2 newPoint = currentLine[i] + directionVector * unitMulti;
-
+        {//////////////////////////////////////////////////////////////////////////////////////////
+            ///////////////////////////////////////////////////////////////This is fine
             //add new point to next line
-            nextLine.push_back(newPoint);
-            //thats it?
-        }
-        //
-        //iterate through a, b, c, d, and then, c d e f like that.
-        //current line and next line should be the same in length, so whatever the combination both combined will be divisible by two.
-        Vec2 a, b;
-        Vec2 c, d;
-        a = currentLine[0];
-        b = currentLine[1];
-        c = nextLine[0];
-        d = nextLine[1];
-        int polygonCountBefore = polygons.size();
-        bool distanceCheck = false;
-        for (int i = 1; i < currentLine.size(); i++) {
-            float distToStartC = (c - startPos).Magnitude();
-            float distToStartD = (d - startPos).Magnitude();
-            //Only add polygons if distance is greater than unit multi * 2, c and d should always be the closer point to the start
-            if (!distanceCheck && (distToStartC > unitMulti * 2 || distToStartD > unitMulti * 2)) {
-                distanceCheck = true;
+            counter++;
+            currentPolygonBottom.push_back(currentLine[i]);
+            polygonCounter++;
+            
+            if (counter == 3) {
+                counter = 0;
+                if (i == currentLine.size() - 1) {
+                    Vec2 directionVector;
+                    directionVector = (startPos - currentLine[i]).UnitVector();
+                    Vec2 newPoint = currentLine[i] + directionVector * unitMulti;
+                    nextLine.push_back(newPoint);
+                    currentPolygonTop.push_back(newPoint);
+                    polygonCounter++;
+                    counter++;
+                }
             }
-            if (distanceCheck)//should only need to do this test once per line?
-            {
+            else {
+                Vec2 directionVector;
+                directionVector = (startPos - currentLine[i]).UnitVector();
+                Vec2 newPoint = currentLine[i] + directionVector * unitMulti;
+                nextLine.push_back(newPoint);
+                currentPolygonTop.push_back(newPoint);
+                polygonCounter++;
+            }
+
+            if (polygonCounter > 5 && currentPolygonTop.size() > 1) {
+                Vec2 reUseTop, reUseBottom;
                 std::vector<Vec2> newPolygon;
-                newPolygon.push_back(a);
-                newPolygon.push_back(b);
-                newPolygon.push_back(d);
-                newPolygon.push_back(c);
-                polygons.push_back(newPolygon);
+                for (int i = currentPolygonTop.size() - 1; i >= 0; i--)
+                {
+                    Graphics::DrawFillCircle(currentPolygonTop[i].x, currentPolygonTop[i].y, 3, 0xFF33cc33);
+                    newPolygon.push_back(currentPolygonTop[i]);
+                }
+                for (auto point : currentPolygonBottom) {
+                    Graphics::DrawFillCircle(point.x, point.y, 3, 0xFFFFcc11);
+                    newPolygon.push_back(point);
+                }
+                //check if its too close.
+                float distTestA = (currentPolygonTop[0] - startPos).Magnitude();
+                float distTestB = (currentPolygonTop[1] - startPos).Magnitude();
+                if (distTestA > 21 || distTestB > 21) {
+                    polygons.push_back(newPolygon);
+                    std::cout << polygons.size() <<std::endl;
+                }
+
+                reUseTop = currentPolygonTop.back();
+                reUseBottom = currentPolygonBottom.back();
+                currentPolygonTop.clear();
+                currentPolygonBottom.clear();
+                currentPolygonTop.push_back(reUseTop);
+                currentPolygonBottom.push_back(reUseBottom);
+
+                polygonCounter = 2;
+                //skip otherwise?
             }
-            if (i + 1 == currentLine.size())
-            {
-                continue;
-            }
-            a = currentLine[i];
-            b = currentLine[i+1];
-            c = nextLine[i];
-            d = nextLine[i+1];
         }
-        int polygonCountAfter = polygons.size();
-        if (polygonCountBefore == polygonCountAfter) {
-            //no polygons are being added, end loop
-            //connect next line to start point
-            currentLine.push_back(startPos);
-            polygons.push_back(currentLine);
+        if (currentPolygonsSize == polygons.size()) {
             howClose = true;
-            continue;
+        }
+        for (auto current : currentLine) {
+            Graphics::DrawFillCircle(current.x, current.y, 3, 0xFF33cc33);
         }
         currentLine = nextLine; //save nextLine after storing polygons
     }
@@ -307,8 +324,8 @@ void LightSource::FillRays() {
         for (int i = 0; i < rays.size(); i++) {
             vertices.push_back(rays[i]->endPos);
         }
-        vertices = SimplifyPolygon(vertices, 30);
-        std::vector<std::vector<Vec2>>polygons = BreakUpPolygon(vertices, 30);
+        vertices = SimplifyPolygon(vertices, 32);
+        std::vector<std::vector<Vec2>>polygons = BreakUpPolygon(vertices, 32);
         for (auto polygon : polygons) {
             Graphics::DrawFillPolygon(polygon[0].x, polygon[0].y, polygon, color);
         }
