@@ -236,11 +236,11 @@ std::vector<std::vector<Vec2>> BreakUpPolygon(std::vector<Vec2> polygon, float u
     for (int i = 1; i < polygon.size(); i++) {
         currentLine.push_back(polygon[i]);
     }
-
+    int counter = 0;
+    bool maxLines = false;
     while (!howClose)
     {
         std::vector<Vec2> nextLine;
-        int counter = 0;
         int polygonCounter = 0;
         std::vector<Vec2> currentPolygonTop;
         std::vector<Vec2> currentPolygonBottom;
@@ -253,18 +253,16 @@ std::vector<std::vector<Vec2>> BreakUpPolygon(std::vector<Vec2> polygon, float u
             counter++;
             currentPolygonBottom.push_back(currentLine[i]);
             polygonCounter++;
-            
-            if (counter == 3) {
+            if (i == currentLine.size() - 1 || i == 0) {
+                Vec2 directionVector;
+                directionVector = (startPos - currentLine[i]).UnitVector();
+                Vec2 newPoint = currentLine[i] + directionVector * unitMulti;
+                nextLine.push_back(newPoint);
+                currentPolygonTop.push_back(newPoint);
+                polygonCounter++;
+            }
+            else if (counter > 3 && !maxLines) {
                 counter = 0;
-                if (i == currentLine.size() - 1) {
-                    Vec2 directionVector;
-                    directionVector = (startPos - currentLine[i]).UnitVector();
-                    Vec2 newPoint = currentLine[i] + directionVector * unitMulti;
-                    nextLine.push_back(newPoint);
-                    currentPolygonTop.push_back(newPoint);
-                    polygonCounter++;
-                    counter++;
-                }
             }
             else {
                 Vec2 directionVector;
@@ -275,24 +273,21 @@ std::vector<std::vector<Vec2>> BreakUpPolygon(std::vector<Vec2> polygon, float u
                 polygonCounter++;
             }
 
-            if (polygonCounter > 5 && currentPolygonTop.size() > 1) {
+            if (polygonCounter > 3 && currentPolygonTop.size() > 0) {
                 Vec2 reUseTop, reUseBottom;
                 std::vector<Vec2> newPolygon;
                 for (int i = currentPolygonTop.size() - 1; i >= 0; i--)
                 {
-                    Graphics::DrawFillCircle(currentPolygonTop[i].x, currentPolygonTop[i].y, 3, 0xFF33cc33);
                     newPolygon.push_back(currentPolygonTop[i]);
                 }
                 for (auto point : currentPolygonBottom) {
-                    Graphics::DrawFillCircle(point.x, point.y, 3, 0xFFFFcc11);
                     newPolygon.push_back(point);
                 }
                 //check if its too close.
                 float distTestA = (currentPolygonTop[0] - startPos).Magnitude();
-                float distTestB = (currentPolygonTop[1] - startPos).Magnitude();
-                if (distTestA > 21 || distTestB > 21) {
+                float distTestB = (currentPolygonTop.back() - startPos).Magnitude();
+                if (distTestA > unitMulti * 2 || distTestB > unitMulti * 2) {
                     polygons.push_back(newPolygon);
-                    std::cout << polygons.size() <<std::endl;
                 }
 
                 reUseTop = currentPolygonTop.back();
@@ -305,6 +300,9 @@ std::vector<std::vector<Vec2>> BreakUpPolygon(std::vector<Vec2> polygon, float u
                 polygonCounter = 2;
                 //skip otherwise?
             }
+        }
+        if (currentLine.size() < 16) {
+            maxLines = true;
         }
         if (currentPolygonsSize == polygons.size()) {
             howClose = true;
