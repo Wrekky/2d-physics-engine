@@ -88,7 +88,6 @@ void Graphics::DrawFillPolygon(int x, int y, const std::vector<Vec2>& vertices, 
         vy.push_back(static_cast<int>(vertices[i].y));
     }
     filledPolygonColor(renderer, &vx[0], &vy[0], vertices.size(), color);
-    filledCircleColor(renderer, x, y, 1, 0xFF000000);
 }
 
 void Graphics::DrawTexture(int x, int y, int width, int height, float rotation, SDL_Texture* texture) {

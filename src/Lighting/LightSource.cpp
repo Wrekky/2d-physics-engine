@@ -314,18 +314,60 @@ std::vector<std::vector<Vec2>> BreakUpPolygon(std::vector<Vec2> polygon, float u
     }
     return polygons;
 }
+//super lazy, just want to see how it looks.
+Uint32 FindColorAlpha(int alpha) {
+    switch (alpha)
+    {
+    case 1:
+        return (0x9933cc99);
+        break;
+    case 2:
+        return (0x8833cc99);
+        break;
+    case 3:
+        return (0x7733cc99);
+        break;
+    case 4:
+        return (0x6633cc99);
+        break;
+    case 5:
+        return (0x5533cc99);
+        break;
+    case 6:
+        return (0x4433cc99);
+        break;
+    case 7:
+        return (0x3333cc99);
+        break;
+    case 8:
+        return (0x2233cc99);
+        break;
+    case 9:
+        return (0x1133cc99);
+        break;
+    case 10:
+        return (0x0133cc99);
+        break;
+    }
 
+    return 0x0133cc99;
+}
 void LightSource::FillRays() {
     for (auto rays : currentRays) {
         std::vector<Vec2> vertices;
-        vertices.push_back(rays[0]->position);
+        Vec2 startPos = rays[0]->position;
+        vertices.push_back(startPos);
         for (int i = 0; i < rays.size(); i++) {
             vertices.push_back(rays[i]->endPos);
         }
         vertices = SimplifyPolygon(vertices, 32);
         std::vector<std::vector<Vec2>>polygons = BreakUpPolygon(vertices, 32);
         for (auto polygon : polygons) {
-            Graphics::DrawFillPolygon(polygon[0].x, polygon[0].y, polygon, color);
+            //last 2 digits of uInt32 are alpha.
+            float distance = (startPos - polygon[0]).Magnitude();
+            float maxDist = 450;
+            Uint32 newColor = FindColorAlpha(distance / maxDist * 10);
+            Graphics::DrawFillPolygon(polygon[0].x, polygon[0].y, polygon, newColor);//maybe will work?
         }
         rays.clear();//maybewillcrash
     }
