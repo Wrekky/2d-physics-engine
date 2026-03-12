@@ -307,9 +307,6 @@ std::vector<std::vector<Vec2>> BreakUpPolygon(std::vector<Vec2> polygon, float u
         if (currentPolygonsSize == polygons.size()) {
             howClose = true;
         }
-        for (auto current : currentLine) {
-            Graphics::DrawFillCircle(current.x, current.y, 3, 0xFF33cc33);
-        }
         currentLine = nextLine; //save nextLine after storing polygons
     }
     return polygons;
