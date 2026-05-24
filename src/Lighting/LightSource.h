@@ -31,7 +31,7 @@ class LightSource {
 
         void ProcessRays();
         float clampDegree(float degree);
-        void FillRays();
+        void FillRays(SDL_Texture* lightTexture);
         LightSource(Vec2 position, float direction, Uint32 color, float intensity, int bounces, int beamSpread);
         ~LightSource();
 };

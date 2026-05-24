@@ -1,10 +1,11 @@
 #include "Render.h"
-
+#include "iostream"
 int main(int argc, char *args[]) {
     //TODO: Multiple scenes
     Render app;
     app.scene = new TitleScreen();
     app.scene->running = Graphics::OpenWindow();
+    app.texture = IMG_LoadTexture(Graphics::renderer, "./assets/light-fade.png");
     app.scene->Setup();
     while (app.scene->IsRunning()) { //TODO: Move to scene class.
         if (app.scene->switchScene) {

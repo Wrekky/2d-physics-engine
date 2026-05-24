@@ -11,6 +11,7 @@ class Render {
     public:
     //TODO: create scene on Render constructor
         Scene* scene;
+        SDL_Texture* texture;
         Render() = default;
         ~Render() = default;
         void RenderScene();

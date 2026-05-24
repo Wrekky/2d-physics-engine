@@ -1,6 +1,6 @@
 #include "Graphics.h"
 #include <iostream>
-
+#include <SDL2/SDL_image.h>
 SDL_Window* Graphics::window = NULL;
 SDL_Renderer* Graphics::renderer = NULL;
 int Graphics::windowWidth = 0;
@@ -19,11 +19,19 @@ bool Graphics::OpenWindow() {
         std::cerr << "Error initializing SDL" << std::endl;
         return false;
     }
+    // Initialize PNG loading
+    int imgFlags = IMG_INIT_PNG;
+    if (!(IMG_Init(imgFlags) & imgFlags))
+    {
+        printf("SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError());
+        return false;
+    }
     SDL_DisplayMode display_mode;
     SDL_GetCurrentDisplayMode(0, &display_mode);
     windowWidth = display_mode.w;
     windowHeight = display_mode.h;
     window = SDL_CreateWindow(NULL, 0, 0, windowWidth, windowHeight, SDL_WINDOW_FULLSCREEN);
+    
     if (!window) {
         std::cerr << "Error creating SDL window" << std::endl;
         return false;
@@ -33,6 +41,8 @@ bool Graphics::OpenWindow() {
         std::cerr << "Error creating SDL renderer" << std::endl;
         return false;
     }
+    SDL_Surface* screenSurface = SDL_GetWindowSurface(window);
+    std::cout << screenSurface->format << std::endl;
     return true;
 }
 
@@ -88,6 +98,27 @@ void Graphics::DrawFillPolygon(int x, int y, const std::vector<Vec2>& vertices, 
         vy.push_back(static_cast<int>(vertices[i].y));
     }
     filledPolygonColor(renderer, &vx[0], &vy[0], vertices.size(), color);
+}
+
+//Doesnt work for antyhing outside of the lighting system. Should be renamed.
+void Graphics::DrawTexturedPolygon(int x, int y, const std::vector<Vec2>& vertices, SDL_Texture* texture, Vec2 texturePosition) {
+    for (int i = 1; i < vertices.size() - 1; i++) {
+        SDL_Vertex verts[3];
+        verts[0].position = {vertices[0].x, vertices[0].y};
+        verts[0].tex_coord = {0, 0};
+        verts[0].color = {0, 0, 0, 5};
+
+        verts[1].position = {vertices[i].x, vertices[i].y};
+        verts[1].tex_coord = {i * 5, i * 5};
+        verts[1].color = {0, 0, 0, 255};
+
+        verts[2].position = {vertices[i+1].x, vertices[i+1].y};
+        verts[2].tex_coord = {(i+1) * 5, (i+1) * 5};
+        verts[2].color = {0, 0, 0, 255};
+        SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+        SDL_RenderGeometry(renderer, NULL, verts, 3, NULL, 0);
+    }
+    //texturedPolygon(renderer, &vx[0], &vy[0], vertices.size(), texture, texturePosition.x, texturePosition.y);
 }
 
 void Graphics::DrawTexture(int x, int y, int width, int height, float rotation, SDL_Texture* texture) {

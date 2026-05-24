@@ -1,4 +1,5 @@
 #include "Render.h"
+#include <SDL2/SDL_image.h>
 #include "./Utility/Constants.h"
 #include <iostream>
 #include <string>
@@ -6,6 +7,11 @@
 // Render function (called several times per second to draw objects)
 ///////////////////////////////////////////////////////////////////////////////
 void Render::RenderScene() {
+
+    Graphics::ClearScreen(0xFF056263);
+    for (auto lightSource : scene->lightObjects) {
+        lightSource->FillRays(texture);
+    }
     std::vector<Body*> bodies = scene->world->GetBodies();
     for (auto body : bodies)
     {
@@ -39,9 +45,6 @@ void Render::RenderScene() {
             Graphics::DrawPolygon(body->position.x, body->position.y, polygonShape->worldVertices, color);
         }
     }
-    for (auto lightSource : scene->lightObjects) {
-        lightSource->FillRays();
-    }
     for (auto uiObj : scene->UIObjects) {
         TextButton *textButton = (TextButton*)uiObj;
         
@@ -66,9 +69,7 @@ void Render::RenderScene() {
             Graphics::DrawLine(pointA.x, pointA.y, pointB.x, pointB.y, 0xFF33cc33);
         }
     }
-
     Graphics::RenderFrame();
-    Graphics::ClearScreen(0xFF056263);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

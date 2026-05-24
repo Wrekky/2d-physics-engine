@@ -25,6 +25,7 @@ struct Graphics {
     static void DrawFillRect(int x, int y, int width, int height, Uint32 color);
     static void DrawPolygon(int x, int y, const std::vector<Vec2>& vertices, Uint32 color);
     static void DrawFillPolygon(int x, int y, const std::vector<Vec2>& vertices, Uint32 color);
+    static void DrawTexturedPolygon(int x, int y, const std::vector<Vec2>& vertices, SDL_Texture* texture, Vec2 texturePosition);
     static void DrawTexture(int x, int y, int width, int height, float rotation, SDL_Texture* texture);
 };
 

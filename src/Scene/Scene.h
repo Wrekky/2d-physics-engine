@@ -19,7 +19,7 @@ class Scene {
         std::vector<Text*> textObjects;
         std::vector<LightSource*> lightObjects;
         TTF_Font* defaultFont;
-        
+        SDL_Surface* lightTexture;
         int nextScene = 0;
         bool switchScene = false;
         bool running = false;

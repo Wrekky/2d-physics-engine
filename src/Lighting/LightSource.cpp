@@ -228,6 +228,7 @@ std::vector<Vec2> SimplifyPolygon(std::vector<Vec2> vertices, float minDist) {
     return newVertices;
 }
 
+//breaks up a complex polygon into many polygons.
 std::vector<std::vector<Vec2>> BreakUpPolygon(std::vector<Vec2> polygon, float unitMulti) {
     std::vector<std::vector<Vec2>> polygons;
     Vec2 startPos = polygon[0];
@@ -238,6 +239,7 @@ std::vector<std::vector<Vec2>> BreakUpPolygon(std::vector<Vec2> polygon, float u
     }
     int counter = 0;
     bool maxLines = false;
+    bool topLast = false;
     while (!howClose)
     {
         std::vector<Vec2> nextLine;
@@ -253,7 +255,7 @@ std::vector<std::vector<Vec2>> BreakUpPolygon(std::vector<Vec2> polygon, float u
             counter++;
             currentPolygonBottom.push_back(currentLine[i]);
             polygonCounter++;
-            if (i == currentLine.size() - 1 || i == 0) {
+            if (i == currentLine.size() - 1 || i == 0) { //Add starting and end position, farthest edges of polygon
                 Vec2 directionVector;
                 directionVector = (startPos - currentLine[i]).UnitVector();
                 Vec2 newPoint = currentLine[i] + directionVector * unitMulti;
@@ -261,10 +263,10 @@ std::vector<std::vector<Vec2>> BreakUpPolygon(std::vector<Vec2> polygon, float u
                 currentPolygonTop.push_back(newPoint);
                 polygonCounter++;
             }
-            else if (counter > 3 && !maxLines) {
+            else if (counter > 3 && !maxLines) { //Skip every third point added to the new lines, ignores if maxLines limit is reached. should lower future iterations counts
                 counter = 0;
             }
-            else {
+            else {//Also adding a new point, maybe move this to a function? Don't feel the need to since its so small..
                 Vec2 directionVector;
                 directionVector = (startPos - currentLine[i]).UnitVector();
                 Vec2 newPoint = currentLine[i] + directionVector * unitMulti;
@@ -272,39 +274,23 @@ std::vector<std::vector<Vec2>> BreakUpPolygon(std::vector<Vec2> polygon, float u
                 currentPolygonTop.push_back(newPoint);
                 polygonCounter++;
             }
-
-            if (polygonCounter > 3 && currentPolygonTop.size() > 0) {
-                Vec2 reUseTop, reUseBottom;
-                std::vector<Vec2> newPolygon;
-                for (int i = currentPolygonTop.size() - 1; i >= 0; i--)
-                {
-                    newPolygon.push_back(currentPolygonTop[i]);
-                }
-                for (auto point : currentPolygonBottom) {
-                    newPolygon.push_back(point);
-                }
-                //check if its too close.
-                float distTestA = (currentPolygonTop[0] - startPos).Magnitude();
-                float distTestB = (currentPolygonTop.back() - startPos).Magnitude();
-                if (distTestA > unitMulti * 2 || distTestB > unitMulti * 2) {
-                    polygons.push_back(newPolygon);
-                }
-
-                reUseTop = currentPolygonTop.back();
-                reUseBottom = currentPolygonBottom.back();
-                currentPolygonTop.clear();
-                currentPolygonBottom.clear();
-                currentPolygonTop.push_back(reUseTop);
-                currentPolygonBottom.push_back(reUseBottom);
-
-                polygonCounter = 2;
-                //skip otherwise?
-            }
         }
-        if (currentLine.size() < 16) {
+
+        //Polygon creation: currently we have a current line point and POTENTIALLY a newLine point correspounding. No gauruntees.
+        //Creating another loop will slow things down, all the needed information is here, simplest solution is to create another loop.
+        //When creating the polygon out of tris, alternate between using two newLines and two currentLines. Always reuse one of each from the previous loop. 
+        
+        //Current Two
+
+        //New Two
+
+
+        if (currentLine.size() < 16) { //TODO move this number somewhere else, probably into the function variables
             maxLines = true;
         }
+
         if (currentPolygonsSize == polygons.size()) {
+            //If new polygons aren't being created due to distance limits being reached, end the loop
             howClose = true;
         }
         currentLine = nextLine; //save nextLine after storing polygons
@@ -349,7 +335,7 @@ Uint32 FindColorAlpha(int alpha) {
 
     return 0x0133cc99;
 }
-void LightSource::FillRays() {
+void LightSource::FillRays(SDL_Texture* lightTexture) {
     for (auto rays : currentRays) {
         std::vector<Vec2> vertices;
         Vec2 startPos = rays[0]->position;
@@ -358,14 +344,10 @@ void LightSource::FillRays() {
             vertices.push_back(rays[i]->endPos);
         }
         vertices = SimplifyPolygon(vertices, 32);
-        std::vector<std::vector<Vec2>>polygons = BreakUpPolygon(vertices, 32);
-        for (auto polygon : polygons) {
-            //last 2 digits of uInt32 are alpha.
-            float distance = (startPos - polygon[0]).Magnitude();
-            float maxDist = 450;
-            Uint32 newColor = FindColorAlpha(distance / maxDist * 10);
-            Graphics::DrawFillPolygon(polygon[0].x, polygon[0].y, polygon, newColor);//maybe will work?
-        }
+        //std::vector<std::vector<Vec2>>polygons = BreakUpPolygon(vertices, 32);
+        //Graphics::DrawFillPolygon(vertices[0].x, vertices[0].y, vertices, 0x9933cc99);
+        Vec2 textureStartPos = Vec2 (0.0, 0.0);
+        Graphics::DrawTexturedPolygon(vertices[0].x, vertices[0].y, vertices, lightTexture, textureStartPos);
         rays.clear();//maybewillcrash
     }
     //TODO: clear currentRays somewhere else. should be cleared everyframe in a lightsource.update function.    
